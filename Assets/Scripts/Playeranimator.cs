@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerAnimator : MonoBehaviour
 {
     Animator anim;
+    public float velocidad = 3f;
 
     void Start()
     {
@@ -11,12 +13,17 @@ public class PlayerAnimator : MonoBehaviour
 
     void Update()
     {
-        float moveX = Input.GetAxisRaw("Horizontal"); // A y D
-        float moveY = Input.GetAxisRaw("Vertical");   // W y S
-        bool space = Input.GetKey(KeyCode.Space);
+        var keyboard = Keyboard.current;
+        if (keyboard == null) return;
 
-        bool isMoving = moveX != 0 || moveY != 0 || space;
+        Vector3 movimiento = Vector3.zero;
 
+        if (keyboard.sKey.isPressed)
+            movimiento = Vector3.down;
+
+        bool isMoving = movimiento != Vector3.zero;
+
+        transform.Translate(movimiento * velocidad * Time.deltaTime);
         anim.SetBool("isMoving", isMoving);
     }
 }
