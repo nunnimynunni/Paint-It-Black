@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1872943880742310097}
   m_Layer: 0
   m_Name: proyectil pincel
-  m_TagString: Untagged
+  m_TagString: Disparo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
