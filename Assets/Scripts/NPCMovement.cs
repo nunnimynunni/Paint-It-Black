@@ -3,6 +3,7 @@ using UnityEngine;
 public class NPCMovement : MonoBehaviour
 {
     private Animator animator;
+    private SpriteRenderer spriteRenderer;
     private Camera mainCamera;
     public float moveSpeed = 2f;
     
@@ -23,6 +24,7 @@ public class NPCMovement : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         mainCamera = Camera.main;
         CalculateCameraBounds();
         RandomizeTimers();
@@ -38,6 +40,9 @@ public class NPCMovement : MonoBehaviour
             waitTimer += Time.deltaTime;
             animator.SetBool("isWalkingDown", false);
             animator.SetBool("isWalkingUp", false);
+            animator.SetBool("isWalkingRight", false);
+            animator.SetBool("isWalkingDiagonalUp", false);
+            animator.SetBool("isWalkingDiagonalDown", false);
             
             if (waitTimer >= randomWaitTime)
             {
@@ -84,59 +89,120 @@ public class NPCMovement : MonoBehaviour
     {
         float margin = 0.5f;
         
-        if (transform.position.y >= cameraTop - margin && moveDirection == Vector3.up)
+        // Limitar en Y
+        if (transform.position.y >= cameraTop - margin && moveDirection.y > 0)
         {
-            moveDirection = Vector3.down;
+            moveDirection = new Vector3(moveDirection.x, -moveDirection.y, 0);
             ChangeAnimation();
         }
-        else if (transform.position.y <= cameraBottom + margin && moveDirection == Vector3.down)
+        else if (transform.position.y <= cameraBottom + margin && moveDirection.y < 0)
         {
-            moveDirection = Vector3.up;
+            moveDirection = new Vector3(moveDirection.x, -moveDirection.y, 0);
             ChangeAnimation();
         }
         
-        if (transform.position.x >= cameraRight - margin && moveDirection == Vector3.right)
+        // Limitar en X
+        if (transform.position.x >= cameraRight - margin && moveDirection.x > 0)
         {
-            moveDirection = Vector3.left;
+            moveDirection = new Vector3(-moveDirection.x, moveDirection.y, 0);
             ChangeAnimation();
         }
-        else if (transform.position.x <= cameraLeft + margin && moveDirection == Vector3.left)
+        else if (transform.position.x <= cameraLeft + margin && moveDirection.x < 0)
         {
-            moveDirection = Vector3.right;
+            moveDirection = new Vector3(-moveDirection.x, moveDirection.y, 0);
             ChangeAnimation();
         }
     }
 
     void ChangeAnimation()
     {
+        animator.SetBool("isWalkingDown", false);
+        animator.SetBool("isWalkingUp", false);
+        animator.SetBool("isWalkingRight", false);
+        animator.SetBool("isWalkingDiagonalUp", false);
+        animator.SetBool("isWalkingDiagonalDown", false);
+        
+        // Arriba y abajo no flippean
         if (moveDirection == Vector3.down)
         {
             animator.SetBool("isWalkingDown", true);
-            animator.SetBool("isWalkingUp", false);
+            spriteRenderer.flipX = false;
         }
         else if (moveDirection == Vector3.up)
         {
             animator.SetBool("isWalkingUp", true);
-            animator.SetBool("isWalkingDown", false);
+            spriteRenderer.flipX = false;
+        }
+        // Solo derecha/diagonales flippean
+        else if (moveDirection.x > 0)
+        {
+            spriteRenderer.flipX = false;
+            
+            if (moveDirection.y > 0)
+            {
+                animator.SetBool("isWalkingDiagonalUp", true);
+            }
+            else if (moveDirection.y < 0)
+            {
+                animator.SetBool("isWalkingDiagonalDown", true);
+            }
+            else
+            {
+                animator.SetBool("isWalkingRight", true);
+            }
+        }
+        else if (moveDirection.x < 0)
+        {
+            spriteRenderer.flipX = true;
+            
+            if (moveDirection.y > 0)
+            {
+                animator.SetBool("isWalkingDiagonalUp", true);
+            }
+            else if (moveDirection.y < 0)
+            {
+                animator.SetBool("isWalkingDiagonalDown", true);
+            }
+            else
+            {
+                animator.SetBool("isWalkingRight", true);
+            }
         }
     }
 
     void ChooseRandomDirection()
     {
-        int randomDir = Random.Range(0, 2);
+        int randomDir = Random.Range(0, 8);
         
-        if (randomDir == 0)
+        switch(randomDir)
         {
-            moveDirection = Vector3.down;
-            animator.SetBool("isWalkingDown", true);
-            animator.SetBool("isWalkingUp", false);
+            case 0: // Arriba
+                moveDirection = Vector3.up;
+                break;
+            case 1: // Abajo
+                moveDirection = Vector3.down;
+                break;
+            case 2: // Derecha
+                moveDirection = Vector3.right;
+                break;
+            case 3: // Izquierda
+                moveDirection = Vector3.left;
+                break;
+            case 4: // Noreste (arriba-derecha)
+                moveDirection = new Vector3(1, 1, 0).normalized;
+                break;
+            case 5: // Noroeste (arriba-izquierda)
+                moveDirection = new Vector3(-1, 1, 0).normalized;
+                break;
+            case 6: // Sureste (abajo-derecha)
+                moveDirection = new Vector3(1, -1, 0).normalized;
+                break;
+            case 7: // Suroeste (abajo-izquierda)
+                moveDirection = new Vector3(-1, -1, 0).normalized;
+                break;
         }
-        else
-        {
-            moveDirection = Vector3.up;
-            animator.SetBool("isWalkingUp", true);
-            animator.SetBool("isWalkingDown", false);
-        }
+        
+        ChangeAnimation();
     }
 
     void RandomizeTimers()
