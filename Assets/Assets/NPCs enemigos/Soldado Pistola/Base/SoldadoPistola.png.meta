@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 209045d708e5f34419519bde0b697645
+guid: 7a2830033003c48069143987ac2cac30
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -354233768803707240
-    second: frottnguy_0
+      213: 6632934708468608344
+    second: SoldadoPistola_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: frottnguy_0
+      name: SoldadoPistola_0
       rect:
         serializedVersion: 2
-        x: 23
-        y: 13
-        width: 90
-        height: 114
+        x: 69
+        y: 55
+        width: 96
+        height: 111
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 896d10b9342851bf0800000000000000
-      internalID: -354233768803707240
+      spriteID: 85d61ac79faec0c50800000000000000
+      internalID: 6632934708468608344
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      frottnguy_0: -354233768803707240
+      SoldadoPistola_0: 6632934708468608344
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
