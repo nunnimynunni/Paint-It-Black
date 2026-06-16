@@ -23,22 +23,39 @@ public class PlayerAnimator : MonoBehaviour
         if (keyboard.aKey.isPressed) movimiento += Vector3.left;
         if (keyboard.dKey.isPressed) movimiento += Vector3.right;
 
-        // Normalizar para que en diagonal no vaya más rápido
         if (movimiento.magnitude > 1)
             movimiento = movimiento.normalized;
 
         transform.Translate(movimiento * velocidad * Time.deltaTime);
 
-        // Animaciones
-        bool isMoving = keyboard.sKey.isPressed;
-        bool yendoDerecha = keyboard.dKey.isPressed && !keyboard.sKey.isPressed;
-        bool yendoArriba = keyboard.wKey.isPressed && !keyboard.dKey.isPressed;
-        bool yendoIzq = keyboard.aKey.isPressed && !keyboard.wKey.isPressed
-                                                     && !keyboard.sKey.isPressed;
+        bool arriba = keyboard.wKey.isPressed;
+        bool abajo = keyboard.sKey.isPressed;
+        bool derecha = keyboard.dKey.isPressed;
+        bool izquierda = keyboard.aKey.isPressed;
+
+        bool diagAbajoD = abajo && derecha;
+        bool diagAbajoI = abajo && izquierda;
+        bool diagArribaD = arriba && derecha;
+        bool diagArribaI = arriba && izquierda;
+
+        // Movimiento puro (sin diagonal)
+        bool isMoving = abajo && !derecha && !izquierda;
+        bool yendoArriba = arriba && !derecha && !izquierda;
+        bool yendoDerecha = derecha && !arriba && !abajo;
+        bool yendoIzq = izquierda && !arriba && !abajo;
 
         anim.SetBool("isMoving", isMoving);
-        anim.SetBool("yendoDerecha", yendoDerecha);
         anim.SetBool("yendoArriba", yendoArriba);
+        anim.SetBool("yendoDerecha", yendoDerecha);
         anim.SetBool("yendoIzq", yendoIzq);
+        anim.SetBool("diagonalAbajoD", diagAbajoD || diagAbajoI);
+        anim.SetBool("diagonalArribaD", diagArribaD || diagArribaI);
+
+        // Espejo automático en X
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (diagAbajoI || diagArribaI)
+            sr.flipX = true;
+        else
+            sr.flipX = false;
     }
 }
