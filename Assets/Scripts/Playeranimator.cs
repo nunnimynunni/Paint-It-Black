@@ -4,11 +4,15 @@ using UnityEngine.InputSystem;
 public class PlayerAnimator : MonoBehaviour
 {
     Animator anim;
+    Rigidbody2D rb;
     public float velocidad = 3f;
+
+    Vector2 movimiento;
 
     void Start()
     {
         anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -16,19 +20,18 @@ public class PlayerAnimator : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
-        Vector3 movimiento = Vector3.zero;
+        movimiento = Vector2.zero;
 
-        if (keyboard.wKey.isPressed) movimiento += Vector3.up;
-        if (keyboard.sKey.isPressed) movimiento += Vector3.down;
-        if (keyboard.aKey.isPressed) movimiento += Vector3.left;
-        if (keyboard.dKey.isPressed) movimiento += Vector3.right;
+        if (keyboard.wKey.isPressed) movimiento += Vector2.up;
+        if (keyboard.sKey.isPressed) movimiento += Vector2.down;
+        if (keyboard.aKey.isPressed) movimiento += Vector2.left;
+        if (keyboard.dKey.isPressed) movimiento += Vector2.right;
 
         if (movimiento.magnitude > 1)
             movimiento = movimiento.normalized;
 
-        transform.Translate(movimiento * velocidad * Time.deltaTime);
-
         bool arriba = keyboard.wKey.isPressed;
+
         bool abajo = keyboard.sKey.isPressed;
         bool derecha = keyboard.dKey.isPressed;
         bool izquierda = keyboard.aKey.isPressed;
@@ -51,11 +54,17 @@ public class PlayerAnimator : MonoBehaviour
         anim.SetBool("diagonalAbajoD", diagAbajoD || diagAbajoI);
         anim.SetBool("diagonalArribaD", diagArribaD || diagArribaI);
 
-        // Espejo automático en X
+        // Espejo automï¿½tico en X
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (diagAbajoI || diagArribaI)
             sr.flipX = true;
         else
             sr.flipX = false;
+    }
+
+    void FixedUpdate()
+    {
+        if (rb != null)
+            rb.linearVelocity = movimiento * velocidad;
     }
 }
