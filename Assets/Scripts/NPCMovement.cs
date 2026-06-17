@@ -56,7 +56,8 @@ public class NPCMovement : MonoBehaviour
         {
             moveTimer += Time.deltaTime;
             transform.position += moveDirection * moveSpeed * Time.deltaTime;
-            
+            ChangeAnimation();
+
             if (moveTimer >= randomMoveTime)
             {
                 isWaiting = true;
