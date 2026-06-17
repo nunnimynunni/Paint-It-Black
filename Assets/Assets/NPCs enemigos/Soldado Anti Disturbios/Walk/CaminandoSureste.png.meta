@@ -1,0 +1,405 @@
+fileFormatVersion: 2
+guid: 91572ab449bbc4887976dd6e82d6c7cd
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5028267034428235944
+    second: CaminandoSureste (1)_0
+  - first:
+      213: 8798125635814243320
+    second: CaminandoSureste (1)_1
+  - first:
+      213: -7385044997507841975
+    second: CaminandoSureste (1)_2
+  - first:
+      213: -4825152811670969160
+    second: CaminandoSureste (1)_3
+  - first:
+      213: 4869019006589578032
+    second: CaminandoSureste (1)_4
+  - first:
+      213: 2672581022255934400
+    second: CaminandoSureste (1)_5
+  - first:
+      213: -7589240334325027445
+    second: CaminandoSureste (1)_6
+  - first:
+      213: 9148207217660760065
+    second: CaminandoSureste (1)_7
+  - first:
+      213: 4648312915995902048
+    second: CaminandoSureste (1)_8
+  - first:
+      213: -7086925320511442078
+    second: CaminandoSureste (1)_9
+  - first:
+      213: -5796448693828029004
+    second: CaminandoSureste (1)_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a0e6e61a3ef7c540800000000000000
+      internalID: 5028267034428235944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fb37fbb6a8391a70800000000000000
+      internalID: 8798125635814243320
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_2
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9400541d3bc038990800000000000000
+      internalID: -7385044997507841975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_3
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b4ef51251d990db0800000000000000
+      internalID: -4825152811670969160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_4
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03ba5644dfa329340800000000000000
+      internalID: 4869019006589578032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_5
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cbe301a74ae61520800000000000000
+      internalID: 2672581022255934400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_6
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8d6d7d102a9da690800000000000000
+      internalID: -7589240334325027445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_7
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1009554cef5f4fe70800000000000000
+      internalID: 9148207217660760065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_8
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 060cbc228ff128040800000000000000
+      internalID: 4648312915995902048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_9
+      rect:
+        serializedVersion: 2
+        x: 2016
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 263b13918fe26ad90800000000000000
+      internalID: -7086925320511442078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CaminandoSureste (1)_10
+      rect:
+        serializedVersion: 2
+        x: 2240
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b57a95bf90ee8fa0800000000000000
+      internalID: -5796448693828029004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7b6acf95f70c44ccda5e5c3d3208e176
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":11.0,"y":1.0},"gridSpriteSize":{"x":224.0,"y":224.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      CaminandoSureste (1)_0: 5028267034428235944
+      CaminandoSureste (1)_1: 8798125635814243320
+      CaminandoSureste (1)_10: -5796448693828029004
+      CaminandoSureste (1)_2: -7385044997507841975
+      CaminandoSureste (1)_3: -4825152811670969160
+      CaminandoSureste (1)_4: 4869019006589578032
+      CaminandoSureste (1)_5: 2672581022255934400
+      CaminandoSureste (1)_6: -7589240334325027445
+      CaminandoSureste (1)_7: 9148207217660760065
+      CaminandoSureste (1)_8: 4648312915995902048
+      CaminandoSureste (1)_9: -7086925320511442078
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

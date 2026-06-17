@@ -1,0 +1,487 @@
+fileFormatVersion: 2
+guid: 1952c10f78265445ea917496eb2de9f7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3228132090523686622
+    second: AtacaLado (1)_0
+  - first:
+      213: 2127591681023412753
+    second: AtacaLado (1)_1
+  - first:
+      213: 7363049585617441264
+    second: AtacaLado (1)_2
+  - first:
+      213: 8255428771347794207
+    second: AtacaLado (1)_3
+  - first:
+      213: 3571271070045709321
+    second: AtacaLado (1)_4
+  - first:
+      213: 1988314189855355226
+    second: AtacaLado (1)_5
+  - first:
+      213: -7203705497435258331
+    second: AtacaLado (1)_6
+  - first:
+      213: 6315985489365857921
+    second: AtacaLado (1)_7
+  - first:
+      213: 3539336965062892645
+    second: AtacaLado (1)_8
+  - first:
+      213: -2352435484784427056
+    second: AtacaLado (1)_9
+  - first:
+      213: 5033766949975033684
+    second: AtacaLado (1)_10
+  - first:
+      213: -7304190977335082441
+    second: AtacaLado (1)_11
+  - first:
+      213: 6210801286617509212
+    second: AtacaLado (1)_12
+  - first:
+      213: -1462456952284139484
+    second: AtacaLado (1)_13
+  - first:
+      213: -5859966756298941876
+    second: AtacaLado (1)_14
+  - first:
+      213: 6412871107163948110
+    second: AtacaLado (1)_15
+  - first:
+      213: 1187734699410605710
+    second: AtacaLado (1)_16
+  - first:
+      213: -2669898001518718329
+    second: AtacaLado (1)_17
+  - first:
+      213: 229969115288267004
+    second: AtacaLado (1)_18
+  - first:
+      213: -8707919296511257727
+    second: AtacaLado (1)_19
+  - first:
+      213: -5701275407432498226
+    second: AtacaLado (1)_20
+  - first:
+      213: 2732870708003019142
+    second: AtacaLado (1)_21
+  - first:
+      213: -6157894142623823456
+    second: AtacaLado (1)_22
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: AtacaLado (1)_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed614bf6801accc20800000000000000
+      internalID: 3228132090523686622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11a0a768c59b68d10800000000000000
+      internalID: 2127591681023412753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_2
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f19056469ece2660800000000000000
+      internalID: 7363049585617441264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_3
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1989b87abc219270800000000000000
+      internalID: 8255428771347794207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_4
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 90424b6ed14bf8130800000000000000
+      internalID: 3571271070045709321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_5
+      rect:
+        serializedVersion: 2
+        x: 1120
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a51723c9839e79b10800000000000000
+      internalID: 1988314189855355226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_6
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 522c7d6540c470c90800000000000000
+      internalID: -7203705497435258331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_7
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1867c2cc653e6a750800000000000000
+      internalID: 6315985489365857921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_8
+      rect:
+        serializedVersion: 2
+        x: 1792
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56c9bfea7304e1130800000000000000
+      internalID: 3539336965062892645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_9
+      rect:
+        serializedVersion: 2
+        x: 2016
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0df766ce3687a5fd0800000000000000
+      internalID: -2352435484784427056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_10
+      rect:
+        serializedVersion: 2
+        x: 2240
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4570d57fe588bd540800000000000000
+      internalID: 5033766949975033684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_11
+      rect:
+        serializedVersion: 2
+        x: 2464
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7324450610d42aa90800000000000000
+      internalID: -7304190977335082441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AtacaLado (1)_12
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 0
+        width: 224
+        height: 224
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5d206b2dd2313650800000000000000
+      internalID: 6210801286617509212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 28ef7eee7a87d41f1b2baaac35ea9cdd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":13.0,"y":1.0},"gridSpriteSize":{"x":224.0,"y":224.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.0},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":7,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      AtacaLado (1)_0: 3228132090523686622
+      AtacaLado (1)_1: 2127591681023412753
+      AtacaLado (1)_10: 5033766949975033684
+      AtacaLado (1)_11: -7304190977335082441
+      AtacaLado (1)_12: 6210801286617509212
+      AtacaLado (1)_2: 7363049585617441264
+      AtacaLado (1)_3: 8255428771347794207
+      AtacaLado (1)_4: 3571271070045709321
+      AtacaLado (1)_5: 1988314189855355226
+      AtacaLado (1)_6: -7203705497435258331
+      AtacaLado (1)_7: 6315985489365857921
+      AtacaLado (1)_8: 3539336965062892645
+      AtacaLado (1)_9: -2352435484784427056
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
