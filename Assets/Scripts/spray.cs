@@ -36,7 +36,7 @@ public class spray : MonoBehaviour
     {
         if (damageTimer > 0f) return;
 
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
         if (enemy == null) return;
 
         enemy.TakeDamage(damage, colorType);

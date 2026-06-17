@@ -27,7 +27,7 @@ public class rodillo : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
+        EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
         if (enemy == null) return;
 
         enemy.TakeDamage(damage, colorType);
