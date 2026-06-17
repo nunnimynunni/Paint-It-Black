@@ -17,6 +17,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UI Menu/Opciones/Opciones.unity
     guid: aff85fd18759046c6bee9acd4a15d582
+  - enabled: 1
+    path: Assets/Scenes/UI Menu/Opciones/Display.unity
+    guid: b6ae51b8b6bc1424cb69d0ab1abf625f
+  - enabled: 1
+    path: Assets/Scenes/UI Menu/Opciones/Sonido.unity
+    guid: 243a00e6afbbd4cf19cacd03190cb7d2
+  - enabled: 1
+    path: Assets/Scenes/UI Menu/Opciones/Controles.unity
+    guid: e3bf92f3895944fbfbfe28df0ce7176f
+  - enabled: 1
+    path: Assets/Scenes/UI Menu/Opciones/Idioma.unity
+    guid: 2e40c9cf1a8ff42f5b37ef453c3d03f9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 18086a57ef2294e1bab534e84cd25ea5
+guid: d91aaf970c8a144928be116830e9ef27
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 276931591383254592
-    second: Recurso 38_0
+      213: 6037279543993135482
+    second: Recurso 75_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Recurso 38_0
+      name: Recurso 75_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 179
-        height: 159
+        y: 0
+        width: 180
+        height: 172
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0468b7ba0dbd7d300800000000000000
-      internalID: 276931591383254592
+      spriteID: a71717522c9b8c350800000000000000
+      internalID: 6037279543993135482
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Recurso 38_0: 276931591383254592
+      Recurso 75_0: 6037279543993135482
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
