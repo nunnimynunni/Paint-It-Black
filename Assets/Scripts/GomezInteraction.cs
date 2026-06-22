@@ -22,6 +22,12 @@ public class GomezInteraction : MonoBehaviour
     private bool playerInRange = false;
     private bool dialogOpen = false;
 
+    void Start()
+    {
+        if (outlineObject != null)
+            outlineObject.SetActive(false);
+    }
+
     void Update()
     {
         // Solo escuchar E si el jugador está cerca
@@ -45,19 +51,13 @@ public class GomezInteraction : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("TRIGGER: " + other.gameObject.name + " tag=" + other.tag + " root=" + other.transform.root.name);
         if (!IsPlayer(other)) return;
 
         playerInRange = true;
 
         if (outlineObject != null)
-        {
             outlineObject.SetActive(true);
-            Debug.Log("Outline activado");
-        }
-        else
-        {
-            Debug.LogWarning("outlineObject es NULL — asignarlo en el Inspector de GomezInteraction");
-        }
     }
 
     void OnTriggerExit2D(Collider2D other)
