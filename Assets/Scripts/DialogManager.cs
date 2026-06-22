@@ -1,47 +1,88 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
-
-// DialogManager.cs
-// Adjuntar este script a un GameObject vacío en la escena (ej: "DialogManager").
-//
-// Requiere en el Canvas UI:
-//   - Un Panel/GameObject "DialogPanel" con el sprite del cuadro de diálogo
-//   - Un TextMeshPro - Text (UI) para el texto del diálogo
-//   - (Opcional) Un Image para el portrait de Gomez con un Mask encima
 
 public class DialogManager : MonoBehaviour
 {
     [Header("UI")]
-    [Tooltip("El panel raíz del diálogo. Se activa/desactiva al abrir/cerrar.")]
     public GameObject dialogPanel;
-
-    [Tooltip("El componente de texto donde aparece el mensaje.")]
     public TextMeshProUGUI dialogText;
 
     [Header("Contenido")]
     [TextArea(3, 6)]
-    [Tooltip("El texto que aparece en el diálogo de Gomez.")]
-    public string dialogContent = "¡Hola! Soy Gomez. Bienvenido a este lugar.";
+    public string[] dialogLines = {
+        "¡Hola! Soy Gomez. Bienvenido a este lugar.",
+        "Nunca vas a llegar al presidente. Nadie te va a recordar."
+    };
+
+    [Header("Typewriter")]
+    public float charDelay = 0.04f;
+
+    private int currentLine = 0;
+    private bool isTyping = false;
+    private Coroutine typewriterCoroutine;
 
     void Start()
     {
-        // El diálogo empieza cerrado
         if (dialogPanel != null)
             dialogPanel.SetActive(false);
+    }
+
+    // Devuelve true si todavía hay líneas, false si se acabaron
+    public bool Advance()
+    {
+        if (isTyping)
+        {
+            // Si está escribiendo, mostrar el texto completo al instante
+            StopCoroutine(typewriterCoroutine);
+            dialogText.text = dialogLines[currentLine];
+            isTyping = false;
+            return true;
+        }
+
+        currentLine++;
+
+        if (currentLine >= dialogLines.Length)
+        {
+            // Se acabaron las líneas
+            currentLine = 0;
+            dialogPanel.SetActive(false);
+            return false;
+        }
+
+        // Mostrar siguiente línea
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        typewriterCoroutine = StartCoroutine(TypeText(dialogLines[currentLine]));
+        return true;
     }
 
     public void OpenDialog()
     {
         if (dialogPanel == null) return;
-
-        dialogText.text = dialogContent;
+        currentLine = 0;
         dialogPanel.SetActive(true);
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        typewriterCoroutine = StartCoroutine(TypeText(dialogLines[currentLine]));
     }
 
     public void CloseDialog()
     {
         if (dialogPanel == null) return;
-
+        if (typewriterCoroutine != null) StopCoroutine(typewriterCoroutine);
+        currentLine = 0;
+        isTyping = false;
         dialogPanel.SetActive(false);
+    }
+
+    IEnumerator TypeText(string text)
+    {
+        isTyping = true;
+        dialogText.text = "";
+        foreach (char c in text)
+        {
+            dialogText.text += c;
+            yield return new WaitForSeconds(charDelay);
+        }
+        isTyping = false;
     }
 }
