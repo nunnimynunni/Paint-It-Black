@@ -241,6 +241,7 @@ MonoBehaviour:
   poisonPercentOfMaxHP: 30
   poisonDuration: 5
   tintStrength: 0.7
+  effectDuration: 12
 --- !u!114 &6044432845031959203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +258,7 @@ MonoBehaviour:
   meleeRange: 1.1
   detectionRange: 12
   attackCooldown: 1
-  damage: 2
+  damage: 15
   attackHitDelay: 0.25
 --- !u!114 &8012559830103168503
 MonoBehaviour:

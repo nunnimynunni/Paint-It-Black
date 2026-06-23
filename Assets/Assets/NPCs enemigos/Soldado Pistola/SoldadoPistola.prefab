@@ -273,6 +273,7 @@ MonoBehaviour:
   poisonPercentOfMaxHP: 30
   poisonDuration: 5
   tintStrength: 0.7
+  effectDuration: 12
 --- !u!114 &2870970619078140678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,7 +293,9 @@ MonoBehaviour:
   bulletPrefab: {fileID: 8760281517111003479, guid: bafb3c0e6908c4ce288c8347dec964e3, type: 3}
   firePoint: {fileID: 0}
   shootCooldown: 1.2
-  damage: 1
+  damage: 10
+  accuracy: 0.6
+  missSpreadDegrees: 18
 --- !u!114 &-2501908195942644173
 MonoBehaviour:
   m_ObjectHideFlags: 0
