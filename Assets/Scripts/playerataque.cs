@@ -40,7 +40,8 @@ public class playerataque : MonoBehaviour
         // --- SPRAY ---
         if (weapon == WeaponManager.WeaponType.Spray)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame && timerSpray <= 0f)
+            if (Mouse.current.leftButton.wasPressedThisFrame && timerSpray <= 0f
+                && AmmoManager.instance != null && AmmoManager.instance.ConsumeAmmo(WeaponManager.instance.currentColor))
                 SpawnSpray();
 
             if (Mouse.current.leftButton.isPressed && currentSpray != null)
@@ -66,14 +67,16 @@ public class playerataque : MonoBehaviour
         // --- PINCEL (auto-disparo al mantener clic) ---
         if (weapon == WeaponManager.WeaponType.Projectile)
         {
-            if (Mouse.current.leftButton.isPressed && timerPincel <= 0f)
+            if (Mouse.current.leftButton.isPressed && timerPincel <= 0f
+                && AmmoManager.instance != null && AmmoManager.instance.ConsumeAmmo(WeaponManager.instance.currentColor))
                 SpawnProjectile();
         }
 
         // --- RODILLO ---
         if (weapon == WeaponManager.WeaponType.Melee)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame && timerRodillo <= 0f)
+            if (Mouse.current.leftButton.wasPressedThisFrame && timerRodillo <= 0f
+                && AmmoManager.instance != null && AmmoManager.instance.ConsumeAmmo(WeaponManager.instance.currentColor))
                 SpawnMelee();
         }
     }

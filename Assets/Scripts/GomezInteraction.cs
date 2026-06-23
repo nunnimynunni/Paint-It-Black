@@ -10,6 +10,10 @@ public class GomezInteraction : MonoBehaviour
     [Header("Diálogo")]
     public DialogManager dialogManager;
 
+    [Header("HUD")]
+    public GameObject hudExploracion;
+    public GameObject hudCombate;
+
     [Header("Salida")]
     [Tooltip("Velocidad a la que Gomez sube al salir")]
     public float exitSpeed = 2f;
@@ -26,6 +30,9 @@ public class GomezInteraction : MonoBehaviour
         if (outlineObject != null)
             outlineObject.SetActive(false);
 
+        if (hudCombate != null)
+            hudCombate.SetActive(false);
+
         animator = GetComponent<Animator>();
     }
 
@@ -40,6 +47,7 @@ public class GomezInteraction : MonoBehaviour
             if (!dialogOpen)
             {
                 dialogOpen = true;
+                if (hudExploracion != null) hudExploracion.SetActive(false);
                 if (dialogManager != null) dialogManager.OpenDialog();
             }
             else
@@ -48,6 +56,7 @@ public class GomezInteraction : MonoBehaviour
                 if (!stillOpen)
                 {
                     dialogOpen = false;
+                    if (hudCombate != null) hudCombate.SetActive(true);
                     StartExit();
                 }
             }
