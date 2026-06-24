@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // Controlador central de partida: game over y victoria.
 // Poner en un GameObject vacío llamado "GameManager" en cada escena de juego.
@@ -16,6 +17,15 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         Time.timeScale = 1f;
+    }
+
+    void Update()
+    {
+        // TEMPORAL: probar entrada de Cromagustin con tecla T
+        // Borrar esto cuando el sistema de oleadas esté implementado
+        if (Keyboard.current.tKey.wasPressedThisFrame)
+            if (CombatEndTrigger.instance != null)
+                CombatEndTrigger.instance.OnCombatEnd();
     }
 
     public void GameOver()
