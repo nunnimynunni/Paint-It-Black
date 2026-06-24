@@ -109,6 +109,14 @@ public class PlayerAnimator : MonoBehaviour
         if (movimiento.sqrMagnitude > 0.01f)
             lastDirection = movimiento;
 
+        // Pedido del usuario: sonido de pisadas en loop mientras camina,
+        // se corta apenas se suelta el movimiento.
+        if (SfxManager.Instance != null)
+        {
+            if (movimiento.sqrMagnitude > 0.01f) SfxManager.Instance.IniciarPisadas();
+            else SfxManager.Instance.DetenerPisadas();
+        }
+
         bool shiftPresionado = keyboard.leftShiftKey.wasPressedThisFrame || keyboard.rightShiftKey.wasPressedThisFrame;
         if (shiftPresionado)
         {
@@ -179,6 +187,11 @@ public class PlayerAnimator : MonoBehaviour
     {
         isDodging = true;
         dodgeCooldownTimer = dodgeCooldown;
+
+        // Mientras esquiva, Update() ya no reprocesa "movimiento" (ver arriba),
+        // así que el loop de pisadas se cortaría recién en el próximo frame
+        // normal; se corta ahora mismo para no dejarlo sonando de fondo.
+        if (SfxManager.Instance != null) SfxManager.Instance.DetenerPisadas();
 
         // Invulnerable SOLO durante la esquiva en sí (no durante la ventana de
         // recuperación posterior: ahí el GDD pide que quede vulnerable).

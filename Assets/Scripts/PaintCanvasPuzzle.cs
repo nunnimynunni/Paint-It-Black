@@ -411,8 +411,20 @@ public class PaintCanvasPuzzle : MonoBehaviour
     void PintarCelda(int indice)
     {
         if (terminado) return;
+
+        // OJO: cada celda tiene Button.onClick Y un EventTrigger de
+        // PointerDown apuntando a este mismo método (para soportar arrastre),
+        // así que un click suelto normal dispara esto DOS veces. Si la celda
+        // ya tiene el color seleccionado, no hay nada que repintar ni que
+        // sonar de nuevo (evita el "pincelazo" doble en cada click).
+        if (patronLienzo[indice] == colorSeleccionado) return;
+
         patronLienzo[indice] = colorSeleccionado;
         celdasLienzo[indice].color = PaintColorUtils.ToUnityColor(colorSeleccionado);
+
+        // Pedido del usuario: "pincelazo" también en cada click/arrastre del
+        // minijuego, porque en teoría se pinta con un pincel.
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayPincelazo();
 
         if (CoincideConReferencia())
             Finalizar(true);

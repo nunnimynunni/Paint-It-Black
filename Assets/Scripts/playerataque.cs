@@ -111,6 +111,7 @@ public class playerataque : MonoBehaviour
     void SpawnSpray()
     {
         DispararAnimacion(1); // 1 = Spray
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayAerosol();
         Vector2 dir = GetMouseDirection(firePoint);
         currentSpray = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity, firePoint);
         currentSpray.transform.localScale *= AreaMult;
@@ -133,6 +134,7 @@ public class playerataque : MonoBehaviour
     void SpawnProjectile()
     {
         DispararAnimacion(0); // 0 = Pincel
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayPincelazo();
         Vector2 dir = GetMouseDirection(projectileFirePoint);
         GameObject bullet = Instantiate(projectilePrefab, projectileFirePoint.position, Quaternion.identity);
         bullet.transform.localScale *= AreaMult;
@@ -150,6 +152,7 @@ public class playerataque : MonoBehaviour
     void SpawnMelee()
     {
         DispararAnimacion(2); // 2 = Rodillo
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayRodillo();
         Vector2 dir = GetMouseDirection(meleeFirePoint);
         float offset = 1f;
         Vector3 spawnPos = meleeFirePoint.position + (Vector3)(dir * offset);
