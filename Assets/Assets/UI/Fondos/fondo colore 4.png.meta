@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: cb50f32ee2e70d646870cd677aa9ee54
+guid: f39ac036776344e108128176dc190878
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5615449584756624499
-    second: spray proyectil 4_0
+      213: 690790746427384594
+    second: fondo colore 4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -96,27 +96,40 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spray proyectil 4_0
+      name: fondo colore 4_0
       rect:
         serializedVersion: 2
-        x: 14
+        x: 0
         y: 0
-        width: 102
-        height: 81
-      alignment: 9
-      pivot: {x: 0.49098983, y: 0.01494864}
+        width: 1080
+        height: 1080
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 37c888935a51eed40800000000000000
-      internalID: 5615449584756624499
+      spriteID: 2136eee168e269900800000000000000
+      internalID: 690790746427384594
       vertices: []
       indices: 
       edges: []
@@ -125,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b6fac29ae6b92eb40be6e15233ab44af
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      spray proyectil 4_0: 5615449584756624499
+      fondo colore 4_0: 690790746427384594
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

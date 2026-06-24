@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 3c47cccd2a2c345dab58a99b5b1b18a7
+guid: 8e8e2f6e19f2f46c2ae65265358a1f02
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1295241224172857262
-    second: Recurso 5_0
+      213: -6484018648507353209
+    second: fondo colores 7_0
+  - first:
+      213: 7521516780799810223
+    second: fondo colores 7_1
+  - first:
+      213: 1004288548962411974
+    second: fondo colores 7_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +119,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Recurso 5_0
+      name: fondo colores 7_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 182
-        height: 73
+        y: 0
+        width: 601
+        height: 601
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +134,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ea7e349e70f99f110800000000000000
-      internalID: 1295241224172857262
+      spriteID: 787f5ba94632406a0800000000000000
+      internalID: -6484018648507353209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fondo colores 7_1
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 0
+        width: 602
+        height: 451
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faa56b359abc16860800000000000000
+      internalID: 7521516780799810223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fondo colores 7_2
+      rect:
+        serializedVersion: 2
+        x: 1319
+        y: 0
+        width: 601
+        height: 601
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c5a5e44d13ffed00800000000000000
+      internalID: 1004288548962411974
       vertices: []
       indices: 
       edges: []
@@ -148,7 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Recurso 5_0: 1295241224172857262
+      fondo colores 7_0: -6484018648507353209
+      fondo colores 7_1: 7521516780799810223
+      fondo colores 7_2: 1004288548962411974
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
