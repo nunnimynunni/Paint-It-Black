@@ -127,8 +127,6 @@ public class EnemyHealth : MonoBehaviour
         currentHP -= amount;
         ultimoColorRecibido = color;
 
-        if (SfxManager.Instance != null) SfxManager.Instance.PlayImpacto();
-
         if (anim != null) anim.SetTrigger("OnHit");
         stunTimer = duracionAturdimientoPorGolpe;
 

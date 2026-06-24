@@ -3,11 +3,10 @@ using UnityEngine;
 
 // ============================================================
 // SCRIPT: MusicManager
-// Pedido del usuario: arranca con fade-in la música de "Exploración mundo
-// BYN" (el pueblo todavía sin color); al iniciar la interacción con Gomez,
-// crossfade a "Final Boss - Paint It Black" (loop durante toda la oleada +
-// minijuego); al ganar la oleada, crossfade a "Exploración color" (el
-// pueblo ya recuperó color). Mismo tratamiento de fades en los 3 tramos.
+// Pedido del usuario: música de exploración con fade-in al arrancar el
+// juego; al iniciar la interacción con Gomez, crossfade a "Final Boss -
+// Paint It Black" (loop durante toda la oleada + minijuego); al ganar la
+// oleada, crossfade de vuelta a la música de exploración.
 //
 // Los clips se cargan desde Assets/Resources/Audio/Music (Resources.Load
 // por path, no por GUID), así no depende de que el archivo ya esté
@@ -21,12 +20,8 @@ public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance;
 
-    // Pedido del usuario: "que todos los sonidos y las musicas convivan
-    // bien". Se bajó un poco la música base (de 0.6 a 0.45) para que quede
-    // de fondo sin tapar los SFX puntuales (aerosol, pincelazo, impacto),
-    // que ahora se manejan con volúmenes propios en SfxManager.
     [Header("Volumen")]
-    [Range(0f, 1f)] public float volumenMusica = 0.45f;
+    [Range(0f, 1f)] public float volumenMusica = 0.6f;
 
     [Header("Tiempos de transición")]
     public float duracionFadeInInicial = 2.5f;
@@ -36,8 +31,7 @@ public class MusicManager : MonoBehaviour
     private AudioSource sourceB;
     private bool activaEsA = true;
 
-    private AudioClip clipExploracionByN;
-    private AudioClip clipExploracionColor;
+    private AudioClip clipExploracion;
     private AudioClip clipBoss;
 
     private Coroutine rutinaActual;
@@ -65,8 +59,7 @@ public class MusicManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        clipExploracionByN = Resources.Load<AudioClip>("Audio/Music/ExploracionByN");
-        clipExploracionColor = Resources.Load<AudioClip>("Audio/Music/ExploracionColor");
+        clipExploracion = Resources.Load<AudioClip>("Audio/Music/Exploracion");
         clipBoss = Resources.Load<AudioClip>("Audio/Music/FinalBoss");
 
         sourceA = gameObject.AddComponent<AudioSource>();
@@ -81,17 +74,17 @@ public class MusicManager : MonoBehaviour
 
     void Start()
     {
-        if (clipExploracionByN == null)
+        if (clipExploracion == null)
         {
-            Debug.LogWarning("MusicManager: no se encontró el clip Assets/Resources/Audio/Music/ExploracionByN.mp3");
+            Debug.LogWarning("MusicManager: no se encontró el clip Assets/Resources/Audio/Music/Exploracion.mp3");
             return;
         }
 
         AudioSource activa = activaEsA ? sourceA : sourceB;
-        activa.clip = clipExploracionByN;
+        activa.clip = clipExploracion;
         activa.volume = 0f;
         activa.Play();
-        clipObjetivoActual = clipExploracionByN;
+        clipObjetivoActual = clipExploracion;
 
         rutinaActual = StartCoroutine(FadeVolumen(activa, 0f, volumenMusica, duracionFadeInInicial));
     }
@@ -102,11 +95,10 @@ public class MusicManager : MonoBehaviour
         Crossfade(clipBoss);
     }
 
-    // Llamado desde EnemySpawner.CheckVictory() al ganar la oleada: el pueblo
-    // ya recuperó color, así que vuelve a la exploración en color (no a la BYN).
+    // Llamado desde EnemySpawner.CheckVictory() al ganar la oleada.
     public void CrossfadeAExploracion()
     {
-        Crossfade(clipExploracionColor);
+        Crossfade(clipExploracion);
     }
 
     void Crossfade(AudioClip nuevoClip)
