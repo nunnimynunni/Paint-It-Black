@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 80e0ec812b9b34b77a22312273253c1b
+guid: 7f7899e0448636b4a8121ba94df13fc9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6171551505250519630
-    second: arbol1_0
+      213: -3323404499178810512
+    second: idle2 (1)_0
+  - first:
+      213: -2088745286009620328
+    second: idle2 (1)_1
+  - first:
+      213: 8075799473406047159
+    second: idle2 (1)_2
+  - first:
+      213: 1576153531088885028
+    second: idle2 (1)_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -96,29 +105,38 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: arbol1_0
+      name: idle2 (1)_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 2
-        width: 105
+        x: 34
+        y: 13
+        width: 82
+        height: 111
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07313855735e0e1d0800000000000000
+      internalID: -3323404499178810512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: idle2 (1)_1
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 13
+        width: 82
         height: 114
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -128,8 +146,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e4a0c7f4561c5a550800000000000000
-      internalID: 6171551505250519630
+      spriteID: 898ff11aa394303e0800000000000000
+      internalID: -2088745286009620328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: idle2 (1)_2
+      rect:
+        serializedVersion: 2
+        x: 314
+        y: 13
+        width: 82
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b377a965d0031070800000000000000
+      internalID: 8075799473406047159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: idle2 (1)_3
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 13
+        width: 86
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 425d704294f9fd510800000000000000
+      internalID: 1576153531088885028
       vertices: []
       indices: 
       edges: []
@@ -148,7 +210,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      arbol1_0: 6171551505250519630
+      idle2 (1)_0: -3323404499178810512
+      idle2 (1)_1: -2088745286009620328
+      idle2 (1)_2: 8075799473406047159
+      idle2 (1)_3: 1576153531088885028
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 80e0ec812b9b34b77a22312273253c1b
+guid: 4abd148b887e24b21a95de2ea6088d78
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6171551505250519630
-    second: arbol1_0
+      213: 3891936234183454250
+    second: Fondo colores 6_0
+  - first:
+      213: -1812560844469010877
+    second: Fondo colores 6_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: arbol1_0
+      name: Fondo colores 6_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 2
-        width: 105
-        height: 114
+        x: 0
+        y: 852
+        width: 1081
+        height: 1081
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +131,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e4a0c7f4561c5a550800000000000000
-      internalID: 6171551505250519630
+      spriteID: a2ee9f6726fe20630800000000000000
+      internalID: 3891936234183454250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fondo colores 6_1
+      rect:
+        serializedVersion: 2
+        x: 1505
+        y: 0
+        width: 1236
+        height: 924
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34e74abe38d78d6e0800000000000000
+      internalID: -1812560844469010877
       vertices: []
       indices: 
       edges: []
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      arbol1_0: 6171551505250519630
+      Fondo colores 6_0: 3891936234183454250
+      Fondo colores 6_1: -1812560844469010877
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
