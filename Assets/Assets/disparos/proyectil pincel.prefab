@@ -183,3 +183,6 @@ MonoBehaviour:
   lifetime: 3
   damage: 25
   colorType: 1
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 8

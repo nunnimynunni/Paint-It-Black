@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 13122530}
   - component: {fileID: 13122529}
   - component: {fileID: 13122531}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: cascada (2)_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,7 +341,7 @@ GameObject:
   - component: {fileID: 97012257}
   - component: {fileID: 97012256}
   - component: {fileID: 97012255}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: BotonReiniciar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -473,7 +473,7 @@ GameObject:
   - component: {fileID: 108101605}
   - component: {fileID: 108101604}
   - component: {fileID: 108101603}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -921,7 +921,7 @@ GameObject:
   - component: {fileID: 327082724}
   - component: {fileID: 327082726}
   - component: {fileID: 327082725}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1058,7 +1058,7 @@ GameObject:
   - component: {fileID: 356507502}
   - component: {fileID: 356507504}
   - component: {fileID: 356507503}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1267,7 +1267,7 @@ GameObject:
   - component: {fileID: 459388706}
   - component: {fileID: 459388705}
   - component: {fileID: 459388704}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1395,7 +1395,7 @@ GameObject:
   - component: {fileID: 510483563}
   - component: {fileID: 510483562}
   - component: {fileID: 510483561}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: GameOverPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1864,7 +1864,7 @@ GameObject:
   - component: {fileID: 780399863}
   - component: {fileID: 780399862}
   - component: {fileID: 780399861}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2118,7 +2118,7 @@ GameObject:
   - component: {fileID: 796502274}
   - component: {fileID: 796502276}
   - component: {fileID: 796502275}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2255,7 +2255,7 @@ GameObject:
   - component: {fileID: 822826543}
   - component: {fileID: 822826542}
   - component: {fileID: 822826541}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2383,7 +2383,7 @@ GameObject:
   - component: {fileID: 891536091}
   - component: {fileID: 891536090}
   - component: {fileID: 891536089}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2511,7 +2511,7 @@ GameObject:
   - component: {fileID: 929302961}
   - component: {fileID: 929302960}
   - component: {fileID: 929302959}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2765,7 +2765,7 @@ GameObject:
   - component: {fileID: 1066317540}
   - component: {fileID: 1066317542}
   - component: {fileID: 1066317541}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2902,7 +2902,7 @@ GameObject:
   - component: {fileID: 1121942274}
   - component: {fileID: 1121942273}
   - component: {fileID: 1121942272}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3030,7 +3030,7 @@ GameObject:
   - component: {fileID: 1233855051}
   - component: {fileID: 1233855050}
   - component: {fileID: 1233855049}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3284,7 +3284,7 @@ GameObject:
   - component: {fileID: 1254256061}
   - component: {fileID: 1254256060}
   - component: {fileID: 1254256059}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3539,7 +3539,7 @@ GameObject:
   - component: {fileID: 1274295146}
   - component: {fileID: 1274295145}
   - component: {fileID: 1274295144}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: BotonReiniciar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3755,7 +3755,7 @@ GameObject:
   - component: {fileID: 1418786039}
   - component: {fileID: 1418786038}
   - component: {fileID: 1418786037}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3950,7 +3950,7 @@ GameObject:
   - component: {fileID: 1539724447}
   - component: {fileID: 1539724446}
   - component: {fileID: 1539724445}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4098,7 +4098,7 @@ GameObject:
   - component: {fileID: 1742017725}
   - component: {fileID: 1742017727}
   - component: {fileID: 1742017726}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: casa_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4283,7 +4283,7 @@ GameObject:
   - component: {fileID: 1774276640}
   - component: {fileID: 1774276639}
   - component: {fileID: 1774276638}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4411,7 +4411,7 @@ GameObject:
   - component: {fileID: 1792597236}
   - component: {fileID: 1792597235}
   - component: {fileID: 1792597234}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4539,7 +4539,8 @@ GameObject:
   - component: {fileID: 1832736590}
   - component: {fileID: 1832736589}
   - component: {fileID: 1832736588}
-  m_Layer: 0
+  - component: {fileID: 1832736591}
+  m_Layer: 3
   m_Name: casa_0 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4553,7 +4554,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1832736587}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -4686,7 +4687,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_MaskInteraction: 0
   m_Sprite: {fileID: 3702124854129300464, guid: 8e646d44805e0404190bd4fdc2d2505f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4713,6 +4714,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1832736591
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832736587}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.024119139, y: -0.283399}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.31, y: 2.36}
+    newSize: {x: 2.31, y: 2.36}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.092929, y: 1.7932022}
+  m_EdgeRadius: 0
 --- !u!1 &1855067771
 GameObject:
   m_ObjectHideFlags: 0
@@ -4724,7 +4771,7 @@ GameObject:
   - component: {fileID: 1855067774}
   - component: {fileID: 1855067773}
   - component: {fileID: 1855067772}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: arbol1_0 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4978,7 +5025,7 @@ GameObject:
   - component: {fileID: 2018612055}
   - component: {fileID: 2018612057}
   - component: {fileID: 2018612056}
-  m_Layer: 5
+  m_Layer: 3
   m_Name: VictoryPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5055,7 +5102,7 @@ GameObject:
   - component: {fileID: 2079028493}
   - component: {fileID: 2079028492}
   - component: {fileID: 2079028491}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5183,7 +5230,7 @@ GameObject:
   - component: {fileID: 2124785789}
   - component: {fileID: 2124785788}
   - component: {fileID: 2124785787}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AREBUSTO_0 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

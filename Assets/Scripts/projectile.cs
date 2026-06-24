@@ -9,6 +9,10 @@ public class Projectile : MonoBehaviour
     public int damage = 1;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
+    [Header("Obstáculos")]
+    [Tooltip("Capa de casas/árboles/etc. Si el disparo choca contra algo de esta capa, se destruye ahí (no la atraviesa).")]
+    public LayerMask obstacleLayer;
+
     private Vector2 direction;
 
     void Awake()
@@ -37,6 +41,13 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        // Choca contra un obstáculo (casa, árbol, etc.): se frena ahí, no sigue de largo.
+        if (((1 << other.gameObject.layer) & obstacleLayer.value) != 0)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Debug.Log("Projectile hit: " + other.name);
         EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
         if (enemy == null) return;

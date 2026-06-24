@@ -9,6 +9,10 @@ public class EnemyBullet : MonoBehaviour
     public float lifetime = 3f;
     public int damage = 1;
 
+    [Header("Obstáculos")]
+    [Tooltip("Capa de casas/árboles/etc. Si el disparo choca contra algo de esta capa, se destruye ahí (no la atraviesa).")]
+    public LayerMask obstacleLayer;
+
     [HideInInspector] public GameObject owner;
 
     private Vector2 dir;
@@ -35,6 +39,13 @@ public class EnemyBullet : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (owner != null && other.gameObject == owner) return;
+
+        // Choca contra un obstáculo (casa, árbol, etc.): se frena ahí, no sigue de largo.
+        if (((1 << other.gameObject.layer) & obstacleLayer.value) != 0)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         PlayerHealth ph = other.GetComponent<PlayerHealth>() ?? other.GetComponentInParent<PlayerHealth>();
         if (ph != null)

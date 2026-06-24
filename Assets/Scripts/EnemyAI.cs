@@ -20,6 +20,14 @@ public abstract class EnemyAI : MonoBehaviour
     [Header("Movimiento")]
     public float baseMoveSpeed = 2f;
 
+    [Header("Evitar obstáculos")]
+    [Tooltip("Capa de casas/árboles/etc. El NPC se aleja de lo que esté en esta capa antes de chocar, para no quedar trabado contra el hitbox.")]
+    public LayerMask obstacleLayer;
+    [Tooltip("Radio desde el que empieza a 'sentir' un obstáculo cercano y desviarse")]
+    public float obstacleAvoidRadius = 1.2f;
+    [Tooltip("Qué tan fuerte pesa la evasión contra la dirección que quería tomar la IA")]
+    public float obstacleAvoidStrength = 1.6f;
+
     protected Rigidbody2D rb;
     protected Animator animator;
     protected SpriteRenderer sr;
@@ -67,9 +75,40 @@ public abstract class EnemyAI : MonoBehaviour
     {
         if (moveDir.sqrMagnitude > 0.0001f)
         {
+            Vector2 desired = moveDir.normalized;
+            Vector2 avoidance = ComputeObstacleAvoidance();
+
+            Vector2 finalDir = desired + avoidance * obstacleAvoidStrength;
+            if (finalDir.sqrMagnitude > 0.0001f) finalDir.Normalize();
+            else finalDir = desired;
+
             float speed = baseMoveSpeed * (status != null ? status.MoveSpeedMultiplier : 1f);
-            rb.MovePosition(rb.position + moveDir.normalized * speed * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + finalDir * speed * Time.fixedDeltaTime);
         }
+    }
+
+    // Steering simple: suma un vector "de escape" por cada obstáculo cercano (casa, árbol, etc.),
+    // más fuerte cuanto más cerca está. Así el NPC empieza a desviarse antes de llegar a chocar
+    // con el collider, en vez de quedar empujándolo/trabado contra el borde del hitbox.
+    private Vector2 ComputeObstacleAvoidance()
+    {
+        if (obstacleLayer.value == 0) return Vector2.zero;
+
+        Vector2 result = Vector2.zero;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(rb.position, obstacleAvoidRadius, obstacleLayer);
+
+        foreach (var hit in hits)
+        {
+            Vector2 closest = hit.ClosestPoint(rb.position);
+            Vector2 away = rb.position - closest;
+            float dist = away.magnitude;
+            if (dist < 0.001f) continue;
+
+            float weight = Mathf.Clamp01(1f - dist / obstacleAvoidRadius);
+            result += away.normalized * weight;
+        }
+
+        return result;
     }
 
     // Las subclases implementan acá su comportamiento (perseguir, mantener rango, proteger, etc.)
