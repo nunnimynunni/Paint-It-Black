@@ -31,6 +31,17 @@ public class EnemyStatusEffects : MonoBehaviour
     public StatusType CurrentStatus { get; private set; } = StatusType.None;
     public bool IsPoisoned { get; private set; } = false;
 
+    // ============================================================
+    // GDD 3.1: "Cuanto más color acumule el NPC mayor será el efecto."
+    // EffectIntensity arranca en 1.0 justo al cruzar hitsToTrigger y sigue
+    // creciendo mientras se lo siga golpeando con el MISMO color (ya no se
+    // resetea el contador de ese color al activarse el efecto). Multiplica
+    // todo: tinte, multiplicadores de movimiento/ataque/daño, duración del
+    // efecto y el % de daño del veneno. Techo en 2.5x para no romper el
+    // balance del juego.
+    // ============================================================
+    public float EffectIntensity { get; private set; } = 1f;
+
     // Color "base" actual del sprite (el original si no hay efecto, o el tinte del efecto activo).
     // EnemyHealth lo usa para no perder el tinte al terminar el flash de un golpe.
     public Color CurrentBaseColor { get; private set; }
@@ -55,24 +66,26 @@ public class EnemyStatusEffects : MonoBehaviour
     }
 
     // --- Multiplicadores que leen los scripts de IA/ataque ---
+    // Todos escalan con EffectIntensity: a más golpes acumulados del color
+    // activo, más fuerte el efecto (GDD 3.1).
     public float MoveSpeedMultiplier
     {
         get
         {
-            if (CurrentStatus == StatusType.Frenzy) return 1.5f;
-            if (CurrentStatus == StatusType.Slow) return 0.5f;
+            if (CurrentStatus == StatusType.Frenzy) return 1f + 0.5f * EffectIntensity; // 1.5x a 2.25x
+            if (CurrentStatus == StatusType.Slow) return Mathf.Clamp(1f - 0.5f * EffectIntensity, 0.1f, 0.5f); // 0.5x a 0.1x
             return 1f;
         }
     }
 
-    public float AttackSpeedMultiplier => CurrentStatus == StatusType.Frenzy ? 1.5f : 1f;
+    public float AttackSpeedMultiplier => CurrentStatus == StatusType.Frenzy ? 1f + 0.5f * EffectIntensity : 1f;
 
     public float DamageMultiplier
     {
         get
         {
-            if (CurrentStatus == StatusType.Frenzy) return 1.5f;
-            if (CurrentStatus == StatusType.Slow) return 0.6f;
+            if (CurrentStatus == StatusType.Frenzy) return 1f + 0.5f * EffectIntensity; // 1.5x a 2.25x
+            if (CurrentStatus == StatusType.Slow) return Mathf.Clamp(1f - 0.4f * EffectIntensity, 0.2f, 0.6f); // 0.6x a 0.2x
             return 1f;
         }
     }
@@ -97,9 +110,16 @@ public class EnemyStatusEffects : MonoBehaviour
 
     void ApplyEffect(PaintColor color)
     {
-        // Reiniciar contadores: hace falta volver a juntar 5 impactos para cambiar de nuevo
+        // Resetear los contadores de los OTROS colores (no el que disparó el
+        // efecto): a ese lo dejamos seguir creciendo para que la intensidad
+        // siga escalando con cada impacto adicional del mismo color, tal
+        // como pide el GDD ("cuanto más color acumule, mayor el efecto").
         var keys = new List<PaintColor>(hits.Keys);
-        foreach (var k in keys) hits[k] = 0;
+        foreach (var k in keys) { if (k != color) hits[k] = 0; }
+
+        int hitsAcumulados = hits[color];
+        float intensidadCruda = 1f + (hitsAcumulados - hitsToTrigger) / (float)hitsToTrigger * 0.5f;
+        EffectIntensity = Mathf.Clamp(intensidadCruda, 1f, 2.5f);
 
         switch (color)
         {
@@ -131,8 +151,11 @@ public class EnemyStatusEffects : MonoBehaviour
 
     void ApplyTint(PaintColor color)
     {
+        // El tinte también se nota más fuerte cuanto más se acumuló el color
+        // (tope en tintStrength máximo, sin pasarse de 1 para no romper el sprite).
+        float tintFinal = Mathf.Clamp01(tintStrength * Mathf.Lerp(0.7f, 1f, (EffectIntensity - 1f) / 1.5f));
         Color target = PaintColorUtils.ToUnityColor(color);
-        Color tinted = Color.Lerp(baseColor, target, tintStrength);
+        Color tinted = Color.Lerp(baseColor, target, tintFinal);
         sr.color = tinted;
         CurrentBaseColor = tinted; // queda como "base" hasta que el efecto expire o se reemplace
     }
@@ -140,15 +163,16 @@ public class EnemyStatusEffects : MonoBehaviour
     // Reinicia el cronómetro de duración del efecto de comportamiento actual (no aplica a Veneno,
     // que tiene su propia duración independiente). Si ya había un timer corriendo lo reemplaza,
     // así que volver a pintar al enemigo del mismo color "recarga" el efecto en vez de cortarlo.
+    // La duración también escala con EffectIntensity: más golpes acumulados = efecto más largo.
     void RestartEffectTimer()
     {
         if (effectRoutine != null) StopCoroutine(effectRoutine);
-        effectRoutine = StartCoroutine(EffectDurationRoutine());
+        effectRoutine = StartCoroutine(EffectDurationRoutine(effectDuration * EffectIntensity));
     }
 
-    IEnumerator EffectDurationRoutine()
+    IEnumerator EffectDurationRoutine(float duracion)
     {
-        yield return new WaitForSeconds(effectDuration);
+        yield return new WaitForSeconds(duracion);
         CurrentStatus = StatusType.None;
         CurrentBaseColor = baseColor;
         sr.color = baseColor;
@@ -159,7 +183,10 @@ public class EnemyStatusEffects : MonoBehaviour
     {
         IsPoisoned = true;
         int ticks = Mathf.Max(1, Mathf.RoundToInt(poisonDuration));
-        int totalDamage = Mathf.RoundToInt(health.maxHP * (poisonPercentOfMaxHP / 100f));
+        // El % de daño del veneno también escala con EffectIntensity, pero
+        // con techo en 80% de la vida máxima para no garantizar un one-shot.
+        float porcentajeFinal = Mathf.Min(poisonPercentOfMaxHP * EffectIntensity, 80f);
+        int totalDamage = Mathf.RoundToInt(health.maxHP * (porcentajeFinal / 100f));
         int perTick = Mathf.Max(1, totalDamage / ticks);
 
         for (int i = 0; i < ticks; i++)

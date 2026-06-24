@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 // ESTE SCRIPT ES REUTILIZABLE PARA CUALQUIER NPC INTERACTUABLE
 // ============================================================
 //
-// FLUJO DEL JUEGO:
+// FLUJO DEL JUEGO (corregido según el GDD y la corrección del usuario):
 //
 // 1. EXPLORACIÓN
 //    - HUD de exploración visible (barra de progreso con rodillo)
@@ -23,17 +23,26 @@ using UnityEngine.InputSystem;
 // 3a. SI exitAfterDialog = true (ej: Gomez)
 //    - El NPC camina hacia arriba y desaparece
 //    - hudCombate se activa
-//    - AQUÍ DEBE ARRANCAR EL SISTEMA DE OLEADAS:
-//      Buscar StartExit() y agregar: EnemySpawner.instance.StartWaves();
+//    - El combate arranca ACÁ MISMO: StartExit() llama directamente a
+//      EnemySpawner.StartWaves() (ya no hay zona de piso de por medio, el
+//      trigger del piso quedó eliminado/deprecado a pedido del usuario).
+//    - En medio de esa oleada va a aparecer una estructura marcada
+//      (PuzzleStructure, creada en runtime por el propio EnemySpawner) que
+//      dispara el minijuego "Copia de Patrón bajo Presión" y pausa la
+//      oleada mientras se resuelve.
 //
 // 3b. SI exitAfterDialog = false (ej: Cromagustin)
 //    - El NPC se queda en la escena
 //    - No activa ningún HUD
+//    - Si triggersEndingAfterDialog = true, dispara el fundido a negro +
+//      créditos de cierre del vertical slice (Etapa 3 del GDD).
 //
-// 4. FIN DEL COMBATE
-//    - El sistema de oleadas debe llamar:
+// 4. FIN DEL COMBATE + PUZZLE
+//    - EnemySpawner, cuando ya no quedan oleadas/enemigos Y el puzzle de la
+//      estructura marcada fue resuelto, llama:
 //      CombatEndTrigger.instance.OnCombatEnd()
-//    - Esto activa a Cromagustin y lo hace entrar desde la izquierda
+//    - Esto activa a Cromagustin y lo hace entrar corriendo desde la
+//      izquierda de la pantalla hacia el centro.
 //
 // SETUP EN UNITY POR NPC:
 //    - CircleCollider2D (Is Trigger = true, Radius = 1.5)
@@ -67,10 +76,16 @@ public class GomezInteraction : MonoBehaviour
     public float exitSpeed = 2f;
     public string walkNorthTrigger = "WalkNorth";
 
+    [Header("Final del slice (vertical slice)")]
+    [Tooltip("Si exitAfterDialog = false y esto está activo, al cerrar el diálogo dispara el fundido a negro + créditos de cierre (ej: Cromagustin). Por defecto en true porque hoy es el único NPC con exitAfterDialog=false en el slice.")]
+    public bool triggersEndingAfterDialog = true;
+    private bool endingStarted = false;
+
     private bool playerInRange = false;
     private bool dialogOpen = false;
     private bool exiting = false;
     private Animator animator;
+    private CircleCollider2D colliderSolido;
 
     void Start()
     {
@@ -81,6 +96,34 @@ public class GomezInteraction : MonoBehaviour
             hudCombate.SetActive(false);
 
         animator = GetComponent<Animator>();
+
+        AsegurarColliderSolido();
+    }
+
+    // ============================================================
+    // Feedback de playtest: "gomez y cromagustin deben tener colider no
+    // debo poder traspasarlos". El collider que ya tienen (CircleCollider2D
+    // con Is Trigger = true) es solo para detectar el rango de interacción,
+    // así que el jugador los atraviesa sin chocar. Se agrega por código un
+    // SEGUNDO collider, sólido (Is Trigger = false), más chico que el de
+    // rango, para bloquear físicamente sin tocar el del Editor ni romper
+    // OnTriggerEnter2D/Exit2D (que sigue funcionando con el trigger original).
+    // ============================================================
+    void AsegurarColliderSolido()
+    {
+        Collider2D[] existentes = GetComponents<Collider2D>();
+        foreach (var c in existentes)
+        {
+            if (!c.isTrigger)
+            {
+                colliderSolido = c as CircleCollider2D;
+                return; // ya hay uno sólido (asignado a mano), no duplicar
+            }
+        }
+
+        colliderSolido = gameObject.AddComponent<CircleCollider2D>();
+        colliderSolido.isTrigger = false;
+        colliderSolido.radius = 0.4f; // bloqueo físico, más chico que el radio de interacción (1.5)
     }
 
     void Update()
@@ -104,9 +147,22 @@ public class GomezInteraction : MonoBehaviour
                     dialogOpen = false;
                     if (hudCombate != null) hudCombate.SetActive(true);
                     if (exitAfterDialog) StartExit();
+                    else if (triggersEndingAfterDialog) StartEndingPostDialog();
                 }
             }
         }
+    }
+
+    // VERTICAL SLICE (Etapa 3 del GDD): dispara el cierre del slice -fundido a
+    // negro + créditos- desde GameManager, que es quien ya controla el estado
+    // global de partida (IsGameOver, etc.), en vez de armar la UI acá mismo.
+    void StartEndingPostDialog()
+    {
+        if (endingStarted) return;
+        endingStarted = true;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.ShowEndingCredits();
     }
 
     void StartExit()
@@ -115,11 +171,17 @@ public class GomezInteraction : MonoBehaviour
         if (outlineObject != null) outlineObject.SetActive(false);
         if (animator != null) animator.SetTrigger(walkNorthTrigger);
 
+        // Al irse caminando hacia arriba y salir de cámara, se apaga el
+        // collider sólido para que no empuje/bloquee al jugador en el camino.
+        if (colliderSolido != null) colliderSolido.enabled = false;
+
         // ============================================================
-        // PUNTO DE ENGANCHE PARA EL SISTEMA DE OLEADAS
-        // Cuando el sistema de oleadas esté implementado, agregar aquí:
-        // EnemySpawner.instance.StartWaves();
+        // CORRECCIÓN (vertical slice): el combate arranca directo acá, ya no
+        // depende de pisar una zona del piso (WaveTriggerZone quedó deprecado).
         // ============================================================
+        EnemySpawner spawner = FindObjectOfType<EnemySpawner>();
+        if (spawner != null) spawner.StartWaves();
+        else Debug.LogWarning("GomezInteraction: no se encontró ningún EnemySpawner en la escena para arrancar las oleadas.");
 
         StartCoroutine(MoveOut());
     }

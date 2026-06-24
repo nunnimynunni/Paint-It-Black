@@ -6,7 +6,17 @@ public class NPCMovement : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Camera mainCamera;
     public float moveSpeed = 2f;
-    
+
+    // ============================================================
+    // Feedback de playtest: "los NPCs deben mantener una distancia mínima
+    // de los objetos del mapa". Este script mueve al NPC seteando
+    // transform.position directamente (no usa Rigidbody2D.MovePosition),
+    // así que NO recibe respuesta física de colisión de Unity y atravesaría
+    // los obstáculos sólidos sin este chequeo manual.
+    // ============================================================
+    [Tooltip("Distancia mínima a la que se detecta un obstáculo sólido por delante para esquivarlo")]
+    public float distanciaMinimaObstaculo = 0.6f;
+
     private float waitTimer = 0f;
     private float moveTimer = 0f;
     private float randomWaitTime = 0f;
@@ -55,7 +65,21 @@ public class NPCMovement : MonoBehaviour
         else
         {
             moveTimer += Time.deltaTime;
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+
+            if (HayObstaculoAdelante())
+            {
+                // Mismo patrón que CheckBounds(): elegir otra dirección y
+                // recortar el tiempo restante de movimiento, en vez de
+                // empujar contra el obstáculo (que lo atravesaría, ya que
+                // este script no usa física para moverse).
+                ChooseRandomDirection();
+                moveTimer = randomMoveTime; // fuerza a re-evaluar/esperar pronto
+            }
+            else
+            {
+                transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            }
+
             ChangeAnimation();
 
             if (moveTimer >= randomMoveTime)
@@ -65,6 +89,22 @@ public class NPCMovement : MonoBehaviour
                 RandomizeTimers();
             }
         }
+    }
+
+    // Feedback de playtest: detecta si hay un objeto sólido del mapa a menos
+    // de distanciaMinimaObstaculo en la dirección en la que se está moviendo,
+    // para esquivarlo en vez de atravesarlo (este script no usa Rigidbody2D).
+    bool HayObstaculoAdelante()
+    {
+        Collider2D propio = GetComponent<Collider2D>();
+        Vector2 origen = transform.position;
+        if (propio != null) origen = propio.bounds.center;
+
+        Collider2D hit = Physics2D.OverlapCircle(
+            origen + (Vector2)moveDirection * distanciaMinimaObstaculo,
+            distanciaMinimaObstaculo * 0.5f);
+
+        return ObstacleUtils.EsObstaculoSolido(hit);
     }
 
     // Función pública para cuando es golpeado

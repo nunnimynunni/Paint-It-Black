@@ -20,6 +20,17 @@ public abstract class EnemyAI : MonoBehaviour
     [Header("Movimiento")]
     public float baseMoveSpeed = 2f;
 
+    // Feedback de playtest: "asegurate que los npcs no traspasen los objetos
+    // de estructuras [...] que siempre se mantengan lejos a un rango minimo
+    // de estas asi evitan traspasarlas". La física (Rigidbody2D + Collider2D
+    // sólido) ya impide que las atraviesen del todo, pero al perseguir en
+    // línea recta al jugador terminan pegados/rozando el borde de casas,
+    // cascada, árboles, etc., lo que se ve como que las traspasan un poco.
+    [Header("Evasión de estructuras")]
+    [Tooltip("Distancia mínima que se intenta mantener respecto a obstáculos sólidos del mapa (casas, cascada, árboles...).")]
+    public float distanciaMinimaEstructuras = 0.5f;
+    private static readonly Collider2D[] bufferEstructuras = new Collider2D[8];
+
     protected Rigidbody2D rb;
     protected Animator animator;
     protected SpriteRenderer sr;
@@ -60,7 +71,40 @@ public abstract class EnemyAI : MonoBehaviour
         }
 
         Tick(Time.deltaTime);
+        moveDir = AplicarEvasionDeEstructuras(moveDir);
         UpdateAnimator(moveDir);
+    }
+
+    // Suma un empuje "hacia afuera" al moveDir deseado por cada obstáculo
+    // sólido del mapa (ObstacleUtils, ver su comentario: por exclusión, todo
+    // collider sólido que no sea jugador/NPC/pickup) que esté a menos de
+    // distanciaMinimaEstructuras. Así el NPC rodea la estructura en vez de
+    // quedarse frotando/clavado contra su borde mientras persigue al jugador.
+    protected Vector2 AplicarEvasionDeEstructuras(Vector2 deseado)
+    {
+        int n = Physics2D.OverlapCircleNonAlloc(transform.position, distanciaMinimaEstructuras, bufferEstructuras);
+        if (n <= 0) return deseado;
+
+        Vector2 empuje = Vector2.zero;
+        for (int i = 0; i < n; i++)
+        {
+            Collider2D col = bufferEstructuras[i];
+            if (!ObstacleUtils.EsObstaculoSolido(col)) continue;
+
+            Vector2 puntoCercano = col.ClosestPoint(transform.position);
+            Vector2 fuera = (Vector2)transform.position - puntoCercano;
+            float dist = fuera.magnitude;
+            if (dist < 0.0001f) continue; // ya está encima del centro, evita dividir por cero
+
+            float fuerza = 1f - Mathf.Clamp01(dist / distanciaMinimaEstructuras);
+            empuje += fuera.normalized * fuerza;
+        }
+
+        if (empuje.sqrMagnitude < 0.0001f) return deseado;
+
+        Vector2 resultado = deseado + empuje;
+        float magnitudDeseada = Mathf.Max(deseado.magnitude, 0.01f);
+        return resultado.sqrMagnitude > 0.0001f ? resultado.normalized * magnitudDeseada : deseado;
     }
 
     void FixedUpdate()

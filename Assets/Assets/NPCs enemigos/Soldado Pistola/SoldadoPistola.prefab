@@ -20,7 +20,6 @@ GameObject:
   - component: {fileID: 364977448013812188}
   - component: {fileID: 215685937488669095}
   - component: {fileID: 2870970619078140678}
-  - component: {fileID: -2501908195942644173}
   m_Layer: 0
   m_Name: SoldadoPistola
   m_TagString: Untagged
@@ -292,21 +291,7 @@ MonoBehaviour:
   detectionRange: 12
   bulletPrefab: {fileID: 8760281517111003479, guid: bafb3c0e6908c4ce288c8347dec964e3, type: 3}
   firePoint: {fileID: 0}
-  shootCooldown: 1.2
+  shootCooldown: 1.7
   damage: 10
   accuracy: 0.6
   missSpreadDegrees: 18
---- !u!114 &-2501908195942644173
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4656027353169343930}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 30
-  damagePopupPrefab: {fileID: 0}

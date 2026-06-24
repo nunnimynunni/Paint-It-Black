@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6873e0a5c11cfeb42828d6e645b8cb50
+guid: 92f6a94876db04f82a382ab46c0a7b90
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -190591680628866082
-    second: AREBUSTO_0
+      213: -7574930781519735781
+    second: casapinta_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: AREBUSTO_0
+      name: casapinta_0
       rect:
         serializedVersion: 2
-        x: 35
-        y: 26
-        width: 65
-        height: 65
+        x: 0
+        y: 4
+        width: 231
+        height: 236
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ed3c8f250e1ea5df0800000000000000
-      internalID: -190591680628866082
+      spriteID: b141851869070e690800000000000000
+      internalID: -7574930781519735781
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      AREBUSTO_0: -190591680628866082
+      casapinta_0: -7574930781519735781
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

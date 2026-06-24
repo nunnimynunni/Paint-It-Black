@@ -3,7 +3,11 @@ using UnityEngine;
 public class spray : MonoBehaviour
 {
     [Header("Daño")]
-    public int damage = 1;
+    // VERTICAL SLICE: este script es el "Aerosol" del GDD. Daño real = 20 (antes placeholder = 1).
+    // Ojo: como hace tick cada damageCooldown mientras se mantiene encima del enemigo,
+    // el daño POR SEGUNDO real es damage / damageCooldown ≈ 66.6 dps a este ritmo —
+    // si se siente muy fuerte en la práctica, conviene subir damageCooldown antes que bajar damage.
+    public int damage = 20;
     public float damageCooldown = 0.3f; // segundos entre ticks de daño (evita sacar HP cada frame)
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
@@ -37,7 +41,14 @@ public class spray : MonoBehaviour
         if (damageTimer > 0f) return;
 
         EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
-        if (enemy == null) return;
+        if (enemy == null)
+        {
+            // Feedback de playtest: detenerse/destruirse al chocar con un
+            // objeto sólido del mapa (obstáculo) en vez de atravesarlo.
+            if (ObstacleUtils.EsObstaculoSolido(other))
+                Destroy(gameObject);
+            return;
+        }
 
         enemy.TakeDamage(damage, colorType);
         damageTimer = damageCooldown;

@@ -257,25 +257,25 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.805, y: -1.13}
-      - {x: 0.835, y: -1.0799999}
-      - {x: 0.995, y: -1.03}
-      - {x: 0.995, y: -0.96}
-      - {x: 1.0849999, y: -0.96}
-      - {x: 1.135, y: -0.91999996}
-      - {x: 1.135, y: -0.64}
-      - {x: 1.125, y: -0.64}
-      - {x: 1.135, y: -0.61}
-      - {x: 1.135, y: -0.31}
-      - {x: 1.105, y: -0.26}
-      - {x: 0.965, y: -0.14}
-      - {x: 0.905, y: -0.089999996}
-      - {x: 0.79499996, y: -0.03}
-      - {x: 0.755, y: 0.03}
-      - {x: 0.765, y: 0.06}
-      - {x: 0.765, y: 0.28}
-      - {x: 0.755, y: 0.31}
-      - {x: 0.66499996, y: 0.39999998}
+    - - {x: 0.505, y: -1.13}
+      - {x: 0.535, y: -1.0799999}
+      - {x: 0.55, y: -1.03}
+      - {x: 0.55, y: -0.96}
+      - {x: 0.55, y: -0.96}
+      - {x: 0.55, y: -0.91999996}
+      - {x: 0.55, y: -0.64}
+      - {x: 0.55, y: -0.64}
+      - {x: 0.55, y: -0.61}
+      - {x: 0.55, y: -0.31}
+      - {x: 0.55, y: -0.26}
+      - {x: 0.665, y: -0.14}
+      - {x: 0.605, y: -0.089999996}
+      - {x: 0.49499995, y: -0.03}
+      - {x: 0.455, y: 0.03}
+      - {x: 0.465, y: 0.06}
+      - {x: 0.465, y: 0.28}
+      - {x: 0.455, y: 0.31}
+      - {x: 0.36499995, y: 0.39999998}
       - {x: 0.415, y: 0.52}
       - {x: 0.48499998, y: 0.61}
       - {x: 0.48499998, y: 0.77}
@@ -898,6 +898,7 @@ MonoBehaviour:
   exitAfterDialog: 0
   exitSpeed: 2
   walkNorthTrigger: WalkNorth
+  triggersEndingAfterDialog: 1
 --- !u!95 &108780219
 Animator:
   serializedVersion: 7
@@ -920,99 +921,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!1 &159830261
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 159830264}
-  - component: {fileID: 159830263}
-  - component: {fileID: 159830262}
-  m_Layer: 0
-  m_Name: ZonaInicioCombate
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &159830262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 159830261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 720976f5fe7d1412f853ec12012de2e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaveTriggerZone
-  spawner: {fileID: 401925906}
-  oneShot: 1
---- !u!61 &159830263
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 159830261}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
---- !u!4 &159830264
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 159830261}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.02, y: 1.28, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &173228795
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,6 +1527,8 @@ MonoBehaviour:
   timeBetweenWaves: 10
   totalWaves: 6
   spawnMargin: 1.5
+  combatProgressShare: 0.6
+  fraccionOleadaParaPuzzle: 0.35
 --- !u!4 &401925907
 Transform:
   m_ObjectHideFlags: 0
@@ -1922,6 +1832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78489df7d18784b4baa9ca932d3e27ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AmmoManager
+  MaxAmmoPerColor: 20
 --- !u!4 &496069772
 Transform:
   m_ObjectHideFlags: 0
@@ -2117,6 +2028,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2242,6 +2154,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d640b5dfa7f444678e8b595d3c9d99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  smoothSpeed: 8
+  useBounds: 0
+  minBoundsPoint: {fileID: 0}
+  maxBoundsPoint: {fileID: 0}
 --- !u!1 &558209909
 GameObject:
   m_ObjectHideFlags: 0
@@ -2606,6 +2535,7 @@ MonoBehaviour:
   exitAfterDialog: 1
   exitSpeed: 2
   walkNorthTrigger: WalkNorth
+  triggersEndingAfterDialog: 1
 --- !u!1 &712462838
 GameObject:
   m_ObjectHideFlags: 0
@@ -5210,6 +5140,7 @@ MonoBehaviour:
   exitAfterDialog: 1
   exitSpeed: 2
   walkNorthTrigger: WalkNorth
+  triggersEndingAfterDialog: 1
 --- !u!58 &1429548170
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5795,6 +5726,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   gameOverPanel: {fileID: 510483560}
   victoryPanel: {fileID: 2018612054}
+  paintProgress: 0
 --- !u!4 &1647776997
 Transform:
   m_ObjectHideFlags: 0
@@ -5912,7 +5844,7 @@ Transform:
   m_GameObject: {fileID: 1742017724}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.32, y: 1.77, z: 0}
+  m_LocalPosition: {x: 5.06, y: 1.77, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7620,8 +7552,8 @@ MonoBehaviour:
   dialogPanel: {fileID: 257880069}
   dialogText: {fileID: 1551035073}
   dialogLines:
-  - buenas
-  - badre...
+  - "As\xED que vos sos el forastero del que hablan..."
+  - "\xA1\xA1Veremos si pod\xE9s con los verdaderos soldados de Inkston!!"
   charDelay: 0.06
 --- !u!4 &2126958849
 Transform:
@@ -7666,7 +7598,6 @@ SceneRoots:
   - {fileID: 1254256061}
   - {fileID: 1647776997}
   - {fileID: 401925907}
-  - {fileID: 159830264}
   - {fileID: 288741554}
   - {fileID: 558209912}
   - {fileID: 1429548172}

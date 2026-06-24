@@ -50,6 +50,12 @@ public class EnemyBullet : MonoBehaviour
             // Nota: usa Gray (Aguado) para no contar como impacto de color en fuego amigo
             eh.TakeDamage(damage, PaintColor.Gray);
             Destroy(gameObject);
+            return;
         }
+
+        // Feedback de playtest: detenerse/destruirse al chocar con un objeto
+        // sólido del mapa (obstáculo) en vez de atravesarlo sin efecto.
+        if (ObstacleUtils.EsObstaculoSolido(other))
+            Destroy(gameObject);
     }
 }

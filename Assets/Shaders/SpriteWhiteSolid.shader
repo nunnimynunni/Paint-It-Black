@@ -64,8 +64,14 @@ Shader "Custom/SpriteWhiteSolid"
             fixed4 frag(v2f i) : SV_Target
             {
                 fixed4 texColor = tex2D(_MainTex, i.uv);
-                // Pinta todo blanco solido, conserva el alpha del sprite
-                return fixed4(1, 1, 1, texColor.a * i.color.a);
+                // Pinta todo de un color sólido (por defecto blanco, vía
+                // SpriteRenderer.color/_Color), conserva el alpha del sprite.
+                // i.color ya viene multiplicado por _Color desde vert(), así
+                // que con SpriteRenderer.color blanco (como en los outlines
+                // de NPCs ya existentes) el resultado sigue siendo blanco
+                // exactamente como antes; con otro color (ej. amarillo para
+                // la estructura del puzzle) sale teñido sin tocar nada más.
+                return fixed4(i.color.rgb, texColor.a * i.color.a);
             }
             ENDCG
         }

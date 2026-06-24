@@ -5,7 +5,8 @@ public class rodillo : MonoBehaviour
     public float lifetime = 0.4f;
 
     [Header("Daño")]
-    public int damage = 2; // el melee hace más daño que los proyectiles
+    // VERTICAL SLICE: este script es el "Rodillo" del GDD. Daño real = 35 (antes placeholder = 2).
+    public int damage = 35;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
     void Awake()
@@ -28,10 +29,17 @@ public class rodillo : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
-        if (enemy == null) return;
+        if (enemy == null)
+        {
+            // Feedback de playtest: detenerse/destruirse al chocar con un
+            // objeto sólido del mapa (obstáculo) en vez de atravesarlo.
+            if (ObstacleUtils.EsObstaculoSolido(other))
+                Destroy(gameObject);
+            return;
+        }
 
         enemy.TakeDamage(damage, colorType);
-        // El rodillo no se destruye al golpear — sigue activo por su lifetime
+        // El rodillo no se destruye al golpear un enemigo — sigue activo por su lifetime
         // FUTURO: podría acumular hits para efectos especiales
     }
 }

@@ -26,6 +26,17 @@ public class playerataque : MonoBehaviour
     private float timerPincel  = 0f;
     private float timerRodillo = 0f;
 
+    // Feedback de playtest: vacantes de animación de disparo del Forastero
+    // (Animator "frottnguy_0", parámetros Trigger "Disparar" + Int
+    // "ArmaActual" 0=Pincel/1=Spray/2=Rodillo, ver estados placeholder
+    // "Disparo ..."). Si no hay Animator en el GameObject no se rompe nada.
+    private Animator animator;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+
     void Update()
     {
         if (WeaponManager.instance == null) return;
@@ -51,7 +62,7 @@ public class playerataque : MonoBehaviour
             {
                 Destroy(currentSpray);
                 currentSpray = null;
-                timerSpray = cooldownSpray; // cooldown al soltar
+                timerSpray = cooldownSpray * CooldownMult; // cooldown al soltar (reducido por mejoras)
             }
         }
         else
@@ -81,14 +92,33 @@ public class playerataque : MonoBehaviour
         }
     }
 
+    // Multiplicadores de UpgradeSystem (GDD 3.7: Mejoras de Arma). Si todavía
+    // no se ganó ninguna mejora, UpgradeSystem.Instance puede ser null: en
+    // ese caso se usan los valores neutros (1f) y el arma se comporta
+    // exactamente igual que antes de este sistema.
+    float DanoMult => UpgradeSystem.Instance != null ? UpgradeSystem.Instance.ArmaDanoMultiplier : 1f;
+    float CooldownMult => UpgradeSystem.Instance != null ? UpgradeSystem.Instance.ArmaCooldownMultiplier : 1f;
+    float VelocidadDisparoMult => UpgradeSystem.Instance != null ? UpgradeSystem.Instance.ArmaVelocidadDisparoMultiplier : 1f;
+    float AreaMult => UpgradeSystem.Instance != null ? UpgradeSystem.Instance.ArmaAreaEfectoMultiplier : 1f;
+
+    void DispararAnimacion(int arma)
+    {
+        if (animator == null) return;
+        animator.SetInteger("ArmaActual", arma);
+        animator.SetTrigger("Disparar");
+    }
+
     void SpawnSpray()
     {
+        DispararAnimacion(1); // 1 = Spray
         Vector2 dir = GetMouseDirection(firePoint);
         currentSpray = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity, firePoint);
+        currentSpray.transform.localScale *= AreaMult;
         spray s = currentSpray.GetComponent<spray>();
         if (s != null)
         {
             s.colorType = WeaponManager.instance.currentColor;
+            s.damage = Mathf.RoundToInt(s.damage * DanoMult);
             s.Init(dir);
         }
     }
@@ -102,30 +132,37 @@ public class playerataque : MonoBehaviour
 
     void SpawnProjectile()
     {
+        DispararAnimacion(0); // 0 = Pincel
         Vector2 dir = GetMouseDirection(projectileFirePoint);
         GameObject bullet = Instantiate(projectilePrefab, projectileFirePoint.position, Quaternion.identity);
+        bullet.transform.localScale *= AreaMult;
         Projectile p = bullet.GetComponent<Projectile>();
         if (p != null)
         {
             p.colorType = WeaponManager.instance.currentColor;
+            p.damage = Mathf.RoundToInt(p.damage * DanoMult);
             p.Init(dir);
         }
-        timerPincel = cooldownPincel;
+        // "Mayor velocidad de disparo" = menos espera entre disparos del Pincel.
+        timerPincel = cooldownPincel / Mathf.Max(0.1f, VelocidadDisparoMult);
     }
 
     void SpawnMelee()
     {
+        DispararAnimacion(2); // 2 = Rodillo
         Vector2 dir = GetMouseDirection(meleeFirePoint);
         float offset = 1f;
         Vector3 spawnPos = meleeFirePoint.position + (Vector3)(dir * offset);
         GameObject melee = Instantiate(meleePrefab, spawnPos, Quaternion.identity);
+        melee.transform.localScale *= AreaMult;
         rodillo r = melee.GetComponent<rodillo>();
         if (r != null)
         {
             r.colorType = WeaponManager.instance.currentColor;
+            r.damage = Mathf.RoundToInt(r.damage * DanoMult);
             r.Init(dir);
         }
-        timerRodillo = cooldownRodillo;
+        timerRodillo = cooldownRodillo * CooldownMult;
     }
 
     Vector2 GetMouseDirection(Transform from)

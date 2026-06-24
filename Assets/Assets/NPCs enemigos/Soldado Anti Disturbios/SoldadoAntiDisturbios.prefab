@@ -18,7 +18,6 @@ GameObject:
   - component: {fileID: 2076315266413108578}
   - component: {fileID: 6231195269217847796}
   - component: {fileID: 6590711705427460705}
-  - component: {fileID: 1754464433253268045}
   m_Layer: 0
   m_Name: SoldadoAntiDisturbios
   m_TagString: Untagged
@@ -159,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 200
+  maxHP: 150
   damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
 --- !u!50 &393905372854920101
 Rigidbody2D:
@@ -257,17 +256,3 @@ MonoBehaviour:
   allyDetectionRange: 10
   blockPositionRatio: 0.4
   followDistance: 0.3
---- !u!114 &1754464433253268045
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5653564539445295210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 40
-  damagePopupPrefab: {fileID: 0}

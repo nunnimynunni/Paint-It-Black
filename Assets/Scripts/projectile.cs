@@ -6,8 +6,17 @@ public class Projectile : MonoBehaviour
     public float lifetime = 3f;
 
     [Header("Daño")]
-    public int damage = 1;
+    // VERTICAL SLICE: este script es el "Pincel" del GDD. Daño real = 25 (antes placeholder = 1).
+    public int damage = 25;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
+
+    // GDD 3.7: "Mejoras de Habilidades Pasivas: rebote de proyectiles".
+    // Si la mejora está activa, el primer impacto no destruye el proyectil:
+    // lo redirige al enemigo más cercano (que no sea el que ya golpeó) y
+    // sigue volando. Solo rebota una vez por proyectil.
+    [Tooltip("Radio de búsqueda del próximo objetivo al rebotar")]
+    public float radioRebote = 6f;
+    private bool yaReboto = false;
 
     private Vector2 direction;
 
@@ -39,9 +48,53 @@ public class Projectile : MonoBehaviour
     {
         Debug.Log("Projectile hit: " + other.name);
         EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
-        if (enemy == null) return;
+        if (enemy == null)
+        {
+            // Feedback de playtest: el proyectil debe detenerse/destruirse al
+            // chocar con un objeto sólido del mapa (obstáculo) en vez de
+            // atravesarlo sin efecto.
+            if (ObstacleUtils.EsObstaculoSolido(other))
+                Destroy(gameObject);
+            return;
+        }
 
         enemy.TakeDamage(damage, colorType);
+
+        bool puedeRebotar = !yaReboto && UpgradeSystem.Instance != null && UpgradeSystem.Instance.PasivaRebote;
+        if (puedeRebotar)
+        {
+            EnemyHealth siguiente = BuscarSiguienteObjetivo(enemy);
+            if (siguiente != null)
+            {
+                yaReboto = true;
+                Vector2 nuevaDir = (Vector2)(siguiente.transform.position - transform.position);
+                Init(nuevaDir);
+                return; // no se destruye: sigue volando hacia el nuevo objetivo
+            }
+        }
+
         Destroy(gameObject);
+    }
+
+    EnemyHealth BuscarSiguienteObjetivo(EnemyHealth excluir)
+    {
+        EnemyHealth[] todos = FindObjectsOfType<EnemyHealth>();
+        EnemyHealth mejor = null;
+        float mejorDist = radioRebote;
+
+        foreach (var e in todos)
+        {
+            if (e == excluir || e == null) continue;
+            if (!e.IsAlive()) continue;
+
+            float dist = Vector2.Distance(transform.position, e.transform.position);
+            if (dist <= mejorDist)
+            {
+                mejorDist = dist;
+                mejor = e;
+            }
+        }
+
+        return mejor;
     }
 }
