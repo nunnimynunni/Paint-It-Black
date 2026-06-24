@@ -78,7 +78,7 @@ public class Projectile : MonoBehaviour
 
     EnemyHealth BuscarSiguienteObjetivo(EnemyHealth excluir)
     {
-        EnemyHealth[] todos = FindObjectsOfType<EnemyHealth>();
+        EnemyHealth[] todos = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
         EnemyHealth mejor = null;
         float mejorDist = radioRebote;
 

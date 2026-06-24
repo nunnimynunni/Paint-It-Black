@@ -68,7 +68,7 @@ public class AmmoPickup : MonoBehaviour
         // Incluye inactivos por consistencia con PaintCanvasPuzzle (ver su
         // EncontrarSpriteGota): si en algún momento el hudCombate está
         // oculto, esto sigue encontrando el sprite igual.
-        AmmoHUD hud = Object.FindObjectOfType<AmmoHUD>(true);
+        AmmoHUD hud = Object.FindFirstObjectByType<AmmoHUD>(FindObjectsInactive.Include);
         if (hud != null && hud.dropSprites != null && hud.dropSprites.Length > 0 && hud.dropSprites[0] != null)
             return hud.dropSprites[0]; // gota "llena", la misma que ya usa el HUD
         return null;

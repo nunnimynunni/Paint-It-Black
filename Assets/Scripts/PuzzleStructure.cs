@@ -100,7 +100,7 @@ public class PuzzleStructure : MonoBehaviour
     // usando los outlines de los NPCs (Gomez/Cromagustin) en la escena.
     Material EncontrarMaterialOutlineExistente()
     {
-        SpriteRenderer[] todos = FindObjectsOfType<SpriteRenderer>(true);
+        SpriteRenderer[] todos = FindObjectsByType<SpriteRenderer>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var r in todos)
         {
             if (r == null || r.sharedMaterial == null || r.sharedMaterial.shader == null) continue;

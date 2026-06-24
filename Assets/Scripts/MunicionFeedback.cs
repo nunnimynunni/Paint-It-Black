@@ -20,7 +20,7 @@ public static class MunicionFeedback
     public static void Mostrar(Vector3 posicionMundo, PaintColor color, int cantidad)
     {
         GameObject canvasObj = GameObject.Find("Canvas");
-        Canvas canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : Object.FindObjectOfType<Canvas>();
+        Canvas canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : Object.FindFirstObjectByType<Canvas>();
         if (canvas == null) return;
 
         GameObject textoObj = new GameObject("MunicionFeedback_Texto", typeof(RectTransform));

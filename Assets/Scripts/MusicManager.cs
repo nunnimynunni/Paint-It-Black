@@ -1,13 +1,24 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // ============================================================
 // SCRIPT: MusicManager
-// Pedido del usuario: arranca con fade-in la música de "Exploración mundo
-// BYN" (el pueblo todavía sin color); al iniciar la interacción con Gomez,
-// crossfade a "Final Boss - Paint It Black" (loop durante toda la oleada +
-// minijuego); al ganar la oleada, crossfade a "Exploración color" (el
-// pueblo ya recuperó color). Mismo tratamiento de fades en los 3 tramos.
+// Pedido del usuario: respetar el flujo completo de las instrumentales
+// según la escena/momento:
+//   - "Intro" en el menú (1Titulo, 2Menu y las escenas de Opciones).
+//   - Crossfade a "Exploración mundo BYN" apenas aparece el juego
+//     (se carga SampleScene).
+//   - Crossfade a "Final Boss" al hablar con Gomez (CrossfadeABoss,
+//     llamado desde GomezInteraction).
+//   - Crossfade a "Exploración color" al ganar la oleada
+//     (CrossfadeAExploracion, llamado desde EnemySpawner.CheckVictory()).
+//
+// Como el objeto es DontDestroyOnLoad (persiste entre escenas), la
+// transición menú→juego y juego→menú (al perder, ver GameManager.GameOver)
+// se manejan solas escuchando SceneManager.sceneLoaded: cualquier escena
+// que NO sea "SampleScene" reproduce el Intro; "SampleScene" reproduce la
+// Exploración BYN. Así no hace falta tocar cada escena de menú a mano.
 //
 // Los clips se cargan desde Assets/Resources/Audio/Music (Resources.Load
 // por path, no por GUID), así no depende de que el archivo ya esté
@@ -20,6 +31,11 @@ using UnityEngine;
 public class MusicManager : MonoBehaviour
 {
     public static MusicManager Instance;
+
+    // Nombre exacto de la escena de juego (ver ProjectSettings/EditorBuildSettings).
+    // Cualquier otra escena (1Titulo, 2Menu, Opciones, Display, Sonido,
+    // Controles, Idioma, etc.) se trata como "menú" y suena el Intro.
+    const string ESCENA_JUEGO = "SampleScene";
 
     // Pedido del usuario: "que todos los sonidos y las musicas convivan
     // bien". Se bajó un poco la música base (de 0.6 a 0.45) para que quede
@@ -36,6 +52,7 @@ public class MusicManager : MonoBehaviour
     private AudioSource sourceB;
     private bool activaEsA = true;
 
+    private AudioClip clipIntro;
     private AudioClip clipExploracionByN;
     private AudioClip clipExploracionColor;
     private AudioClip clipBoss;
@@ -65,6 +82,7 @@ public class MusicManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        clipIntro = Resources.Load<AudioClip>("Audio/Music/Intro");
         clipExploracionByN = Resources.Load<AudioClip>("Audio/Music/ExploracionByN");
         clipExploracionColor = Resources.Load<AudioClip>("Audio/Music/ExploracionColor");
         clipBoss = Resources.Load<AudioClip>("Audio/Music/FinalBoss");
@@ -77,23 +95,47 @@ public class MusicManager : MonoBehaviour
             s.playOnAwake = false;
             s.volume = 0f;
         }
+
+        // Escucha cada cambio de escena para decidir solo si toca Intro
+        // (menú) o Exploración BYN (SampleScene), sin tener que cablear
+        // nada a mano en cada escena de menú.
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     void Start()
     {
-        if (clipExploracionByN == null)
+        AudioClip inicial = ClipParaEscena(SceneManager.GetActiveScene().name);
+        if (inicial == null)
         {
-            Debug.LogWarning("MusicManager: no se encontró el clip Assets/Resources/Audio/Music/ExploracionByN.mp3");
+            Debug.LogWarning("MusicManager: no se encontró el clip inicial para la escena '" + SceneManager.GetActiveScene().name + "'.");
             return;
         }
 
         AudioSource activa = activaEsA ? sourceA : sourceB;
-        activa.clip = clipExploracionByN;
+        activa.clip = inicial;
         activa.volume = 0f;
         activa.Play();
-        clipObjetivoActual = clipExploracionByN;
+        clipObjetivoActual = inicial;
 
         rutinaActual = StartCoroutine(FadeVolumen(activa, 0f, volumenMusica, duracionFadeInInicial));
+    }
+
+    // Pedido del usuario: Intro en el menú, Exploración BYN apenas aparece
+    // el juego. SampleScene = la única escena de juego; todo lo demás
+    // (Título, Menú, Opciones, Pausa, etc.) cuenta como "menú".
+    AudioClip ClipParaEscena(string nombreEscena)
+    {
+        return nombreEscena == ESCENA_JUEGO ? clipExploracionByN : clipIntro;
+    }
+
+    void OnSceneLoaded(Scene escena, LoadSceneMode modo)
+    {
+        Crossfade(ClipParaEscena(escena.name));
     }
 
     // Llamado desde GomezInteraction al iniciarse el diálogo (inicio de la interacción).

@@ -30,6 +30,16 @@ public abstract class EnemyAI : MonoBehaviour
     [Tooltip("Distancia mínima que se intenta mantener respecto a obstáculos sólidos del mapa (casas, cascada, árboles...).")]
     public float distanciaMinimaEstructuras = 0.5f;
     private static readonly Collider2D[] bufferEstructuras = new Collider2D[8];
+    // Physics2D.OverlapCircleNonAlloc quedó obsoleto; el reemplazo no-obsoleto
+    // pide un ContactFilter2D. NoFilter() reproduce el mismo comportamiento de
+    // antes (sin filtrar por capa/profundidad, incluye triggers).
+    private static readonly ContactFilter2D filtroEstructuras = CrearFiltroSinFiltrar();
+    private static ContactFilter2D CrearFiltroSinFiltrar()
+    {
+        ContactFilter2D f = new ContactFilter2D();
+        f.NoFilter();
+        return f;
+    }
 
     protected Rigidbody2D rb;
     protected Animator animator;
@@ -144,7 +154,7 @@ public abstract class EnemyAI : MonoBehaviour
     // quedarse frotando/clavado contra su borde mientras persigue al jugador.
     protected Vector2 AplicarEvasionDeEstructuras(Vector2 deseado)
     {
-        int n = Physics2D.OverlapCircleNonAlloc(transform.position, distanciaMinimaEstructuras, bufferEstructuras);
+        int n = Physics2D.OverlapCircle(transform.position, distanciaMinimaEstructuras, filtroEstructuras, bufferEstructuras);
         if (n <= 0) return deseado;
 
         Vector2 empuje = Vector2.zero;

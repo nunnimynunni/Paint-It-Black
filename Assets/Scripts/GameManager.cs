@@ -88,6 +88,12 @@ public class GameManager : MonoBehaviour
             barraProgresoImg.fillAmount = paintProgress;
     }
 
+    [Header("Game Over -> Menú (pedido del usuario)")]
+    [Tooltip("Nombre exacto de la escena de menú a la que se vuelve al perder la oleada.")]
+    public string escenaMenuAlPerder = "2Menu";
+    [Tooltip("Duración del fade a negro antes de volver al menú.")]
+    public float duracionFadeAlPerder = 1.2f;
+
     public void GameOver()
     {
         if (IsGameOver) return;
@@ -98,6 +104,53 @@ public class GameManager : MonoBehaviour
         SetHudVisible(false);
 
         Time.timeScale = 0f;
+
+        // Pedido del usuario: al perder la oleada, fade a negro y volver al
+        // menú inicial (MusicManager ya detecta el cambio de escena solo y
+        // hace crossfade de vuelta al Intro, ver MusicManager.OnSceneLoaded).
+        StartCoroutine(FadeANegroYVolverAlMenu());
+    }
+
+    IEnumerator FadeANegroYVolverAlMenu()
+    {
+        GameObject canvasObj = GameObject.Find("Canvas");
+        Canvas canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : Object.FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            Debug.LogWarning("GameManager: no se encontró ningún Canvas para el fade a negro; se va directo al menú.");
+            Time.timeScale = 1f;
+            UnityEngine.SceneManagement.SceneManager.LoadScene(escenaMenuAlPerder);
+            yield break;
+        }
+
+        GameObject negroObj = new GameObject("FadeNegro_GameOver", typeof(RectTransform));
+        negroObj.transform.SetParent(canvas.transform, false);
+        negroObj.transform.SetAsLastSibling(); // por encima de todo el resto del HUD/paneles
+        RectTransform rt = negroObj.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+
+        Image negro = negroObj.AddComponent<Image>();
+        negro.color = new Color(0f, 0f, 0f, 0f);
+        negro.raycastTarget = false;
+
+        // Time.timeScale ya está en 0 (juego congelado), así que el fade
+        // usa tiempo NO escalado para poder avanzar igual.
+        float t = 0f;
+        while (t < duracionFadeAlPerder)
+        {
+            t += Time.unscaledDeltaTime;
+            Color c = negro.color;
+            c.a = Mathf.Clamp01(t / duracionFadeAlPerder);
+            negro.color = c;
+            yield return null;
+        }
+        negro.color = new Color(0f, 0f, 0f, 1f);
+
+        Time.timeScale = 1f; // importante: descongelar antes de cambiar de escena
+        UnityEngine.SceneManagement.SceneManager.LoadScene(escenaMenuAlPerder);
     }
 
     public void Victory()
@@ -161,7 +214,7 @@ public class GameManager : MonoBehaviour
     public void ShowEndingCredits()
     {
         GameObject canvasObj = GameObject.Find("Canvas");
-        Canvas canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : FindObjectOfType<Canvas>();
+        Canvas canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : Object.FindFirstObjectByType<Canvas>();
         if (canvas == null)
         {
             Debug.LogWarning("GameManager: no se encontró ningún Canvas para mostrar el cartel de cierre del slice.");
@@ -182,7 +235,10 @@ public class GameManager : MonoBehaviour
         texto.alignment = TextAnchor.MiddleCenter;
         texto.fontSize = 28;
         texto.color = Color.white;
-        texto.text = "Fin del Vertical Slice — ¡Gracias por jugar!";
+        // Pedido del usuario: al ganar la oleada, el mensaje debe avisar que
+        // ya se puede explorar el mapa libremente (antes decía "Fin del
+        // Vertical Slice").
+        texto.text = "¡Ya podés explorar el mapa!";
 
         StartCoroutine(DesvanecerYDestruir(texto));
     }

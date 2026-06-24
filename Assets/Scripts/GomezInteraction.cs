@@ -87,6 +87,26 @@ public class GomezInteraction : MonoBehaviour
     private Animator animator;
     private CircleCollider2D colliderSolido;
 
+    // ============================================================
+    // Pedido del usuario: "gomez debe evitar estas estructuras al irse"
+    // (casas/árboles/arbustos). El collider sólido se apaga durante la
+    // salida (ver StartExit) para no bloquear físicamente al jugador en el
+    // camino, así que la evasión de estructuras se hace por steering, igual
+    // esquema que ya usa EnemyAI.AplicarEvasionDeEstructuras: un empuje
+    // hacia afuera de cualquier obstáculo sólido cercano (ObstacleUtils),
+    // sumado a la dirección de salida deseada (hacia arriba).
+    // ============================================================
+    [Header("Evasión de estructuras al salir")]
+    public float distanciaMinimaEstructurasSalida = 0.5f;
+    private static readonly Collider2D[] bufferEstructurasSalida = new Collider2D[8];
+    private static readonly ContactFilter2D filtroEstructurasSalida = CrearFiltroSinFiltrarSalida();
+    private static ContactFilter2D CrearFiltroSinFiltrarSalida()
+    {
+        ContactFilter2D f = new ContactFilter2D();
+        f.NoFilter();
+        return f;
+    }
+
     void Start()
     {
         if (outlineObject != null)
@@ -183,7 +203,7 @@ public class GomezInteraction : MonoBehaviour
         // CORRECCIÓN (vertical slice): el combate arranca directo acá, ya no
         // depende de pisar una zona del piso (WaveTriggerZone quedó deprecado).
         // ============================================================
-        EnemySpawner spawner = FindObjectOfType<EnemySpawner>();
+        EnemySpawner spawner = Object.FindFirstObjectByType<EnemySpawner>();
         if (spawner != null) spawner.StartWaves();
         else Debug.LogWarning("GomezInteraction: no se encontró ningún EnemySpawner en la escena para arrancar las oleadas.");
 
@@ -194,7 +214,10 @@ public class GomezInteraction : MonoBehaviour
     {
         while (true)
         {
-            transform.position += Vector3.up * exitSpeed * Time.deltaTime;
+            // Pedido del usuario: que evite las estructuras (casas/árboles/
+            // arbustos) al irse, en vez de atravesarlas en línea recta.
+            Vector2 direccion = AplicarEvasionDeEstructuras(Vector2.up);
+            transform.position += (Vector3)(direccion * exitSpeed * Time.deltaTime);
             if (transform.position.y > Camera.main.transform.position.y + 15f)
             {
                 Destroy(gameObject);
@@ -202,6 +225,38 @@ public class GomezInteraction : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    // Mismo esquema que EnemyAI.AplicarEvasionDeEstructuras: busca obstáculos
+    // sólidos cercanos (ObstacleUtils descarta jugador/enemigos/NPCs, así que
+    // solo detecta casas/árboles/arbustos y similares) y suma un empuje hacia
+    // afuera de ellos a la dirección deseada, para esquivarlos sin tener que
+    // depender del collider sólido (que sigue apagado durante la salida para
+    // no bloquear físicamente al jugador).
+    Vector2 AplicarEvasionDeEstructuras(Vector2 deseado)
+    {
+        int n = Physics2D.OverlapCircle(transform.position, distanciaMinimaEstructurasSalida, filtroEstructurasSalida, bufferEstructurasSalida);
+        if (n <= 0) return deseado;
+
+        Vector2 empuje = Vector2.zero;
+        for (int i = 0; i < n; i++)
+        {
+            Collider2D col = bufferEstructurasSalida[i];
+            if (!ObstacleUtils.EsObstaculoSolido(col)) continue;
+
+            Vector2 puntoCercano = col.ClosestPoint(transform.position);
+            Vector2 fuera = (Vector2)transform.position - puntoCercano;
+            float dist = fuera.magnitude;
+            if (dist < 0.0001f) continue;
+
+            float fuerza = 1f - Mathf.Clamp01(dist / distanciaMinimaEstructurasSalida);
+            empuje += fuera.normalized * fuerza;
+        }
+
+        if (empuje.sqrMagnitude < 0.0001f) return deseado;
+
+        Vector2 resultado = deseado + empuje;
+        return resultado.sqrMagnitude > 0.0001f ? resultado.normalized : deseado;
     }
 
     bool IsPlayer(Collider2D other)

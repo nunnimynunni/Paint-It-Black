@@ -97,7 +97,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
         // llama. FindObjectOfType sin este parámetro ignora objetos
         // inactivos y por eso el minijuego dejó de mostrar las gotas de
         // pintura y volvió al placeholder de color plano.
-        AmmoHUD hud = FindObjectOfType<AmmoHUD>(true);
+        AmmoHUD hud = FindFirstObjectByType<AmmoHUD>(FindObjectsInactive.Include);
         if (hud != null && hud.dropSprites != null && hud.dropSprites.Length > 0 && hud.dropSprites[0] != null)
             spriteGotaCache = hud.dropSprites[0];
         return spriteGotaCache;
@@ -146,7 +146,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
     {
         if (WeaponCursor.Instance != null) WeaponCursor.Instance.Suspender();
 
-        WeaponHUD hud = FindObjectOfType<WeaponHUD>(true);
+        WeaponHUD hud = FindFirstObjectByType<WeaponHUD>(FindObjectsInactive.Include);
         Sprite pincel = hud != null ? hud.spritePincel : null;
         if (pincel == null) return;
 
@@ -176,7 +176,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
     {
         GameObject canvasObj = GameObject.Find("Canvas");
         canvas = canvasObj != null ? canvasObj.GetComponent<Canvas>() : null;
-        if (canvas == null) canvas = FindObjectOfType<Canvas>();
+        if (canvas == null) canvas = FindFirstObjectByType<Canvas>();
 
         if (canvas == null)
         {
