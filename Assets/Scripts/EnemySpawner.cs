@@ -35,8 +35,18 @@ public class EnemySpawner : MonoBehaviour
     public int totalWaves = 8;
 
     [Header("Spawn")]
+    // Feedback de playtest: "por mas que yo me mueva [los enemigos] deben
+    // spawnear siempre por fuera del rango de la camara asi parece que
+    // vienen a por mi". GetOffscreenPosition() ya calculaba la posición
+    // tomando el rectángulo visible de la cámara en el instante exacto del
+    // spawn (siempre por fuera, geométricamente). El problema era el margen:
+    // con solo 1.5 unidades de buffer, en cuanto el jugador caminaba hacia
+    // ese lado la cámara (que lo sigue) alcanzaba esa posición casi al
+    // toque, y el NPC "aparecía" en pantalla en vez de verse venir desde
+    // afuera. Subido a un margen mucho mayor para dar tiempo a que se note
+    // que se acercan caminando.
     [Tooltip("Qué tan lejos del borde de cámara aparecen los NPCs")]
-    public float spawnMargin = 1.5f;
+    public float spawnMargin = 4.5f;
 
     public int CurrentWave { get; private set; } = 0;
     public bool Started { get; private set; } = false;
@@ -272,6 +282,11 @@ public class EnemySpawner : MonoBehaviour
         // con Cromagustín, EntryStart y EntryEnd asignados.
         // ============================================================
         combateYaTermino = true;
+
+        // Pedido del usuario: victoria de la oleada = crossfade de vuelta a
+        // la música de exploración (la de "Final Boss" sonó durante toda la
+        // oleada + minijuego, ahora termina).
+        if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeAExploracion();
 
         if (CombatEndTrigger.instance != null)
             CombatEndTrigger.instance.OnCombatEnd();

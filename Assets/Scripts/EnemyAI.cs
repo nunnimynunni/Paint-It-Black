@@ -56,6 +56,56 @@ public abstract class EnemyAI : MonoBehaviour
         rb.gravityScale = 0f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+        ultimaPosicionRevisada = transform.position;
+    }
+
+    // ============================================================
+    // Feedback de playtest: "un enemigo quedo atrapado entre arboles, esto
+    // no puede suceder ya que no puedo ganar" (CheckVictory exige que TODOS
+    // los enemigos planeados estén muertos). Red de seguridad: si el NPC
+    // lleva un buen rato queriendo moverse (moveDir != 0) pero apenas cambia
+    // de posición real, se asume que quedó físicamente encajonado entre
+    // colliders sólidos (ej: dos árboles muy juntos) y se lo destraba con un
+    // pequeño desplazamiento directo del transform (no pasa por el
+    // Rigidbody/colisiones, así ningún collider en el medio lo puede volver
+    // a frenar).
+    // ============================================================
+    private Vector2 ultimaPosicionRevisada;
+    private float tiempoAtascado = 0f;
+    private float proximaRevisionAtasco = 0f;
+    private const float intervaloRevisionAtasco = 1f;
+    private const float distanciaMinimaParaNoEstarAtascado = 0.15f;
+    private const float tiempoMaximoAtascado = 4f;
+
+    void RevisarAtasco(float dt)
+    {
+        proximaRevisionAtasco -= dt;
+        if (proximaRevisionAtasco > 0f) return;
+        proximaRevisionAtasco = intervaloRevisionAtasco;
+
+        float avance = Vector2.Distance(transform.position, ultimaPosicionRevisada);
+        ultimaPosicionRevisada = transform.position;
+
+        bool queriaMoverse = moveDir.sqrMagnitude > 0.0001f;
+
+        if (queriaMoverse && avance < distanciaMinimaParaNoEstarAtascado)
+            tiempoAtascado += intervaloRevisionAtasco;
+        else
+            tiempoAtascado = 0f;
+
+        if (tiempoAtascado >= tiempoMaximoAtascado)
+        {
+            Destrabar();
+            tiempoAtascado = 0f;
+        }
+    }
+
+    void Destrabar()
+    {
+        Vector2 direccionLibre = Random.insideUnitCircle.normalized;
+        transform.position += (Vector3)(direccionLibre * 1.5f);
+        ultimaPosicionRevisada = transform.position;
     }
 
     protected virtual void OnEnable() => All.Add(this);
@@ -70,9 +120,21 @@ public abstract class EnemyAI : MonoBehaviour
             return;
         }
 
+        // Feedback de playtest: "los enemigos no deben poder moverse ni
+        // atacar mientras tienen la animacion onhit". Tick() es quien decide
+        // tanto el movimiento como disparar/atacar en cada subclase, así que
+        // alcanza con no llamarlo mientras dure el aturdimiento del golpe.
+        if (health != null && health.IsStunned)
+        {
+            moveDir = Vector2.zero;
+            UpdateAnimator(moveDir);
+            return;
+        }
+
         Tick(Time.deltaTime);
         moveDir = AplicarEvasionDeEstructuras(moveDir);
         UpdateAnimator(moveDir);
+        RevisarAtasco(Time.deltaTime);
     }
 
     // Suma un empuje "hacia afuera" al moveDir deseado por cada obstáculo

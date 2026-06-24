@@ -41,6 +41,18 @@ public class EnemyHealth : MonoBehaviour
     private float hitTimer = 0f;
 
     // ============================================================
+    // Feedback de playtest: "los enemigos no deben poder moverse ni atacar
+    // mientras tienen la animacion onhit". EnemyAI consulta IsStunned para
+    // saltearse Tick() (que es quien decide tanto el movimiento como
+    // disparar/atacar en cada subclase) mientras dura este aturdimiento.
+    // ============================================================
+    [Header("Aturdimiento al ser golpeado")]
+    [Tooltip("Mientras dura esto tras recibir un golpe, el NPC no se mueve ni ataca (se ve completa la animación OnHit).")]
+    public float duracionAturdimientoPorGolpe = 0.3f;
+    private float stunTimer = 0f;
+    public bool IsStunned => stunTimer > 0f;
+
+    // ============================================================
     // GDD: el Anti Disturbios tiene un escudo que bloquea ataques frontales
     // (inmovilizándolo 3s después). Si este componente existe en el mismo
     // GameObject, se le consulta ANTES de aplicar cualquier golpe.
@@ -90,6 +102,8 @@ public class EnemyHealth : MonoBehaviour
             if (sr != null) sr.flipX = flipXAlMorir;
         }
 
+        if (stunTimer > 0f) stunTimer -= Time.deltaTime;
+
         if (sr == null || hitTimer <= 0f) return;
         hitTimer -= Time.deltaTime;
         // OJO: al terminar el flash del golpe, NO volver al color original sin teñir.
@@ -114,6 +128,7 @@ public class EnemyHealth : MonoBehaviour
         ultimoColorRecibido = color;
 
         if (anim != null) anim.SetTrigger("OnHit");
+        stunTimer = duracionAturdimientoPorGolpe;
 
         hitColor = PaintColorUtils.ToUnityColor(color);
         hitColor.a = 0.6f;
@@ -138,6 +153,11 @@ public class EnemyHealth : MonoBehaviour
         hitColor = Color.green;
         hitColor.a = 0.6f;
         hitTimer = 0.2f;
+
+        // Feedback de playtest: "si es como el verde que saca vida debe
+        // verse ese nro de vida sacada". Antes el veneno (TakeRawDamage)
+        // no mostraba ningún número de daño, solo TakeDamage lo hacía.
+        DamagePopup.Create(damagePopupPrefab, transform.position, amount, Color.green);
 
         if (currentHP <= 0)
             Die();
