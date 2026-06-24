@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bc9d20672e2324dfe873baa076bcbfde
+guid: f39ac036776344e108128176dc190878
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1440269860636659521
-    second: Recurso 35_0
+      213: 690790746427384594
+    second: fondo colore 4_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Recurso 35_0
+      name: fondo colore 4_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 364
-        height: 73
+        y: 0
+        width: 1080
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fb0fc005132230ce0800000000000000
-      internalID: -1440269860636659521
+      spriteID: 2136eee168e269900800000000000000
+      internalID: 690790746427384594
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Recurso 35_0: -1440269860636659521
+      fondo colore 4_0: 690790746427384594
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
