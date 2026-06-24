@@ -25,8 +25,16 @@ using UnityEngine;
 //   este script calcula solo una posición a la izquierda de la cámara
 //   actual (ComputePosicionIzquierdaFueraDeCamara), así que funciona igual
 //   sin tocar el Editor.
-// - entryEnd: si no se asigna, Cromagustin se queda donde ya estaba puesto
-//   en la escena.
+// - entryEnd: si se asigna a mano, Cromagustin SIEMPRE se detiene ahí (punto
+//   fijo, útil para una cinemática específica). Si NO se asigna (caso normal
+//   del flujo de oleadas), el destino se calcula dinámicamente en base a la
+//   cámara actual al momento de OnCombatEnd() (ComputePosicionFinalEnCamara),
+//   así Cromagustin queda SIEMPRE visible en pantalla sin importar en qué
+//   parte del mapa terminó la oleada (pedido del usuario: "debe aparecer en
+//   cámara independientemente de en qué parte del mapa se termine la oleada
+//   [...] y luego quedarse quieto ahí"). Antes, sin entryEnd asignado, el
+//   destino quedaba fijo en la posición que Cromagustin ya tenía puesta en
+//   la escena, que podía caer fuera de cámara si la oleada terminaba lejos.
 // ============================================================
 
 public class CombatEndTrigger : MonoBehaviour
@@ -76,7 +84,7 @@ public class CombatEndTrigger : MonoBehaviour
         yaEntro = true;
 
         Vector3 posInicial = entryStart != null ? entryStart.position : ComputePosicionIzquierdaFueraDeCamara();
-        Vector3 posFinal = entryEnd != null ? entryEnd.position : cromagustin.transform.position;
+        Vector3 posFinal = entryEnd != null ? entryEnd.position : ComputePosicionFinalEnCamara();
 
         cromagustin.SetActive(true);
         cromagustin.transform.position = posInicial;
@@ -105,6 +113,27 @@ public class CombatEndTrigger : MonoBehaviour
 
         float izquierda = centro.x - width / 2f - 2f;
         return new Vector3(izquierda, centro.y, 0f);
+    }
+
+    // Pedido del usuario: Cromagustin debe terminar SIEMPRE visible en
+    // cámara, sin importar en qué punto del mapa terminó la oleada. Se
+    // calcula un destino DENTRO del campo visible de la cámara actual (un
+    // poco a la derecha del centro, ya que entra caminando desde la
+    // izquierda hacia el centro según el GDD), en vez de depender de una
+    // posición fija puesta a mano en la escena.
+    Vector3 ComputePosicionFinalEnCamara()
+    {
+        Camera cam = Camera.main;
+        if (cam == null) return cromagustin.transform.position;
+
+        float height = cam.orthographicSize * 2f;
+        float width = height * cam.aspect;
+        Vector3 centro = cam.transform.position;
+
+        // Un poco a la derecha del centro de cámara (margen seguro para que
+        // no quede pegado al borde ni encima del jugador).
+        float destinoX = centro.x + width * 0.15f;
+        return new Vector3(destinoX, centro.y, 0f);
     }
 
     IEnumerator MoveIn(Vector3 destino)

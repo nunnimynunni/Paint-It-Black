@@ -141,21 +141,28 @@ public class PuzzleStructure : MonoBehaviour
         GameObject puzzleObj = new GameObject("PaintCanvasPuzzle_Runtime");
         PaintCanvasPuzzle puzzle = puzzleObj.AddComponent<PaintCanvasPuzzle>();
         puzzle.OnFinished += ManejarResultado;
+
+        // Feedback de playtest: "queda un segundo en el que soy vulnerable
+        // porque se mueven tras la interfaz de minijuego los enemigos".
+        // OnFinished se invoca apenas se resuelve el patrón (para poder
+        // mostrar la mejora otorgada en el cartel de resultado), pero el
+        // cartel sigue 1.4s más en pantalla (tiempo real, con
+        // Time.timeScale todavía en 0). Antes ManejarResultado descongelaba
+        // el juego ahí mismo, así que los enemigos ya se movían y atacaban
+        // detrás del cartel todavía visible. Ahora la despausa se hace en
+        // OnClosed, que PaintCanvasPuzzle dispara recién al destruirse (al
+        // final de esos 1.4s), así coincide exactamente con el momento en
+        // que el jugador recupera la vista del mapa.
+        puzzle.OnClosed += ReanudarJuego;
     }
 
     // Devuelve el mensaje de la mejora otorgada (para que PaintCanvasPuzzle
-    // lo muestre en su cartel de resultado), o null si fue derrota.
+    // lo muestre en su cartel de resultado), o null si fue derrota. Ya NO
+    // descongela el juego ni muestra la HUD: eso ahora lo hace ReanudarJuego,
+    // llamado recién cuando la interfaz del minijuego termina de cerrarse.
     string ManejarResultado(bool victoria)
     {
         puzzleOpen = false;
-        Time.timeScale = 1f; // descongela el juego de fondo
-        if (spawner != null) spawner.SetPaused(false);
-
-        // Vuelve a mostrar la HUD normal al cerrarse el minijuego (a menos
-        // que justo en este instante se haya activado el game over, que la
-        // vuelve a esconder por su cuenta).
-        if (GameManager.Instance == null || !GameManager.Instance.IsGameOver)
-            GameManager.SetHudVisible(true);
 
         if (!victoria)
         {
@@ -186,6 +193,20 @@ public class PuzzleStructure : MonoBehaviour
             spawner.RecheckVictory();
 
         return mensajeMejora;
+    }
+
+    // Se llama exactamente cuando PaintCanvasPuzzle termina de cerrarse del
+    // todo (cartel de resultado incluido), no apenas se resuelve el patrón.
+    void ReanudarJuego()
+    {
+        Time.timeScale = 1f; // descongela el juego de fondo
+        if (spawner != null) spawner.SetPaused(false);
+
+        // Vuelve a mostrar la HUD normal al cerrarse el minijuego (a menos
+        // que justo en este instante se haya activado el game over, que la
+        // vuelve a esconder por su cuenta).
+        if (GameManager.Instance == null || !GameManager.Instance.IsGameOver)
+            GameManager.SetHudVisible(true);
     }
 
     private static Sprite spriteCasaPintadaCache;

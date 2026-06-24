@@ -119,14 +119,24 @@ public class GameManager : MonoBehaviour
     // establecido en el proyecto (sin asignar referencias a mano en el
     // Editor). Estático para que PuzzleStructure también pueda llamarlo al
     // abrir/cerrar el minijuego, sin depender de que exista GameManager.Instance.
+    //
+    // Bug de playtest: "luego del minijuego la hud de oleada no reaparece".
+    // GameObject.Find NO encuentra objetos inactivos: una vez que
+    // SetHudVisible(false) los desactiva, el SetHudVisible(true) posterior
+    // ya no podía volver a encontrarlos y se quedaban escondidos para
+    // siempre. Se cachean las referencias una sola vez (mientras todavía
+    // están activos) para no depender de Find después de la primera vez.
     // ============================================================
+    private static GameObject hudCombateCache;
+    private static GameObject hudExploracionCache;
+
     public static void SetHudVisible(bool visible)
     {
-        GameObject combate = GameObject.Find("hudCombate");
-        if (combate != null) combate.SetActive(visible);
+        if (hudCombateCache == null) hudCombateCache = GameObject.Find("hudCombate");
+        if (hudCombateCache != null) hudCombateCache.SetActive(visible);
 
-        GameObject exploracion = GameObject.Find("hudExploracion");
-        if (exploracion != null) exploracion.SetActive(visible);
+        if (hudExploracionCache == null) hudExploracionCache = GameObject.Find("hudExploracion");
+        if (hudExploracionCache != null) hudExploracionCache.SetActive(visible);
     }
 
     // Útil para un botón de "Reintentar" en el panel de Game Over
