@@ -138,6 +138,10 @@ public class GomezInteraction : MonoBehaviour
                 dialogOpen = true;
                 if (hudExploracion != null) hudExploracion.SetActive(false);
                 if (dialogManager != null) dialogManager.OpenDialog();
+
+                // Pedido del usuario: el inicio de la interacción con Gomez es la
+                // señal para el crossfade hacia la música de "Final Boss".
+                if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeABoss();
             }
             else
             {

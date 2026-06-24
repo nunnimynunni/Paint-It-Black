@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 // ============================================================
 // SCRIPT: PaintCanvasPuzzle
@@ -53,6 +54,13 @@ public class PaintCanvasPuzzle : MonoBehaviour
     // Devuelve un mensaje en español (la mejora otorgada) para mostrarlo en
     // pantalla antes de cerrar, o null/"" si no hay nada que mostrar.
     public System.Func<bool, string> OnFinished;
+
+    // Se invoca recién cuando esta interfaz termina de cerrarse del todo
+    // (justo antes de Destroy), no apenas se resuelve el patrón. Sirve para
+    // que quien escuche pueda despausar el juego de fondo exactamente en el
+    // instante en que el jugador recupera la vista del mapa, sin la ventana
+    // de ~1.4s de vulnerabilidad que había antes.
+    public System.Action OnClosed;
 
     private Canvas canvas;
     private GameObject backdrop;
@@ -121,8 +129,47 @@ public class PaintCanvasPuzzle : MonoBehaviour
         EncontrarOCrearCanvas();
         GenerarPatronReferencia();
         ConstruirUI();
+        AplicarCursorPincel();
         tiempoRestante = TIME_LIMIT;
         StartCoroutine(FlujoTimer());
+    }
+
+    // ============================================================
+    // Feedback de playtest: "el cursor debe ser el png del sprite del
+    // pincel" (mientras el minijuego está abierto). Le pide a WeaponCursor
+    // que se quede quieto (Suspender) y toma el control del cursor del
+    // sistema usando el mismo sprite "pincel" que ya tiene asignado
+    // WeaponHUD para el arma Projectile, sin necesitar un sprite nuevo
+    // asignado a mano.
+    // ============================================================
+    void AplicarCursorPincel()
+    {
+        if (WeaponCursor.Instance != null) WeaponCursor.Instance.Suspender();
+
+        WeaponHUD hud = FindObjectOfType<WeaponHUD>(true);
+        Sprite pincel = hud != null ? hud.spritePincel : null;
+        if (pincel == null) return;
+
+        // Feedback de playtest: "el cursor debe ser mucho mas pequeño y
+        // estira los pngs horizontalmente un poco ya que estan muy
+        // aplanados". Mismo criterio de tamaño/estiramiento que WeaponCursor.
+        const int altoCursorPincelPx = 24;
+        const float estiramientoHorizontalPincel = 1.35f;
+        int anchoCursorPincelPx = Mathf.RoundToInt(altoCursorPincelPx * estiramientoHorizontalPincel);
+
+        Texture2D tex = CursorTextureUtils.SpriteATexturaEscalada(pincel, anchoCursorPincelPx, altoCursorPincelPx);
+        if (tex == null) return;
+
+        Cursor.SetCursor(tex, new Vector2(tex.width / 2f, tex.height / 2f), CursorMode.Auto);
+    }
+
+    // Red de seguridad: si este objeto se destruye por cualquier vía que no
+    // sea el cierre normal (MostrarResultadoYCerrar ya llama a esto también),
+    // el cursor del arma vuelve a tomar control en vez de quedarse pegado
+    // en el pincel para siempre.
+    void OnDestroy()
+    {
+        if (WeaponCursor.Instance != null) WeaponCursor.Instance.Reanudar();
     }
 
     void EncontrarOCrearCanvas()
@@ -271,6 +318,30 @@ public class PaintCanvasPuzzle : MonoBehaviour
                 Button btn = celdaObj.AddComponent<Button>();
                 int indiceCapturado = i;
                 btn.onClick.AddListener(() => PintarCelda(indiceCapturado));
+
+                // Feedback de playtest: "permitir pintar varios cuadros a
+                // imitar con arrastre de click en el minijuego". Button.onClick
+                // de arriba solo pinta UNA celda por click suelto. Se agrega
+                // un EventTrigger para que también pinte: (a) apenas se
+                // presiona el botón sobre la celda (PointerDown, así la
+                // primera celda del arrastre no depende de que el click se
+                // "suelte" justo ahí), y (b) cada celda nueva que el mouse
+                // vaya tocando MIENTRAS el botón izquierdo sigue presionado
+                // (PointerEnter + chequeo de Mouse.current, sino pintaría
+                // solo con pasar el mouse por encima sin clickear).
+                EventTrigger trigger = celdaObj.AddComponent<EventTrigger>();
+
+                EventTrigger.Entry entryDown = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+                entryDown.callback.AddListener((data) => PintarCelda(indiceCapturado));
+                trigger.triggers.Add(entryDown);
+
+                EventTrigger.Entry entryEnter = new EventTrigger.Entry { eventID = EventTriggerType.PointerEnter };
+                entryEnter.callback.AddListener((data) =>
+                {
+                    if (Mouse.current != null && Mouse.current.leftButton.isPressed)
+                        PintarCelda(indiceCapturado);
+                });
+                trigger.triggers.Add(entryEnter);
             }
         }
         return celdas;
@@ -340,8 +411,20 @@ public class PaintCanvasPuzzle : MonoBehaviour
     void PintarCelda(int indice)
     {
         if (terminado) return;
+
+        // OJO: cada celda tiene Button.onClick Y un EventTrigger de
+        // PointerDown apuntando a este mismo método (para soportar arrastre),
+        // así que un click suelto normal dispara esto DOS veces. Si la celda
+        // ya tiene el color seleccionado, no hay nada que repintar ni que
+        // sonar de nuevo (evita el "pincelazo" doble en cada click).
+        if (patronLienzo[indice] == colorSeleccionado) return;
+
         patronLienzo[indice] = colorSeleccionado;
         celdasLienzo[indice].color = PaintColorUtils.ToUnityColor(colorSeleccionado);
+
+        // Pedido del usuario: "pincelazo" también en cada click/arrastre del
+        // minijuego, porque en teoría se pinta con un pincel.
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayPincelazo();
 
         if (CoincideConReferencia())
             Finalizar(true);
@@ -411,6 +494,11 @@ public class PaintCanvasPuzzle : MonoBehaviour
             timerTexto.text = victoria ? "El pueblo recupera un poco más de color." : "Podés volver a intentarlo cuando quieras.";
 
         yield return new WaitForSecondsRealtime(1.4f);
+
+        // Recién acá, justo antes de que la interfaz desaparezca de verdad,
+        // se avisa para despausar el juego de fondo: así no queda ninguna
+        // ventana en la que los enemigos ya se mueven detrás del cartel.
+        OnClosed?.Invoke();
 
         Destroy(backdrop);
         Destroy(gameObject);

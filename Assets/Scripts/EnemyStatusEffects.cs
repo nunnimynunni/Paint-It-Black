@@ -22,7 +22,12 @@ public class EnemyStatusEffects : MonoBehaviour
     public int hitsToTrigger = 5;
     [Tooltip("Cuánta vida máxima (%) pierde por veneno, repartida durante poisonDuration")]
     public float poisonPercentOfMaxHP = 30f;
-    public float poisonDuration = 5f;
+    // Feedback de playtest: "el color del efecto de color aplicado a los
+    // npcs debe persistir por lo menos 10 segundos asi se puede identificar
+    // el estado". El tinte verde del veneno se mantiene mientras dura
+    // PoisonRoutine, así que subir esto a 10s también hace que el color se
+    // vea ese tiempo mínimo (antes eran 5s, menos de lo pedido).
+    public float poisonDuration = 10f;
     [Tooltip("Qué tan fuerte se nota el tinte de color sobre el sprite original")]
     [Range(0f, 1f)] public float tintStrength = 0.7f;
     [Tooltip("Cuánto dura un efecto de comportamiento (Frenzy/Pacificado/Miedo/Lento) antes de volver a la normalidad. Se reinicia si vuelve a juntar 5 impactos del mismo color mientras está activo.")]
