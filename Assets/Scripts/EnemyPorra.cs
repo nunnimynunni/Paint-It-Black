@@ -7,7 +7,8 @@ public class EnemyPorra : EnemyAI
     public float meleeRange = 1.1f;
     public float detectionRange = 12f;
     public float attackCooldown = 1f;
-    public int damage = 2;
+    // Daño rebalanceado: 15 por golpe melee → jugador con 100 HP aguanta ~6-7 golpes. Más amenazante que el pistolero por ser cuerpo a cuerpo.
+    public int damage = 15;
     [Tooltip("Segundos entre que se dispara la animación de ataque y se aplica el daño")]
     public float attackHitDelay = 0.25f;
 

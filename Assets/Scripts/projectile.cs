@@ -6,8 +6,8 @@ public class Projectile : MonoBehaviour
     public float lifetime = 3f;
 
     [Header("Daño")]
-    // VERTICAL SLICE: este script es el "Pincel" del GDD. Daño real = 25 (antes placeholder = 1).
-    public int damage = 25;
+    // Daño rebalanceado: 10 por impacto → 5 hits = 50 daño, NPC queda vivo con 50 HP para recibir el efecto de color.
+    public int damage = 10;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
     // GDD 3.7: "Mejoras de Habilidades Pasivas: rebote de proyectiles".

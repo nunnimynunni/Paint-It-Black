@@ -3,11 +3,9 @@ using UnityEngine;
 public class spray : MonoBehaviour
 {
     [Header("Daño")]
-    // VERTICAL SLICE: este script es el "Aerosol" del GDD. Daño real = 20 (antes placeholder = 1).
-    // Ojo: como hace tick cada damageCooldown mientras se mantiene encima del enemigo,
-    // el daño POR SEGUNDO real es damage / damageCooldown ≈ 66.6 dps a este ritmo —
-    // si se siente muy fuerte en la práctica, conviene subir damageCooldown antes que bajar damage.
-    public int damage = 20;
+    // Daño rebalanceado: 8 por tick → 5 ticks = 40 daño, NPC queda vivo con 60 HP para recibir el efecto de color.
+    // DPS real: 8 / 0.3 ≈ 26 dps (antes era 66 dps, demasiado alto para que el color tenga sentido).
+    public int damage = 8;
     public float damageCooldown = 0.3f; // segundos entre ticks de daño (evita sacar HP cada frame)
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 

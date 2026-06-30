@@ -22,7 +22,8 @@ public class EnemyPistolero : EnemyAI
     // actualizado el override serializado en SoldadoPistola.prefab, que
     // tenía su propio valor 1.2 guardado y no toma el default del script).
     public float shootCooldown = 1.7f;
-    public int damage = 1;
+    // Daño rebalanceado: 10 por bala (×0.85 reducción = 8.5 ≈ 8 efectivo) → jugador con 100 HP aguanta ~12 impactos.
+    public int damage = 10;
     [Tooltip("Probabilidad (0-1) de que el disparo vaya certero. El resto de las veces sale desviado y no pega.")]
     [Range(0f, 1f)] public float accuracy = 0.6f;
     [Tooltip("Grados de desvío máximo cuando el disparo falla")]

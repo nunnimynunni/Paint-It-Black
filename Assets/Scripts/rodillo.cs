@@ -5,8 +5,9 @@ public class rodillo : MonoBehaviour
     public float lifetime = 0.4f;
 
     [Header("Daño")]
-    // VERTICAL SLICE: este script es el "Rodillo" del GDD. Daño real = 35 (antes placeholder = 2).
-    public int damage = 35;
+    // Daño rebalanceado: 15 por golpe → 5 golpes = 75 daño, NPC queda vivo con 25 HP para recibir el efecto de color.
+    // Sigue siendo el arma más fuerte por golpe pero requiere acercarse (melee).
+    public int damage = 15;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
     void Awake()
