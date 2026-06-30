@@ -67,9 +67,6 @@ public abstract class EnemyAI : MonoBehaviour
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
 
-        // Y-sorting automático: los NPCs más abajo en pantalla se dibujan delante
-        if (GetComponent<YSort>() == null) gameObject.AddComponent<YSort>();
-
         ultimaPosicionRevisada = transform.position;
     }
 

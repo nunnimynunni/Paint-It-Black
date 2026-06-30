@@ -16,10 +16,10 @@ using UnityEngine;
 public class YSort : MonoBehaviour
 {
     [Tooltip("Multiplicador de posición Y. Más alto = separación más fina entre objetos cercanos.")]
-    public float escala = 100f;
+    public float escala = 10f;
 
-    [Tooltip("Orden de base sobre el que se suma el offset de Y. Dejalo en 0 para personajes normales.")]
-    public int ordenBase = 0;
+    [Tooltip("Orden de base. Tiene que ser mayor que cualquier sprite de fondo para que los personajes no desaparezcan detrás.")]
+    public int ordenBase = 500;
 
     private SpriteRenderer sr;
 
