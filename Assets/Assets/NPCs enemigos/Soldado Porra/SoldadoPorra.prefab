@@ -237,7 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
   hitsToTrigger: 3
-  poisonPercentOfMaxHP: 50
+  poisonPercentOfMaxHP: 30
   poisonDuration: 5
   tintStrength: 1
   effectDuration: 12

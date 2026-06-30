@@ -5,9 +5,9 @@ public class rodillo : MonoBehaviour
     public float lifetime = 0.4f;
 
     [Header("Daño")]
-    // Daño rebalanceado: 8 por golpe → 3 golpes = 24 daño, NPC queda vivo con 76 HP para recibir el efecto de color.
+    // Daño rebalanceado: 15 por golpe → 5 golpes = 75 daño, NPC queda vivo con 25 HP para recibir el efecto de color.
     // Sigue siendo el arma más fuerte por golpe pero requiere acercarse (melee).
-    public int damage = 8;
+    public int damage = 15;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
     void Awake()
