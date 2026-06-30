@@ -52,7 +52,6 @@ public class PlayerAnimator : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         spriteRendererPropio = GetComponent<SpriteRenderer>();
-
     }
 
     void Update()
