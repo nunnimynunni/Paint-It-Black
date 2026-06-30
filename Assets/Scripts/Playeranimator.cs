@@ -52,6 +52,9 @@ public class PlayerAnimator : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         spriteRendererPropio = GetComponent<SpriteRenderer>();
+
+        // Y-sorting: el jugador se ordena visualmente igual que los NPCs (quien está más abajo en pantalla aparece delante)
+        if (GetComponent<YSort>() == null) gameObject.AddComponent<YSort>();
     }
 
     void Update()

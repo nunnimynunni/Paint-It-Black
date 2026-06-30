@@ -268,10 +268,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97d48f3b6e174798ac34d0a37e1c562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
-  hitsToTrigger: 3
+  hitsToTrigger: 5
   poisonPercentOfMaxHP: 30
   poisonDuration: 5
-  tintStrength: 1
+  tintStrength: 0.7
   effectDuration: 12
 --- !u!114 &2870970619078140678
 MonoBehaviour:
