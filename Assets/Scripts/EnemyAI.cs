@@ -36,9 +36,7 @@ public abstract class EnemyAI : MonoBehaviour
     private static readonly ContactFilter2D filtroEstructuras = CrearFiltroSinFiltrar();
     private static ContactFilter2D CrearFiltroSinFiltrar()
     {
-        ContactFilter2D f = new ContactFilter2D();
-        f.NoFilter();
-        return f;
+        return ContactFilter2D.noFilter;
     }
 
     protected Rigidbody2D rb;
@@ -113,8 +111,26 @@ public abstract class EnemyAI : MonoBehaviour
 
     void Destrabar()
     {
-        Vector2 direccionLibre = Random.insideUnitCircle.normalized;
-        transform.position += (Vector3)(direccionLibre * 1.5f);
+        // Calcula la dirección que más se aleja de los obstáculos cercanos.
+        // Si no hay obstáculos detectables, elige una dirección aleatoria.
+        // Usa rb.MovePosition (respeta física) con un desplazamiento pequeño
+        // para no teletransportar al NPC a través de paredes.
+        Vector2 empujeLibre = Vector2.zero;
+        int n = Physics2D.OverlapCircle(transform.position, distanciaMinimaEstructuras * 2f,
+                                        filtroEstructuras, bufferEstructuras);
+        for (int i = 0; i < n; i++)
+        {
+            Collider2D col = bufferEstructuras[i];
+            if (!ObstacleUtils.EsObstaculoSolido(col)) continue;
+            Vector2 fuera = (Vector2)transform.position - (Vector2)col.bounds.center;
+            if (fuera.sqrMagnitude > 0.0001f) empujeLibre += fuera.normalized;
+        }
+
+        Vector2 dir = empujeLibre.sqrMagnitude > 0.0001f
+            ? empujeLibre.normalized
+            : Random.insideUnitCircle.normalized;
+
+        rb.MovePosition(rb.position + dir * 0.5f);
         ultimaPosicionRevisada = transform.position;
     }
 

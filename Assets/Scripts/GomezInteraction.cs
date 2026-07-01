@@ -87,6 +87,10 @@ public class GomezInteraction : MonoBehaviour
     private Animator animator;
     private CircleCollider2D colliderSolido;
 
+    // Para mantener el outline siempre 1 sortingOrder detrás de Gomez.
+    private SpriteRenderer srSelf;
+    private SpriteRenderer srOutline;
+
     // ============================================================
     // Pedido del usuario: "gomez debe evitar estas estructuras al irse"
     // (casas/árboles/arbustos). El collider sólido se apaga durante la
@@ -102,15 +106,24 @@ public class GomezInteraction : MonoBehaviour
     private static readonly ContactFilter2D filtroEstructurasSalida = CrearFiltroSinFiltrarSalida();
     private static ContactFilter2D CrearFiltroSinFiltrarSalida()
     {
-        ContactFilter2D f = new ContactFilter2D();
-        f.NoFilter();
-        return f;
+        return ContactFilter2D.noFilter;
     }
 
     void Start()
     {
+        srSelf = GetComponent<SpriteRenderer>();
+
         if (outlineObject != null)
+        {
+            srOutline = outlineObject.GetComponent<SpriteRenderer>();
+
+            // Destruir YSort del outline para que no compita con el control manual
+            // de sortingOrder que hacemos en LateUpdate (outline siempre = Gomez - 1).
+            YSort ysOutline = outlineObject.GetComponent<YSort>();
+            if (ysOutline != null) Destroy(ysOutline);
+
             outlineObject.SetActive(false);
+        }
 
         if (hudCombate != null)
             hudCombate.SetActive(false);
@@ -118,6 +131,14 @@ public class GomezInteraction : MonoBehaviour
         animator = GetComponent<Animator>();
 
         AsegurarColliderSolido();
+    }
+
+    void LateUpdate()
+    {
+        // Mantiene el outline siempre 1 sortingOrder detrás de Gomez,
+        // independientemente de qué valor le haya asignado YSort a Gomez este frame.
+        if (srSelf != null && srOutline != null)
+            srOutline.sortingOrder = srSelf.sortingOrder - 1;
     }
 
     // ============================================================

@@ -19,7 +19,7 @@ public class EnemyStatusEffects : MonoBehaviour
 
     [Header("Config")]
     [Tooltip("Cantidad de impactos del mismo color para activar el efecto")]
-    public int hitsToTrigger = 5;
+    public int hitsToTrigger = 3;
     [Tooltip("Cuánta vida máxima (%) pierde por veneno, repartida durante poisonDuration")]
     public float poisonPercentOfMaxHP = 30f;
     // Feedback de playtest: "el color del efecto de color aplicado a los
@@ -29,7 +29,7 @@ public class EnemyStatusEffects : MonoBehaviour
     // vea ese tiempo mínimo (antes eran 5s, menos de lo pedido).
     public float poisonDuration = 10f;
     [Tooltip("Qué tan fuerte se nota el tinte de color sobre el sprite original")]
-    [Range(0f, 1f)] public float tintStrength = 0.7f;
+    [Range(0f, 1f)] public float tintStrength = 1.0f;
     [Tooltip("Cuánto dura un efecto de comportamiento (Frenzy/Pacificado/Miedo/Lento) antes de volver a la normalidad. Se reinicia si vuelve a juntar 5 impactos del mismo color mientras está activo.")]
     public float effectDuration = 12f;
 
@@ -130,19 +130,16 @@ public class EnemyStatusEffects : MonoBehaviour
         {
             case PaintColor.Red:
                 CurrentStatus = StatusType.Frenzy;
-                RestartEffectTimer();
+                // Efecto permanente: no se resetea con el tiempo, dura hasta la muerte del NPC
                 break;
             case PaintColor.Yellow:
                 CurrentStatus = StatusType.Pacified;
-                RestartEffectTimer();
                 break;
             case PaintColor.Purple:
                 CurrentStatus = StatusType.Fear;
-                RestartEffectTimer();
                 break;
             case PaintColor.Blue:
                 CurrentStatus = StatusType.Slow;
-                RestartEffectTimer();
                 break;
             case PaintColor.Green:
                 // El veneno corre en paralelo, no pisa el estado de comportamiento actual
@@ -202,12 +199,6 @@ public class EnemyStatusEffects : MonoBehaviour
         }
 
         IsPoisoned = false;
-
-        // Si no hay otro efecto de comportamiento corriendo en paralelo, vuelve al color original
-        if (effectRoutine == null && CurrentStatus == StatusType.None)
-        {
-            CurrentBaseColor = baseColor;
-            sr.color = baseColor;
-        }
+        // El tinte verde se mantiene aunque el veneno termine — el color es permanente hasta la muerte
     }
 }

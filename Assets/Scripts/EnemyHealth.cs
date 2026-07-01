@@ -16,8 +16,7 @@ public class EnemyHealth : MonoBehaviour
     // sentido: es literalmente el color que lo mató).
     // ============================================================
     [Header("Drop de munición (GDD: rastros de pintura)")]
-    [Range(0f, 1f)] public float probabilidadDropMunicion = 0.5f;
-    public int cantidadMunicionPorDrop = 8;
+    public int cantidadMunicionPorDrop = 10;
     private PaintColor ultimoColorRecibido = PaintColor.Red;
 
     // ============================================================
@@ -169,9 +168,8 @@ public class EnemyHealth : MonoBehaviour
     {
         currentHP = 0;
 
-        // Drop de munición lootable (GDD), con el color con el que murió.
-        if (Random.value <= probabilidadDropMunicion)
-            AmmoPickup.Crear(transform.position, ultimoColorRecibido, cantidadMunicionPorDrop);
+        // Siempre dropea munición del color que más le falte al jugador.
+        AmmoPickup.Crear(transform.position, ElegirColorParaDrop(), cantidadMunicionPorDrop);
 
         // Feedback de playtest: "matar npcs debe regenerar un pequeño
         // porcentaje de la vida" del jugador, calculado sobre su vida máxima.
@@ -260,6 +258,29 @@ public class EnemyHealth : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    // Elige el color con menos munición que tenga el jugador (excluyendo Gray, que es infinito).
+    // Si todos están llenos, usa el último color recibido como fallback.
+    PaintColor ElegirColorParaDrop()
+    {
+        if (AmmoManager.instance == null) return ultimoColorRecibido;
+
+        PaintColor mejor = ultimoColorRecibido;
+        int menorAmmo = int.MaxValue;
+
+        foreach (PaintColor c in System.Enum.GetValues(typeof(PaintColor)))
+        {
+            if (c == PaintColor.Gray) continue; // infinito, no tiene sentido dropear
+            int actual = AmmoManager.instance.GetAmmo(c);
+            if (actual < menorAmmo)
+            {
+                menorAmmo = actual;
+                mejor = c;
+            }
+        }
+
+        return mejor;
     }
 
     public int GetCurrentHP() => currentHP;

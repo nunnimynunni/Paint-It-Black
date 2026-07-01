@@ -6,8 +6,8 @@ public class Projectile : MonoBehaviour
     public float lifetime = 3f;
 
     [Header("Daño")]
-    // Daño rebalanceado: 10 por impacto → 5 hits = 50 daño, NPC queda vivo con 50 HP para recibir el efecto de color.
-    public int damage = 10;
+    // Daño rebalanceado: 12 por impacto → NPC de 100 HP muere en ~8 disparos, efecto de color a los 3.
+    public int damage = 12;
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 
     // GDD 3.7: "Mejoras de Habilidades Pasivas: rebote de proyectiles".

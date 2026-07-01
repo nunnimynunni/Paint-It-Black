@@ -57,9 +57,14 @@ public class AmmoManager : MonoBehaviour
             ammo[color] = MaxAmmoPerColor;
     }
 
+    // El color gris (aguado) es infinito: nunca gasta munición ni se muestra vacío.
+    public static bool EsInfinito(PaintColor color) => color == PaintColor.Gray;
+
     // Devuelve true si habia municion y se pudo consumir
     public bool ConsumeAmmo(PaintColor color, int amount = 1)
     {
+        if (EsInfinito(color)) return true; // infinito: siempre permite disparar
+
         if (!ammo.ContainsKey(color)) return false;
         if (ammo[color] <= 0) return false;
 
@@ -69,6 +74,7 @@ public class AmmoManager : MonoBehaviour
 
     public int GetAmmo(PaintColor color)
     {
+        if (EsInfinito(color)) return MaxAmmoPerColor; // siempre lleno en el HUD
         return ammo.ContainsKey(color) ? ammo[color] : 0;
     }
 

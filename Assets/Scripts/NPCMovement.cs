@@ -33,6 +33,16 @@ public class NPCMovement : MonoBehaviour
 
     void Start()
     {
+        // Si este GameObject tiene una IA de combate (EnemyAI), esa IA gestiona
+        // el movimiento vía Rigidbody2D.MovePosition (respeta física y colliders).
+        // NPCMovement usa transform.position directamente y bypasea las físicas,
+        // así que se deshabilita a sí mismo para no entrar en conflicto.
+        if (GetComponent<EnemyAI>() != null)
+        {
+            enabled = false;
+            return;
+        }
+
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         mainCamera = Camera.main;

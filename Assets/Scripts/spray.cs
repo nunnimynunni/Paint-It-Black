@@ -3,9 +3,8 @@ using UnityEngine;
 public class spray : MonoBehaviour
 {
     [Header("Daño")]
-    // Daño rebalanceado: 8 por tick → 5 ticks = 40 daño, NPC queda vivo con 60 HP para recibir el efecto de color.
-    // DPS real: 8 / 0.3 ≈ 26 dps (antes era 66 dps, demasiado alto para que el color tenga sentido).
-    public int damage = 8;
+    // Daño rebalanceado: 10 por tick → 3 ticks = 30 daño cada 0.9s.
+    public int damage = 10;
     public float damageCooldown = 0.3f; // segundos entre ticks de daño (evita sacar HP cada frame)
     public PaintColor colorType = PaintColor.Red; // seteado por playerataque al instanciar
 

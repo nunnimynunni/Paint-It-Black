@@ -194,5 +194,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Melee
   lifetime: 0.4
-  damage: 35
+  damage: 8
   colorType: 0

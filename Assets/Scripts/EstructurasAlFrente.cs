@@ -36,20 +36,14 @@ public class EstructurasAlFrente : MonoBehaviour
 
     private static EstructurasAlFrente instancia;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    // DESACTIVADO: Este script forzaba sortingOrder +10000 en casas/árboles,
+    // lo que impedía el Y-sorting correcto. Las casas ahora usan YSort igual
+    // que los personajes (correr Paint-It-Black → Restaurar Y-Sorting en el
+    // Editor para agregar YSort a las casas de la escena).
+    // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Bootstrap()
     {
-        if (instancia != null) return;
-
-        GameObject obj = new GameObject("EstructurasAlFrente");
-        instancia = obj.AddComponent<EstructurasAlFrente>();
-        Object.DontDestroyOnLoad(obj);
-
-        SceneManager.sceneLoaded += instancia.OnSceneLoaded;
-
-        // La escena ya cargada al momento del bootstrap también necesita el
-        // ajuste (sceneLoaded solo dispara para cargas futuras).
-        instancia.AplicarATodaLaEscena();
+        // no-op
     }
 
     void OnSceneLoaded(Scene escena, LoadSceneMode modo)
@@ -65,10 +59,11 @@ public class EstructurasAlFrente : MonoBehaviour
             if (sr == null) continue;
             if (!EsEstructura(sr.gameObject.name)) continue;
 
+            // Si el objeto tiene YSort, se encarga solo del sorting — no interferir.
+            if (sr.GetComponent<YSort>() != null || sr.GetComponentInParent<YSort>() != null) continue;
+
             // Evita ir sumando el offset de nuevo si esta función se vuelve a
-            // llamar sobre un objeto que ya lo tenía aplicado (por ejemplo si
-            // sceneLoaded llegara a dispararse más de una vez para la misma
-            // escena sin recargar realmente los objetos).
+            // llamar sobre un objeto que ya lo tenía aplicado.
             if (sr.sortingOrder >= OFFSET_SORTING_ORDER) continue;
 
             sr.sortingOrder += OFFSET_SORTING_ORDER;

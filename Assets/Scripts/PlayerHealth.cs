@@ -77,6 +77,7 @@ public class PlayerHealth : MonoBehaviour
         {
             buffOutlineSr.sprite = sr.sprite;
             buffOutlineSr.flipX = sr.flipX;
+            buffOutlineSr.sortingOrder = sr.sortingOrder - 1; // YSort cambia sortingOrder cada frame; el outline debe seguirlo
         }
 
         if (flashTimer <= 0f) return;

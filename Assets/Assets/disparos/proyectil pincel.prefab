@@ -181,5 +181,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   speed: 9
   lifetime: 3
-  damage: 25
+  damage: 12
   colorType: 1

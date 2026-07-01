@@ -608,7 +608,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0041503906, y: 0.00030517578}
+  m_AnchoredPosition: {x: -0.0041503906, y: 0.00024414062}
   m_SizeDelta: {x: 2281, y: 1283}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &501211775
@@ -1235,15 +1235,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31972cdd30a5d4488aad85eaf574c2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
-  audioSource: {fileID: 1552150386}
-  escenasDeMenu:
-  - 1Titulo
-  - 2Menu
-  - Opciones
-  - Display
-  - Sonido
-  - Controles
-  - Idioma
+  volumenMusica: 0.45
+  duracionFadeInInicial: 2.5
+  duracionCrossfade: 1.5
 --- !u!4 &1552150388
 Transform:
   m_ObjectHideFlags: 0

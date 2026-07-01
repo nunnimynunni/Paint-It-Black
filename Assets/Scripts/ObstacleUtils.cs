@@ -28,6 +28,10 @@ public static class ObstacleUtils
         if (other.GetComponent<NPCMovement>() != null || other.GetComponentInParent<NPCMovement>() != null)
             return false;
 
+        // El agua (río, etc.) no detiene proyectiles — las balas van por el aire.
+        if (other.GetComponent<MarcadorAgua>() != null || other.GetComponentInParent<MarcadorAgua>() != null)
+            return false;
+
         return true;
     }
 }

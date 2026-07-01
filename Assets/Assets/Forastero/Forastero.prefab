@@ -45,8 +45,9 @@ GameObject:
   - component: {fileID: 4875923185329835574}
   - component: {fileID: 1810445669120822122}
   - component: {fileID: 7258210161438439856}
+  - component: {fileID: 4495335010118205853}
   m_Layer: 0
-  m_Name: frottnguy_0
+  m_Name: Forastero
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -162,6 +163,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
   velocidad: 3
+  dodgeSpeedMultiplier: 2.5
+  dodgeDuration: 0.25
+  dodgeRecoveryDuration: 0.2
+  dodgeCooldown: 0.8
+  dodgeAnimTrigger: Dodge
 --- !u!114 &1810445669120822122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,10 +182,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::playerataque
   bulletPrefab: {fileID: 6764445537273017771, guid: a86c9527f8f12bf45826510a651d00eb, type: 3}
   firePoint: {fileID: 3607856865733994495}
+  cooldownSpray: 0.5
   projectilePrefab: {fileID: 3868822131983572928, guid: 25649c5d819d6de4881c86e2ce285cb3, type: 3}
   projectileFirePoint: {fileID: 3607856865733994495}
+  cooldownPincel: 0.25
   meleePrefab: {fileID: 7834684062949217147, guid: 5e84a8905b15d9643a3ec3d81225e136, type: 3}
   meleeFirePoint: {fileID: 3607856865733994495}
+  cooldownRodillo: 0.5
 --- !u!114 &7258210161438439856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,3 +202,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponManager
   currentWeapon: 0
+  currentColor: 0
+--- !u!70 &4495335010118205853
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7036061655297498844}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: -0.37}
+  m_Size: {x: 0.5, y: 0.4}
+  m_Direction: 0

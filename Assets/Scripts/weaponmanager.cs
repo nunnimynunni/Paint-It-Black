@@ -24,9 +24,8 @@ public class WeaponManager : MonoBehaviour
         if (Keyboard.current.digit2Key.wasPressedThisFrame) currentWeapon = WeaponType.Projectile;
         if (Keyboard.current.digit3Key.wasPressedThisFrame) currentWeapon = WeaponType.Melee;
 
-        // Control cicla entre los colores disponibles (antes era Bloq Mayús,
-        // feedback de playtest pidió cambiarlo a Control)
-        if (Keyboard.current.ctrlKey.wasPressedThisFrame)
+        // Tab cicla entre los colores disponibles
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
             CycleColor();
 
         // Feedback de playtest: "al acabarse las gotas de un color se debe
