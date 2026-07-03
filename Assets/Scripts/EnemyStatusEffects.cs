@@ -104,6 +104,8 @@ public class EnemyStatusEffects : MonoBehaviour
     // Llamado desde EnemyHealth.TakeDamage cada vez que el enemigo recibe un disparo
     public void RegisterHit(PaintColor color)
     {
+        // Durante la lluvia la pintura no tiene efecto (todo es B&W)
+        if (RainManager.Instance != null && RainManager.Instance.IsRaining) return;
         if (color == PaintColor.Gray) return; // Aguado: sin efectos, no cuenta
 
         if (!hits.ContainsKey(color)) hits[color] = 0;
@@ -200,5 +202,24 @@ public class EnemyStatusEffects : MonoBehaviour
 
         IsPoisoned = false;
         // El tinte verde se mantiene aunque el veneno termine — el color es permanente hasta la muerte
+    }
+
+    // ============================================================
+    // Llamado por RainManager cuando termina la lluvia.
+    // Limpia todos los efectos de pintura: el NPC vuelve a su estado base.
+    // ============================================================
+    public void LimpiarPorLluvia()
+    {
+        if (poisonRoutine != null) StopCoroutine(poisonRoutine);
+        if (effectRoutine != null) StopCoroutine(effectRoutine);
+        poisonRoutine = null;
+        effectRoutine = null;
+
+        hits.Clear();
+        CurrentStatus = StatusType.None;
+        IsPoisoned = false;
+        EffectIntensity = 1f;
+        CurrentBaseColor = baseColor;
+        if (sr != null) sr.color = baseColor;
     }
 }

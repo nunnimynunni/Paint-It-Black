@@ -23,9 +23,8 @@ public class EnemySpawner : MonoBehaviour
         public GameObject prefab;
         [Tooltip("A partir de qué oleada (0 = primera) empieza a aparecer este tipo")]
         public int unlockWave = 0;
-
-        [HideInInspector] public int aliveCount = 0;
-        [HideInInspector] public bool everSpawned = false;
+        // aliveCount y everSpawned se movieron a arrays privados en EnemySpawner
+        // para evitar el error de layout de serialización en builds (Unity 6).
     }
 
     [Tooltip("Pistola, Porra y Anti Disturbios. Configurar unlockWave para desbloquear gradualmente.")]
@@ -80,8 +79,10 @@ public class EnemySpawner : MonoBehaviour
     {
         if (Started) return;
         Started = true;
-        waveTimer = 0f; // la primera oleada sale enseguida
+        waveTimer = 0f;
         totalEnemiesPlanned = ComputeTotalPlanned();
+        tipoAlive   = new int[tipos.Count];
+        tipoSpawned = new bool[tipos.Count];
     }
 
     void Update()
@@ -94,8 +95,8 @@ public class EnemySpawner : MonoBehaviour
             // Drip-feed: spawnear más mientras haya cupo y queden por spawnear
             while (TotalAlive() < maxSimultaneo && waveSpawned < waveTotal)
             {
-                EnemyTypeConfig tipo = ElegirTipo(CurrentWave);
-                if (tipo == null)
+                int tipoIndex = ElegirTipoIndex(CurrentWave);
+                if (tipoIndex < 0)
                 {
                     Debug.LogWarning($"EnemySpawner: sin tipos disponibles para oleada {CurrentWave + 1}. Revisá unlockWave.");
                     break;
@@ -103,7 +104,7 @@ public class EnemySpawner : MonoBehaviour
                 Vector3 pos = spawnPoints.Count > 0
                     ? spawnPoints[Random.Range(0, spawnPoints.Count)].position
                     : GetOffscreenPosition();
-                SpawnOneAt(tipo, pos);
+                SpawnOneAt(tipoIndex, pos);
                 waveSpawned++;
             }
 
@@ -158,28 +159,30 @@ public class EnemySpawner : MonoBehaviour
         Debug.Log($"Oleada {CurrentWave + 1}: {waveTotal} enemigos en total, máx {maxSimultaneo} simultáneos.");
     }
 
-    EnemyTypeConfig ElegirTipo(int waveIndex)
+    // Devuelve el índice en 'tipos' del tipo elegido, o -1 si no hay disponibles.
+    int ElegirTipoIndex(int waveIndex)
     {
-        var disponibles = new List<EnemyTypeConfig>();
-        foreach (var t in tipos)
-            if (t.prefab != null && waveIndex >= t.unlockWave)
-                disponibles.Add(t);
-        if (disponibles.Count == 0) return null;
+        var disponibles = new List<int>();
+        for (int i = 0; i < tipos.Count; i++)
+            if (tipos[i].prefab != null && waveIndex >= tipos[i].unlockWave)
+                disponibles.Add(i);
+        if (disponibles.Count == 0) return -1;
         return disponibles[Random.Range(0, disponibles.Count)];
     }
 
-    void SpawnOneAt(EnemyTypeConfig tipo, Vector3 pos)
+    void SpawnOneAt(int tipoIndex, Vector3 pos)
     {
+        EnemyTypeConfig tipo = tipos[tipoIndex];
         GameObject obj = Instantiate(tipo.prefab, pos, Quaternion.identity);
-        tipo.aliveCount++;
-        tipo.everSpawned = true;
+        tipoAlive[tipoIndex]++;
+        tipoSpawned[tipoIndex] = true;
 
         EnemyHealth health = obj.GetComponent<EnemyHealth>();
         if (health == null) return;
 
         health.OnDeath += () =>
         {
-            tipo.aliveCount--;
+            tipoAlive[tipoIndex]--;
             enemiesKilledSoFar++;
 
             if (GameManager.Instance != null && totalEnemiesPlanned > 0)
@@ -193,7 +196,8 @@ public class EnemySpawner : MonoBehaviour
     int TotalAlive()
     {
         int total = 0;
-        foreach (var t in tipos) total += t.aliveCount;
+        if (tipoAlive != null)
+            foreach (int c in tipoAlive) total += c;
         return total;
     }
 
@@ -246,7 +250,13 @@ public class EnemySpawner : MonoBehaviour
 
     public void RecheckVictory() => CheckVictory();
 
+    // Estado de runtime por tipo (no serializado — arrays privados indexados igual que 'tipos')
+    private int[]  tipoAlive;    // cuántos enemigos de cada tipo están vivos
+    private bool[] tipoSpawned;  // si alguna vez se spawneó cada tipo
+
     private bool combateYaTermino = false;
+    // Expuesto para que RainManager sepa cuándo dejar de generar lluvia.
+    public bool CombateTerminado => combateYaTermino;
 
     void CheckVictory()
     {

@@ -50,10 +50,31 @@ public class PuzzleStructure : MonoBehaviour
 
     private bool playerInRange = false;
     private bool puzzleOpen = false;
+    private bool bloqueadaPorLluvia = false;
     private GameObject outlineObject;
+
+    // Sprite original de la casa (antes de que PintarCasa lo reemplace por "casapinta").
+    // Se cachea en Start() para poder restaurarlo si llueve.
+    private Sprite spriteOriginal;
 
     void Start()
     {
+        // Si la casa tiene HouseVisualState, éste maneja los sprites.
+        // Si no, cacheamos el sprite original como fallback.
+        HouseVisualState hvs = GetComponent<HouseVisualState>() ?? GetComponentInChildren<HouseVisualState>();
+        if (hvs != null)
+        {
+            // El puzzle se activó en esta casa → pasa a estado Arruinada
+            // (fue dañada durante el combate y el jugador debe pintarla).
+            hvs.SetEstado(HouseVisualState.Estado.Arruinada);
+        }
+        else
+        {
+            SpriteRenderer srInicio = GetComponent<SpriteRenderer>();
+            if (srInicio == null) srInicio = GetComponentInChildren<SpriteRenderer>();
+            if (srInicio != null) spriteOriginal = srInicio.sprite;
+        }
+
         CircleCollider2D col = gameObject.AddComponent<CircleCollider2D>();
         col.isTrigger = true;
         col.radius = 2f;
@@ -119,6 +140,7 @@ public class PuzzleStructure : MonoBehaviour
         }
 
         if (puzzleOpen) return;
+        if (bloqueadaPorLluvia) return; // deshabilitada mientras llueve
         if (!playerInRange) return;
 
         if (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
@@ -217,6 +239,15 @@ public class PuzzleStructure : MonoBehaviour
     // Collider2D ni el transform: misma posición, mismo tamaño de colisión.
     void PintarCasa()
     {
+        // Prioridad: usar HouseVisualState si está disponible (sistema nuevo de 3 sprites por casa).
+        HouseVisualState hvs = GetComponent<HouseVisualState>() ?? GetComponentInChildren<HouseVisualState>();
+        if (hvs != null)
+        {
+            hvs.SetEstado(HouseVisualState.Estado.Pintada);
+            return;
+        }
+
+        // Fallback: sistema antiguo (sprite único 'casapinta').
         SpriteRenderer srCasa = GetComponent<SpriteRenderer>();
         if (srCasa == null) srCasa = GetComponentInChildren<SpriteRenderer>();
         if (srCasa == null) return;
@@ -224,10 +255,9 @@ public class PuzzleStructure : MonoBehaviour
         Sprite spritePintado = EncontrarSpriteCasaPintada();
         if (spritePintado == null)
         {
-            Debug.LogWarning("PuzzleStructure: no se encontró el sprite 'casapinta' en Resources/Mapa, la casa no cambia de aspecto.");
+            Debug.LogWarning("PuzzleStructure: no se encontró el sprite 'casapinta' en Resources/Mapa.");
             return;
         }
-
         srCasa.sprite = spritePintado;
     }
 
@@ -242,6 +272,53 @@ public class PuzzleStructure : MonoBehaviour
         if (sprites != null && sprites.Length > 0)
             spriteCasaPintadaCache = sprites[0];
         return spriteCasaPintadaCache;
+    }
+
+    // ============================================================
+    // Llamado por RainManager cuando la pantalla ya está en B&W
+    // (el swap de sprite no se nota porque todo es gris).
+    // Revierte la casa a su estado sin pintar y devuelve el progreso.
+    // ============================================================
+    public void RevertirPorLluvia()
+    {
+        if (!Completed || puzzleOpen) return;
+
+        Completed = false;
+        bloqueadaPorLluvia = true; // bloquear interacción hasta que termine la lluvia
+
+        // Restaurar sprite: HouseVisualState si está disponible, si no el sprite cacheado.
+        HouseVisualState hvs = GetComponent<HouseVisualState>() ?? GetComponentInChildren<HouseVisualState>();
+        if (hvs != null)
+        {
+            // La lluvia lava la pintura, pero la casa sigue arruinada debajo.
+            hvs.SetEstado(HouseVisualState.Estado.Arruinada);
+        }
+        else
+        {
+            SpriteRenderer srCasa = GetComponent<SpriteRenderer>();
+            if (srCasa == null) srCasa = GetComponentInChildren<SpriteRenderer>();
+            if (srCasa != null && spriteOriginal != null)
+                srCasa.sprite = spriteOriginal;
+        }
+
+        // Descontar el progreso que aportó esta casa
+        if (GameManager.Instance != null)
+            GameManager.Instance.AddPaintProgress(-progresoPorCompletar);
+
+        // Ocultar outline mientras está bloqueada (se restaura al terminar la lluvia)
+        if (outlineObject != null) outlineObject.SetActive(false);
+    }
+
+    // ============================================================
+    // Llamado por RainManager cuando la lluvia termina.
+    // Vuelve a habilitar la interacción y muestra el outline amarillo.
+    // ============================================================
+    public void DesbloquearPorFinLluvia()
+    {
+        if (!bloqueadaPorLluvia) return;
+        bloqueadaPorLluvia = false;
+        if (!Completed && outlineObject != null)
+            outlineObject.SetActive(true);
     }
 
     bool IsPlayer(Collider2D other) => other.CompareTag("Player") || other.transform.root.CompareTag("Player");

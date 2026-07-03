@@ -43,6 +43,8 @@ public class MusicManager : MonoBehaviour
     // que ahora se manejan con volúmenes propios en SfxManager.
     [Header("Volumen")]
     [Range(0f, 1f)] public float volumenMusica = 0.45f;
+    [Tooltip("Volumen de la música mientras llueve (la lluvia pasa al frente)")]
+    [Range(0f, 1f)] public float volumenMusicaEnLluvia = 0.10f;
 
     [Header("Tiempos de transición")]
     public float duracionFadeInInicial = 2.5f;
@@ -58,6 +60,7 @@ public class MusicManager : MonoBehaviour
     private AudioClip clipBoss;
 
     private Coroutine rutinaActual;
+    private Coroutine duckRoutine;
 
     // Para no reiniciar un crossfade hacia la pista que ya está sonando
     // (ej: si el jugador reabre el diálogo de Gomez sin haber salido del
@@ -184,6 +187,45 @@ public class MusicManager : MonoBehaviour
         saliente.volume = 0f;
         saliente.Stop();
         entrante.volume = volumenMusica;
+    }
+
+    // ============================================================
+    // DUCKING DE LLUVIA — llamado por RainManager
+    // ============================================================
+
+    /// <summary>Baja la música gradualmente para que la lluvia pase al frente.</summary>
+    public void DuckMusica(float duracion = 2f)
+    {
+        if (duckRoutine != null) StopCoroutine(duckRoutine);
+        duckRoutine = StartCoroutine(CoroutineDuck(volumenMusicaEnLluvia, duracion));
+    }
+
+    /// <summary>Restaura la música a su volumen normal cuando termina la lluvia.</summary>
+    public void RestaurarMusica(float duracion = 2f)
+    {
+        if (duckRoutine != null) StopCoroutine(duckRoutine);
+        duckRoutine = StartCoroutine(CoroutineDuck(volumenMusica, duracion));
+    }
+
+    IEnumerator CoroutineDuck(float hasta, float duracion)
+    {
+        float desdeA = sourceA.volume;
+        float desdeB = sourceB.volume;
+        // Solo afectar las fuentes que están sonando
+        float hastaA = sourceA.isPlaying ? hasta : 0f;
+        float hastaB = sourceB.isPlaying ? hasta : 0f;
+        float t = 0f;
+        while (t < duracion)
+        {
+            t += Time.unscaledDeltaTime;
+            float pct = Mathf.SmoothStep(0f, 1f, t / duracion);
+            sourceA.volume = Mathf.Lerp(desdeA, hastaA, pct);
+            sourceB.volume = Mathf.Lerp(desdeB, hastaB, pct);
+            yield return null;
+        }
+        sourceA.volume = hastaA;
+        sourceB.volume = hastaB;
+        duckRoutine = null;
     }
 
     IEnumerator FadeVolumen(AudioSource source, float desde, float hasta, float duracion)

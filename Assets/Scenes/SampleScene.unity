@@ -3339,8 +3339,9 @@ GameObject:
   - component: {fileID: 152538383}
   - component: {fileID: 152538382}
   - component: {fileID: 152538384}
+  - component: {fileID: 152538385}
   m_Layer: 0
-  m_Name: Casa2 (1)
+  m_Name: Casa 2 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3456,7 +3457,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3145365322134157199, guid: 3071437641bbc624ca8d1dc37e9569f6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -3464,7 +3465,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.11}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &152538384
 MonoBehaviour:
@@ -3481,6 +3482,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &152538385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152538379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 2
 --- !u!1 &158289211
 GameObject:
   m_ObjectHideFlags: 0
@@ -9218,18 +9232,12 @@ MonoBehaviour:
   - nombre: Pistola
     prefab: {fileID: 4656027353169343930, guid: 4c28973c06380447bbe505cd047b4ba9, type: 3}
     unlockWave: 0
-    aliveCount: 0
-    everSpawned: 0
   - nombre: Porra
     prefab: {fileID: 1309987684844828619, guid: 5d97628d203b145cbb0438d5a7cd9cd9, type: 3}
     unlockWave: 1
-    aliveCount: 0
-    everSpawned: 0
   - nombre: Escudo
     prefab: {fileID: 5653564539445295210, guid: 341eda72d18d24850ae15ad85c28eb84, type: 3}
     unlockWave: 2
-    aliveCount: 0
-    everSpawned: 0
   totalWaves: 3
   timeBetweenWaves: 5
   maxSimultaneo: 10
@@ -9246,7 +9254,6 @@ MonoBehaviour:
   - {fileID: 320402175}
   spawnMargin: 1.5
   combatProgressShare: 0.6
-  fraccionOleadaParaPuzzle: 0.35
 --- !u!4 &401925907
 Transform:
   m_ObjectHideFlags: 0
@@ -9625,6 +9632,7 @@ GameObject:
   - component: {fileID: 452918178}
   - component: {fileID: 452918177}
   - component: {fileID: 452918180}
+  - component: {fileID: 452918181}
   m_Layer: 0
   m_Name: Casa 4
   m_TagString: Untagged
@@ -9727,7 +9735,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5462701702910662880, guid: adf2ebda0f23900458c1df4b8eca3bae, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9735,7 +9743,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.21}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &452918179
 Transform:
@@ -9767,6 +9775,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &452918181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452918176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 4
 --- !u!1 &459788448
 GameObject:
   m_ObjectHideFlags: 0
@@ -12116,7 +12137,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -23154,8 +23175,9 @@ GameObject:
   - component: {fileID: 1043789967}
   - component: {fileID: 1043789966}
   - component: {fileID: 1043789969}
+  - component: {fileID: 1043789970}
   m_Layer: 0
-  m_Name: Casa2
+  m_Name: Casa 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23256,7 +23278,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3145365322134157199, guid: 3071437641bbc624ca8d1dc37e9569f6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -23264,7 +23286,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.11}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1043789968
 Transform:
@@ -23296,6 +23318,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1043789970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043789965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 2
 --- !u!1 &1046135789
 GameObject:
   m_ObjectHideFlags: 0
@@ -24028,6 +24063,7 @@ GameObject:
   - component: {fileID: 1085588050}
   - component: {fileID: 1085588049}
   - component: {fileID: 1085588051}
+  - component: {fileID: 1085588052}
   m_Layer: 0
   m_Name: Casa 4 (1)
   m_TagString: Untagged
@@ -24145,7 +24181,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5462701702910662880, guid: adf2ebda0f23900458c1df4b8eca3bae, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -24153,7 +24189,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.21}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1085588051
 MonoBehaviour:
@@ -24170,6 +24206,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1085588052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085588046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 4
 --- !u!1 &1087019537
 GameObject:
   m_ObjectHideFlags: 0
@@ -26291,8 +26340,9 @@ GameObject:
   - component: {fileID: 1197627961}
   - component: {fileID: 1197627960}
   - component: {fileID: 1197627962}
+  - component: {fileID: 1197627963}
   m_Layer: 0
-  m_Name: Casa1 (1)
+  m_Name: Casa 1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26408,7 +26458,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3702124854129300464, guid: 8e646d44805e0404190bd4fdc2d2505f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -26416,7 +26466,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1197627962
 MonoBehaviour:
@@ -26433,6 +26483,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1197627963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1197627957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 1
 --- !u!1 &1205193851
 GameObject:
   m_ObjectHideFlags: 0
@@ -30911,8 +30974,9 @@ GameObject:
   - component: {fileID: 1408776875}
   - component: {fileID: 1408776874}
   - component: {fileID: 1408776877}
+  - component: {fileID: 1408776878}
   m_Layer: 0
-  m_Name: Casa3
+  m_Name: Casa 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31013,7 +31077,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5670196304666666116, guid: ca157cc5ac88b4b4aaaf6a333e12248f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -31021,7 +31085,7 @@ SpriteRenderer:
   m_Size: {x: 2.04, y: 1.95}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1408776876
 Transform:
@@ -31053,6 +31117,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1408776878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1408776873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 3
 --- !u!1 &1423195587
 GameObject:
   m_ObjectHideFlags: 0
@@ -31559,8 +31636,9 @@ GameObject:
   - component: {fileID: 1440815302}
   - component: {fileID: 1440815301}
   - component: {fileID: 1440815303}
+  - component: {fileID: 1440815304}
   m_Layer: 0
-  m_Name: Casa3 (1)
+  m_Name: Casa 3 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31676,7 +31754,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5670196304666666116, guid: ca157cc5ac88b4b4aaaf6a333e12248f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -31684,7 +31762,7 @@ SpriteRenderer:
   m_Size: {x: 2.04, y: 1.95}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1440815303
 MonoBehaviour:
@@ -31701,6 +31779,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1440815304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1440815298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 3
 --- !u!1 &1443614096
 GameObject:
   m_ObjectHideFlags: 0
@@ -38583,8 +38674,9 @@ GameObject:
   - component: {fileID: 1771369957}
   - component: {fileID: 1771369956}
   - component: {fileID: 1771369958}
+  - component: {fileID: 1771369959}
   m_Layer: 0
-  m_Name: Casa1 (2)
+  m_Name: Casa 1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38700,7 +38792,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3702124854129300464, guid: 8e646d44805e0404190bd4fdc2d2505f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -38708,7 +38800,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1771369958
 MonoBehaviour:
@@ -38725,6 +38817,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1771369959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1771369953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 1
 --- !u!1 &1772222230
 GameObject:
   m_ObjectHideFlags: 0
@@ -40192,8 +40297,9 @@ GameObject:
   - component: {fileID: 1832736589}
   - component: {fileID: 1832736591}
   - component: {fileID: 1832736592}
+  - component: {fileID: 1832736593}
   m_Layer: 0
-  m_Name: Casa1
+  m_Name: Casa 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40248,7 +40354,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3702124854129300464, guid: 8e646d44805e0404190bd4fdc2d2505f, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -40256,7 +40362,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1832736590
 Transform:
@@ -40334,6 +40440,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &1832736593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832736587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 1
 --- !u!1 &1837966220
 GameObject:
   m_ObjectHideFlags: 0
@@ -44751,8 +44870,9 @@ GameObject:
   - component: {fileID: 2038740420}
   - component: {fileID: 2038740419}
   - component: {fileID: 2038740421}
+  - component: {fileID: 2038740422}
   m_Layer: 0
-  m_Name: Casa2 (2)
+  m_Name: Casa 2 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44868,7 +44988,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -3145365322134157199, guid: 3071437641bbc624ca8d1dc37e9569f6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -44876,7 +44996,7 @@ SpriteRenderer:
   m_Size: {x: 2.31, y: 2.11}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!114 &2038740421
 MonoBehaviour:
@@ -44893,6 +45013,19 @@ MonoBehaviour:
   escala: 10
   ordenBase: 300
   yOffset: 0
+--- !u!114 &2038740422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2038740416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d80c755e15034f5d82923340c1b62ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
+  numeroCasa: 2
 --- !u!1 &2041507793
 GameObject:
   m_ObjectHideFlags: 0
