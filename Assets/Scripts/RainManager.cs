@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 // ============================================================
@@ -98,6 +99,38 @@ public class RainManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // Al cargar cualquier escena de nuevo (ej: el jugador pierde y reinicia
+        // sin refrescar), hay que relanzar BucleRain porque la corrutina anterior
+        // ya terminó y el EnemySpawner de la escena anterior fue destruido.
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Resetear referencia al spawner — el de la sesión anterior ya fue destruido
+        spawner = null;
+
+        // Limpiar cualquier estado de lluvia que haya quedado activo
+        // (por si el jugador perdió justo durante una lluvia)
+        IsRaining = false;
+        if (colorAdj != null)
+        {
+            colorAdj.saturation.value   = 0f;
+            colorAdj.postExposure.value = 0f;
+        }
+        if (overlayOscuro != null)
+            overlayOscuro.color = new Color(0f, 0f, 0.04f, 0f);
+        MostrarGotas(false);
+
+        // Parar la corrutina anterior (si seguía esperando o lloviendo) y lanzar una nueva
+        StopAllCoroutines();
+        StartCoroutine(BucleRain());
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
