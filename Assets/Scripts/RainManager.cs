@@ -166,7 +166,22 @@ public class RainManager : MonoBehaviour
     // ============================================================
     IEnumerator BucleRain()
     {
-        yield return new WaitUntil(() => spawner != null && spawner.Started);
+        // Si spawner es null (RainManager se creó en la escena del título,
+        // donde EnemySpawner todavía no existe), lo buscamos de nuevo en cada
+        // frame hasta encontrarlo y hasta que el combate haya arrancado.
+        yield return new WaitUntil(() =>
+        {
+            if (spawner == null) spawner = FindFirstObjectByType<EnemySpawner>();
+            return spawner != null && spawner.Started;
+        });
+
+        // La cámara activa en SampleScene puede ser distinta de la que había
+        // en la escena del título. Asegurar que tiene post-processing activo.
+        if (Camera.main != null)
+        {
+            var camData = Camera.main.GetComponent<UniversalAdditionalCameraData>();
+            if (camData != null) camData.renderPostProcessing = true;
+        }
 
         // ── Primera lluvia ─────────────────────────────────────────
         yield return new WaitForSeconds(esperaPrimeraLluvia);
@@ -412,6 +427,7 @@ public class RainManager : MonoBehaviour
         }
 
         GameObject volObj = new GameObject("RainManager_BWVolume");
+        volObj.transform.SetParent(transform); // hijo del RainManager → survives scene changes
         rainVolume = volObj.AddComponent<Volume>();
         rainVolume.isGlobal = true;
         rainVolume.priority = 100f;
@@ -433,6 +449,7 @@ public class RainManager : MonoBehaviour
     void CrearCanvasLluvia()
     {
         GameObject canvasObj = new GameObject("RainManager_Canvas");
+        canvasObj.transform.SetParent(transform); // hijo del RainManager → survives scene changes
         rainCanvas = canvasObj.AddComponent<Canvas>();
         rainCanvas.renderMode   = RenderMode.ScreenSpaceOverlay;
         rainCanvas.sortingOrder = 500;

@@ -33,6 +33,14 @@ public class YSort : MonoBehaviour
 
     private SpriteRenderer sr;
 
+    // Se inicializa yOffset en el primer LateUpdate donde los bounds sean válidos
+    // (no en Start/Awake) para evitar el caso de WebGL donde los bounds del
+    // SpriteRenderer pueden devolver (0,0,0) hasta que el motor gráfico
+    // haya renderizado al menos un frame. Si se inicializara en Start() con
+    // bounds=(0,0,0), quedaría yOffset = -transform.position.y, y referenceY=0
+    // para todos los objetos → sortingOrder=ordenBase constante → Y-sorting roto.
+    private bool yOffsetInit = false;
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -43,13 +51,20 @@ public class YSort : MonoBehaviour
     {
         if (sr == null) return;
 
-        // Base: transform.position.y (correcto para NPCs, jugador y casas,
-        // cuyo pivot coincide con los pies o con el centro de masa visual).
-        // yOffset desplaza la referencia por objeto:
-        //   - Personajes/casas: yOffset=0 (usan transform.position.y directamente)
-        //   - Árboles/arbustos: yOffset = bounds.min.y - transform.position.y
-        //     (baja la referencia hasta la base del sprite = tronco)
-        //     Se calibra con Paint-It-Black → Calibrar YSort Árboles y Arbustos.
+        // Inicializar yOffset en el primer frame donde los bounds ya sean válidos.
+        // Misma fórmula que CalibrarArbolesYSort:
+        //   - Personajes (pivot en los pies): bounds.min.y ≈ position.y → yOffset ≈ 0 ✓
+        //   - Árboles/arbustos (pivot al centro): yOffset = -mitad de altura ✓
+        if (!yOffsetInit)
+        {
+            Bounds b = sr.bounds;
+            if (b.size.y > 0.001f)
+            {
+                yOffset = b.min.y - transform.position.y;
+                yOffsetInit = true;
+            }
+        }
+
         float referenceY = transform.position.y + yOffset;
         sr.sortingOrder = ordenBase + Mathf.RoundToInt(-referenceY * escala);
     }

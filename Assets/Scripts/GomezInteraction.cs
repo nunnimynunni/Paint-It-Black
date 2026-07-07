@@ -225,6 +225,7 @@ public class GomezInteraction : MonoBehaviour
         // depende de pisar una zona del piso (WaveTriggerZone quedó deprecado).
         // ============================================================
         EnemySpawner spawner = Object.FindFirstObjectByType<EnemySpawner>();
+        Debug.Log($"[GomezInteraction] StartExit: EnemySpawner {(spawner != null ? "encontrado → arrancando oleadas" : "NO ENCONTRADO")}");
         if (spawner != null) spawner.StartWaves();
         else Debug.LogWarning("GomezInteraction: no se encontró ningún EnemySpawner en la escena para arrancar las oleadas.");
 

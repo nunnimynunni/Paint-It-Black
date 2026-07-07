@@ -72,13 +72,37 @@ public class EnemySpawner : MonoBehaviour
     private int totalEnemiesPlanned = 0;
     private int enemiesKilledSoFar  = 0;
 
-    void Start() { cam = Camera.main; }
+    void Start()
+    {
+        cam = Camera.main;
+
+        // WebGL: algunos campos del componente pueden no deserializarse correctamente
+        // desde la escena binaria. Si spawnPoints está vacío o maxSimultaneo es 0,
+        // los recuperamos en runtime para no depender de la serialización.
+        if (spawnPoints.Count == 0)
+        {
+            Debug.LogWarning("[EnemySpawner] spawnPoints vacíos en WebGL — buscando SpawnPoints por nombre...");
+            foreach (var t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+                if (t.gameObject.name.StartsWith("SpawnPoint"))
+                    spawnPoints.Add(t);
+            Debug.Log($"[EnemySpawner] SpawnPoints recuperados: {spawnPoints.Count}");
+        }
+
+        if (maxSimultaneo <= 0)
+        {
+            Debug.LogWarning("[EnemySpawner] maxSimultaneo era 0 en WebGL — usando 7 por defecto.");
+            maxSimultaneo = 7;
+        }
+    }
 
     // Llamado desde GomezInteraction.StartExit() al terminar la interacción con Gomez.
     public void StartWaves()
     {
         if (Started) return;
         Started = true;
+        Debug.Log($"[EnemySpawner] StartWaves: tipos={tipos.Count}, spawnPoints={spawnPoints.Count}");
+        for (int i = 0; i < tipos.Count; i++)
+            Debug.Log($"[EnemySpawner] tipo[{i}] '{tipos[i].nombre}' prefab={(tipos[i].prefab != null ? tipos[i].prefab.name : "NULL")} unlockWave={tipos[i].unlockWave}");
         waveTimer = 0f;
         totalEnemiesPlanned = ComputeTotalPlanned();
         tipoAlive   = new int[tipos.Count];
@@ -101,9 +125,8 @@ public class EnemySpawner : MonoBehaviour
                     Debug.LogWarning($"EnemySpawner: sin tipos disponibles para oleada {CurrentWave + 1}. Revisá unlockWave.");
                     break;
                 }
-                Vector3 pos = spawnPoints.Count > 0
-                    ? spawnPoints[Random.Range(0, spawnPoints.Count)].position
-                    : GetOffscreenPosition();
+                Transform sp = spawnPoints.Count > 0 ? spawnPoints[Random.Range(0, spawnPoints.Count)] : null;
+                Vector3 pos = (sp != null) ? sp.position : GetOffscreenPosition();
                 SpawnOneAt(tipoIndex, pos);
                 waveSpawned++;
             }
