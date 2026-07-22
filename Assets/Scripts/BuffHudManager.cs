@@ -45,8 +45,6 @@ public class BuffHudManager : MonoBehaviour
 
     private Coroutine rutinaActual;
 
-    // Segundos que se muestra la notificación en el HUD
-    const float DURACION_NOTIF = 18f;
     // Velocidad del ciclo arcoiris (ciclos por segundo, igual que el outline del jugador)
     const float VEL_ARCOIRIS = 0.5f;
     // Borde en píxeles que sobresale del panel del HUD
@@ -81,9 +79,12 @@ public class BuffHudManager : MonoBehaviour
         Image outline = esArma ? outlineArmas : outlineVida;
         if (outline != null) outline.gameObject.SetActive(true);
 
-        // Animar arcoiris durante DURACION_NOTIF segundos
+        // Animar arcoiris indefinidamente: el banner NO se auto-oculta.
+        // PlayerHealth llama OcultarBanner() cuando el outline del jugador
+        // termina (por expiración natural o por GameOver), asegurando que
+        // el cartel desaparezca exactamente al mismo tiempo que el buff.
         float tiempo = 0f;
-        while (tiempo < DURACION_NOTIF)
+        while (true)
         {
             float hue = Mathf.Repeat(tiempo * VEL_ARCOIRIS, 1f);
             Color c = Color.HSVToRGB(hue, 1f, 1f);
@@ -97,11 +98,20 @@ public class BuffHudManager : MonoBehaviour
             tiempo += Time.deltaTime;
             yield return null;
         }
+    }
 
-        // Ocultar
-        if (panelTexto != null) panelTexto.SetActive(false);
-        if (outline != null) outline.gameObject.SetActive(false);
-        rutinaActual = null;
+    // Oculta el banner y detiene la animación arcoiris.
+    // Llamado por PlayerHealth cuando el outline del jugador termina.
+    public void OcultarBanner()
+    {
+        if (rutinaActual != null)
+        {
+            StopCoroutine(rutinaActual);
+            rutinaActual = null;
+        }
+        if (panelTexto  != null) panelTexto.SetActive(false);
+        if (outlineArmas != null) outlineArmas.gameObject.SetActive(false);
+        if (outlineVida  != null) outlineVida.gameObject.SetActive(false);
     }
 
     // ── Construcción del recuadro de texto ───────────────────────────────────
@@ -123,10 +133,10 @@ public class BuffHudManager : MonoBehaviour
         // Intentar alinear con hudExploracion (barra de vida): mismo X, mismo ancho,
         // posicionado justo debajo con un gap de 6px, usando las esquinas del mundo.
         float panelX = 10f;
-        float panelY = -56f;  // fallback si no se encuentra el HUD
-        float panelW = 220f;
-        const float panelH = 38f;
-        const float gap    =  6f;
+        float panelY = -100f;  // fallback: claramente debajo de la barra de vida
+        float panelW = 240f;
+        const float panelH = 52f;
+        const float gap    = 10f;
 
         GameObject vidaObj = GameObject.Find("hudExploracion") ?? GameObject.Find("barraVida");
         if (vidaObj != null)
@@ -183,7 +193,7 @@ public class BuffHudManager : MonoBehaviour
         textoLabel.font     = px != null ? px
                             : (fuentePixel != null ? fuentePixel
                             : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"));
-        textoLabel.fontSize = px != null ? 10 : 15; // PressStart2P visualmente ~15px a size 10
+        textoLabel.fontSize = px != null ? 12 : 18; // más grande que antes (era 10/15)
 
         panelTexto.SetActive(false);
     }

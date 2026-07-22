@@ -18,6 +18,10 @@ public class Projectile : MonoBehaviour
     public float radioRebote = 6f;
     private bool yaReboto = false;
 
+    // Coraza Rebote: si este flag está activo el proyectil viaja de vuelta al
+    // jugador y puede hacerle daño. El flag lo activa EnemyCoraza.IntentarRebote.
+    private bool rebotadoAlJugador = false;
+
     private Vector2 direction;
 
     void Awake()
@@ -47,6 +51,25 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("Projectile hit: " + other.name);
+
+        // ── Proyectil rebotado: solo puede golpear al jugador ──────────────
+        if (rebotadoAlJugador)
+        {
+            PlayerHealth ph = other.GetComponent<PlayerHealth>() ?? other.GetComponentInParent<PlayerHealth>();
+            if (ph != null)
+            {
+                ph.TakeDamage(damage);
+                Destroy(gameObject);
+            }
+            else if (ObstacleUtils.EsObstaculoSolido(other))
+            {
+                Destroy(gameObject);
+            }
+            // Ignora colisiones con NPCs mientras viaja de vuelta al jugador
+            return;
+        }
+
+        // ── Flujo normal: proyectil del jugador ────────────────────────────
         EnemyHealth enemy = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
         if (enemy == null)
         {
@@ -55,6 +78,26 @@ public class Projectile : MonoBehaviour
             // atravesarlo sin efecto.
             if (ObstacleUtils.EsObstaculoSolido(other))
                 Destroy(gameObject);
+            return;
+        }
+
+        // ── Coraza Rebote: chequear si el NPC tiene coraza activa ──────────
+        EnemyCoraza coraza = enemy.GetComponent<EnemyCoraza>() ?? enemy.GetComponentInParent<EnemyCoraza>();
+        if (coraza != null && coraza.EstaActiva)
+        {
+            bool procesado = coraza.IntentarRebote(this);
+            if (procesado)
+            {
+                // Si fue redirigido al jugador (MarcarComoRebotado lo setea),
+                // el proyectil sigue volando; si fue absorbido por un NPC,
+                // IntentarRebote llamó TakeDamage internamente → destruir.
+                if (!rebotadoAlJugador)
+                    Destroy(gameObject);
+                return;
+            }
+            // Si no hubo rebote (25 % de chance): el proyectil pasa pero NO
+            // aplica daño ni efectos de pintura mientras la coraza está activa.
+            Destroy(gameObject);
             return;
         }
 
@@ -96,5 +139,21 @@ public class Projectile : MonoBehaviour
         }
 
         return mejor;
+    }
+
+    // ── API para EnemyCoraza ─────────────────────────────────────────────────
+
+    // Cambia la dirección del proyectil (llamado por EnemyCoraza para redirigir al jugador)
+    public void RebotrSetDireccion(Vector2 nuevaDir)
+    {
+        direction = nuevaDir.normalized;
+        float angle = Mathf.Atan2(nuevaDir.y, nuevaDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    }
+
+    // Marca el proyectil como rebotado: a partir de aquí solo puede dañar al jugador
+    public void MarcarComoRebotado()
+    {
+        rebotadoAlJugador = true;
     }
 }

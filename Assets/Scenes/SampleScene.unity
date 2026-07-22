@@ -9235,12 +9235,19 @@ MonoBehaviour:
   - nombre: Pistola
     prefab: {fileID: 4656027353169343930, guid: 4c28973c06380447bbe505cd047b4ba9, type: 3}
     unlockWave: 0
+    spawnWeight: 1
   - nombre: Porra
     prefab: {fileID: 1309987684844828619, guid: 5d97628d203b145cbb0438d5a7cd9cd9, type: 3}
     unlockWave: 1
+    spawnWeight: 1
   - nombre: Escudo
     prefab: {fileID: 5653564539445295210, guid: 341eda72d18d24850ae15ad85c28eb84, type: 3}
     unlockWave: 2
+    spawnWeight: 1
+  - nombre: Encerador
+    prefab: {fileID: 5612518006460599639, guid: 4ed586689e4f4dd082a9eebc2d5a12ef, type: 3}
+    unlockWave: 0
+    spawnWeight: 0.8
   totalWaves: 3
   timeBetweenWaves: 5
   maxSimultaneo: 10
@@ -30265,7 +30272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e07179e348d524d48bf4e4fd7695d2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 100
+  maxHealth: 150
   hitFlashDuration: 1
   invulnerabilityDuration: 0.6
 --- !u!4 &1383483889 stripped
@@ -31504,7 +31511,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 2.5
 --- !u!212 &1429548171
 SpriteRenderer:
   serializedVersion: 2

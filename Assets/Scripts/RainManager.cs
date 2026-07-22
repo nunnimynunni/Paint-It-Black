@@ -647,6 +647,16 @@ public class RainManager : MonoBehaviour
     // ============================================================
     void Update()
     {
+        // Detener audio de lluvia inmediatamente al perder (antes de que la escena cambie)
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+        {
+            if (audioLluvia != null && audioLluvia.isPlaying)
+            {
+                audioLluvia.Stop();
+                audioLluvia.volume = 0f;
+            }
+        }
+
         if (!IsRaining) return;
 
         float dt      = Time.deltaTime;

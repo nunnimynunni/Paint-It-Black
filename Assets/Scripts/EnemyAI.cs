@@ -59,13 +59,38 @@ public abstract class EnemyAI : MonoBehaviour
     // mientras están quietas disparando/atacando.
     protected Vector2 facing = Vector2.down;
 
-    // Histeresis de flipX: evita que el sprite se espeje rápidamente cuando el
-    // jugador oscila alrededor del eje horizontal del NPC (bug visual al disparar).
-    // Solo se permite cambiar el flip después de que pase este cooldown desde el
-    // último cambio, y solo cuando la dirección horizontal es suficientemente clara.
-    private float flipCooldown = 0f;
-    private const float FLIP_COOLDOWN_SEG = 0.55f; // más alto = menos flickering al oscilar alrededor del eje
-    private const float FLIP_DEADZONE_X   = 0.15f; // cos del ángulo mínimo para contar como "izquierda/derecha"
+    // Histeresis de flipX basada en TIEMPO: el NPC debe querer el mismo flip
+    // CONSECUTIVAMENTE durante COOLDOWN_FLIP segundos antes de que se aplique.
+    // Si en cualquier momento el deseo cambia de sentido, el contador se resetea.
+    //
+    // Guard de frame: EnceradorAI llama UpdateAnimator dos veces por frame
+    // (una via base.Update, otra al final de su propio Update). Sin el guard,
+    // Time.deltaTime se acumularía el doble de rápido para Enceradores.
+    private bool  flipDeseado       = false;
+    private float timerCambioFlip   = 0f;
+    private int   ultimoFrameFlip   = -1;
+    private const float COOLDOWN_FLIP = 1.5f; // segundos de deseo continuo antes de espejar
+
+    // Debounce de dirección: la nueva dirección debe mantenerse estable al menos
+    // FRAMES_PARA_CONFIRMAR frames antes de actualizar 'facing'.
+    // Umbral de "cambio inmediato" subido de 90° a 135°: cambios de lado horizontales
+    // (exactamente 90°) ahora pasan por debounce en lugar de aplicarse instantáneamente,
+    // eliminando la principal fuente de oscilación ante fuerzas de separación.
+    // Solo los giros de casi U-turn (≥135°) se siguen aplicando al instante.
+    private Vector2 pendingFacing       = Vector2.zero;
+    private int     pendingFacingFrames = 0;
+    private const int   FRAMES_PARA_CONFIRMAR  = 6;    // ~0.1s a 60 fps, más estable
+    private const float ANGULO_CAMBIO_INMEDIATO = 135f; // era 90°
+
+    // Empuje externo temporal (ej: onda de choque del AntiDisturbios).
+    // Tiene prioridad absoluta sobre moveDir durante timerEmpuje segundos.
+    private Vector2 empujeExterno    = Vector2.zero;
+    private float   timerEmpuje      = 0f;
+    private float   empujeVelocidad  = 8f; // unidades/s del empuje (mucho más que el walk normal)
+
+    // Referencia cacheada al componente de Coraza (solo AntiDisturbios la tiene).
+    // Se usa en FixedUpdate para reducir la velocidad mientras la coraza está activa.
+    protected EnemyCoraza coraza;
 
     protected virtual void Awake()
     {
@@ -74,12 +99,24 @@ public abstract class EnemyAI : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         health = GetComponent<EnemyHealth>();
         status = GetComponent<EnemyStatusEffects>();
+        coraza = GetComponent<EnemyCoraza>();
 
         rb.gravityScale = 0f;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
 
         ultimaPosicionRevisada = transform.position;
+    }
+
+    // Llamado por EnemyCoraza.DispararOndaChoque() para que el NPC se
+    // desplace en la dirección del empuje durante un instante breve.
+    // Es más confiable que rb.AddForce porque MovePosition tiene prioridad
+    // sobre las fuerzas aplicadas a Rigidbodies 2D con Interpolate.
+    public void RecibirEmpuje(Vector2 dir, float duracion, float velocidad = 9f)
+    {
+        empujeExterno   = dir.normalized;
+        timerEmpuje     = duracion;
+        empujeVelocidad = velocidad;
     }
 
     // ============================================================
@@ -98,9 +135,9 @@ public abstract class EnemyAI : MonoBehaviour
     private float proximaRevisionAtasco = 0f;
     private const float intervaloRevisionAtasco = 1f;
     private const float distanciaMinimaParaNoEstarAtascado = 0.15f;
-    private const float tiempoMaximoAtascado = 4f;
+    private const float tiempoMaximoAtascado = 1.5f;
 
-    void RevisarAtasco(float dt)
+    protected void RevisarAtasco(float dt)
     {
         proximaRevisionAtasco -= dt;
         if (proximaRevisionAtasco > 0f) return;
@@ -123,57 +160,83 @@ public abstract class EnemyAI : MonoBehaviour
         }
     }
 
+    // Candidatas de dirección para el ray-scan (8 ejes cardinales/diagonales)
+    private static readonly Vector2[] DIRS_DESTRABAR = {
+        Vector2.right, Vector2.left, Vector2.up, Vector2.down,
+        new Vector2( 1f,  1f) * 0.7071f, new Vector2(-1f,  1f) * 0.7071f,
+        new Vector2( 1f, -1f) * 0.7071f, new Vector2(-1f, -1f) * 0.7071f
+    };
+
     void Destrabar()
     {
-        // Calcula la dirección que más se aleja de los obstáculos cercanos.
-        // Si no hay obstáculos detectables, elige una dirección aleatoria.
-        // Usa rb.MovePosition (respeta física) con un desplazamiento pequeño
-        // para no teletransportar al NPC a través de paredes.
-        Vector2 empujeLibre = Vector2.zero;
-        int n = Physics2D.OverlapCircle(transform.position, distanciaMinimaEstructuras * 2f,
-                                        filtroEstructuras, bufferEstructuras);
-        for (int i = 0; i < n; i++)
+        // Elige la dirección con más espacio libre (raycast de 2 unidades en cada eje).
+        // Si ningún ray llega a 2 unidades libres, usa el que llega más lejos.
+        // Teleporta directamente (transform.position) en vez de rb.MovePosition:
+        // así ningún collider intermedio puede bloquear el escape de emergencia.
+        Vector2 mejorDir = Random.insideUnitCircle.normalized;
+        float mayorEspacio = -1f;
+
+        for (int i = 0; i < DIRS_DESTRABAR.Length; i++)
         {
-            Collider2D col = bufferEstructuras[i];
-            if (!ObstacleUtils.EsObstaculoSolido(col)) continue;
-            Vector2 fuera = (Vector2)transform.position - (Vector2)col.bounds.center;
-            if (fuera.sqrMagnitude > 0.0001f) empujeLibre += fuera.normalized;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, DIRS_DESTRABAR[i], 2f);
+            float espacio = (hit.collider != null) ? hit.distance : 2f;
+            if (espacio > mayorEspacio)
+            {
+                mayorEspacio = espacio;
+                mejorDir     = DIRS_DESTRABAR[i];
+            }
         }
 
-        Vector2 dir = empujeLibre.sqrMagnitude > 0.0001f
-            ? empujeLibre.normalized
-            : Random.insideUnitCircle.normalized;
-
-        rb.MovePosition(rb.position + dir * 0.5f);
+        // Empuje de 1.2 unidades en la dirección más despejada
+        transform.position = (Vector2)transform.position + mejorDir * 1.2f;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
         ultimaPosicionRevisada = transform.position;
+        tiempoAtascado = 0f;
     }
 
     protected virtual void OnEnable() => All.Add(this);
     protected virtual void OnDisable() => All.Remove(this);
 
-    protected virtual void Update()
+    // ── Lógica de movimiento sin UpdateAnimator ──────────────────────────────
+    // Separada para que subclases (EnceradorAI) puedan llamar primero la lógica
+    // de movimiento, aplicar sus propias correcciones, y luego llamar
+    // UpdateAnimator UNA SOLA VEZ con el moveDir definitivo.
+    // Devuelve false si el frame fue interceptado (GameOver, stun, empuje)
+    // y UpdateAnimator ya fue llamado internamente.
+    protected bool ActualizarMovimiento()
     {
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
         {
             moveDir = Vector2.zero;
             UpdateAnimator(moveDir);
-            return;
+            return false;
         }
 
-        // Feedback de playtest: "los enemigos no deben poder moverse ni
-        // atacar mientras tienen la animacion onhit". Tick() es quien decide
-        // tanto el movimiento como disparar/atacar en cada subclase, así que
-        // alcanza con no llamarlo mientras dure el aturdimiento del golpe.
         if (health != null && health.IsStunned)
         {
             moveDir = Vector2.zero;
             UpdateAnimator(moveDir);
-            return;
+            return false;
+        }
+
+        if (timerEmpuje > 0f)
+        {
+            timerEmpuje -= Time.deltaTime;
+            moveDir = empujeExterno;
+            UpdateAnimator(moveDir);
+            return false;
         }
 
         Tick(Time.deltaTime);
         moveDir = AplicarEvasionDeEstructuras(moveDir);
         moveDir = AplicarSeparacionDeNPCs(moveDir);
+        if (moveDir.sqrMagnitude < 0.04f) moveDir = Vector2.zero;
+        return true; // el llamador debe invocar UpdateAnimator y RevisarAtasco
+    }
+
+    protected virtual void Update()
+    {
+        if (!ActualizarMovimiento()) return;
         UpdateAnimator(moveDir);
         RevisarAtasco(Time.deltaTime);
     }
@@ -185,10 +248,14 @@ public abstract class EnemyAI : MonoBehaviour
     // quedarse frotando/clavado contra su borde mientras persigue al jugador.
     protected Vector2 AplicarEvasionDeEstructuras(Vector2 deseado)
     {
-        int n = Physics2D.OverlapCircle(transform.position, distanciaMinimaEstructuras, filtroEstructuras, bufferEstructuras);
+        // Radio de sondeo ligeramente mayor al mínimo para que el NPC detecte
+        // el obstáculo con anticipación y empiece a deslizarse antes de chocar.
+        float radioSondeo = distanciaMinimaEstructuras * 1.4f;
+        int n = Physics2D.OverlapCircle(transform.position, radioSondeo, filtroEstructuras, bufferEstructuras);
         if (n <= 0) return deseado;
 
         Vector2 empuje = Vector2.zero;
+        bool hayObstaculo = false;
         for (int i = 0; i < n; i++)
         {
             Collider2D col = bufferEstructuras[i];
@@ -197,24 +264,57 @@ public abstract class EnemyAI : MonoBehaviour
             Vector2 puntoCercano = col.ClosestPoint(transform.position);
             Vector2 fuera = (Vector2)transform.position - puntoCercano;
             float dist = fuera.magnitude;
-            if (dist < 0.0001f) continue; // ya está encima del centro, evita dividir por cero
+            if (dist < 0.0001f) continue;
 
-            float fuerza = 1f - Mathf.Clamp01(dist / distanciaMinimaEstructuras);
+            float fuerza = 1f - Mathf.Clamp01(dist / radioSondeo);
             empuje += fuera.normalized * fuerza;
+            hayObstaculo = true;
         }
 
-        if (empuje.sqrMagnitude < 0.0001f) return deseado;
+        if (!hayObstaculo || empuje.sqrMagnitude < 0.0001f) return deseado;
 
-        Vector2 resultado = deseado + empuje;
-        float magnitudDeseada = Mathf.Max(deseado.magnitude, 0.01f);
-        return resultado.sqrMagnitude > 0.0001f ? resultado.normalized * magnitudDeseada : deseado;
+        // ── Wall-sliding ────────────────────────────────────────────────────
+        // En vez de simplemente sumar el empuje al vector deseado (lo que puede
+        // dejar al NPC presionando la pared si el empuje no es suficientemente
+        // fuerte), cancelamos la componente del movimiento que va HACIA la pared
+        // y dejamos intacta la componente que desliza a lo LARGO de ella.
+        // Resultado: el NPC "resbala" pegado al borde del edificio en vez de
+        // quedarse clavado caminando contra él.
+        Vector2 normal = empuje.normalized;
+        float componenteEntrante = Vector2.Dot(deseado, normal);
+        if (componenteEntrante < 0f)
+        {
+            // Hay movimiento hacia adentro → cancelar esa parte
+            deseado -= normal * componenteEntrante;
+        }
+
+        // Empuje suave hacia afuera para cerrar la brecha si ya está rozando
+        Vector2 resultado = deseado + normal * empuje.magnitude * 0.4f;
+
+        float magnitudDeseada = Mathf.Max(moveDir.magnitude, 0.01f);
+        return resultado.sqrMagnitude > 0.0001f
+            ? resultado.normalized * magnitudDeseada
+            : deseado;
     }
 
     void FixedUpdate()
     {
         if (moveDir.sqrMagnitude > 0.0001f)
         {
-            float speed = baseMoveSpeed * (status != null ? status.MoveSpeedMultiplier : 1f);
+            float speed;
+            if (timerEmpuje > 0f)
+            {
+                // Velocidad fija del empuje externo (onda de choque, etc.)
+                // — mucho más rápida que el movimiento normal para que sea visible.
+                speed = empujeVelocidad;
+            }
+            else
+            {
+                speed = baseMoveSpeed * (status != null ? status.MoveSpeedMultiplier : 1f);
+                // La coraza del AntiDisturbios lo ralentiza: mientras está activa se mueve
+                // muy lento (se "endurece"), lo que refuerza el feedback visual del estado.
+                if (coraza != null && coraza.EstaActiva) speed *= 0.2f;
+            }
             rb.MovePosition(rb.position + moveDir.normalized * speed * Time.fixedDeltaTime);
         }
     }
@@ -287,29 +387,23 @@ public abstract class EnemyAI : MonoBehaviour
     }
 
     // Fuerza hacia dónde "mira" el NPC aunque no se esté moviendo (ej: apuntar al disparar).
-    // IMPORTANTE: si el nuevo rumbo implica un cambio horizontal de lado (flipX), pero
-    // el cooldown de flip todavía no expiró, se conserva la componente X actual para que
-    // 'facing' nunca quede desincronizado del sprite visual.  Esto resuelve dos bugs:
-    //   1. Oscilación rápida del sprite cuando el jugador cruza el eje horizontal del NPC.
-    //   2. NPC "dispara para el lado contrario" porque facing.x ya cambió pero flipX todavía no.
+    // Es el ÚNICO camino de flip inmediato: cuando el NPC apunta deliberadamente
+    // a su objetivo el sprite debe mirarlo ya, sin espera de tiempo.
     protected void FaceDirection(Vector2 dir)
     {
         if (dir.sqrMagnitude < 0.0001f) return;
-        Vector2 snapped = SnapTo8(dir);
-        if (snapped == facing) return;
-
-        // ¿El nuevo snap quiere cambiar el lado horizontal?
-        bool cambiaDeLado = snapped.x != 0 && facing.x != 0
-                            && Mathf.Sign(snapped.x) != Mathf.Sign(facing.x);
-        if (cambiaDeLado && flipCooldown > 0f)
+        facing = SnapTo8(dir);
+        if (sr != null && facing.x != 0)
         {
-            // Actualizar solo la componente Y; la X se comprometerá cuando
-            // AplicarFlip() pueda efectivamente girar el sprite.
-            facing = new Vector2(facing.x, snapped.y);
-            return;
+            bool flip = facing.x < 0;
+            // Sincronizar flipDeseado: si no lo hacemos, AplicarFlip seguiría
+            // acumulando timer en el sentido contrario al que FaceDirection impone,
+            // y eventualmente lo revertiría (bug de conflicto con EnemyPistolero).
+            flipDeseado     = flip;
+            timerCambioFlip = 0f;
+            if (sr.flipX != flip)
+                sr.flipX = flip;
         }
-
-        facing = snapped;
     }
 
     // --- Animación: igual lógica que NPCMovement pero para una dirección cualquiera ---
@@ -324,11 +418,55 @@ public abstract class EnemyAI : MonoBehaviour
         animator.SetBool("isWalkingDiagonalUp", false);
         animator.SetBool("isWalkingDiagonalDown", false);
 
-        if (flipCooldown > 0f) flipCooldown -= Time.deltaTime;
-
         if (dir.sqrMagnitude > 0.0001f)
         {
-            facing = SnapTo8(dir);
+            // ── Debounce de dirección ────────────────────────────────────────────
+            // SnapTo8 discretiza en 8 sectores de 45°. En las zonas límite entre
+            // dos sectores adyacentes, pequeñas oscilaciones del vector (por fuerzas
+            // de separación / evasión) hacen que el snap alterne entre dos valores
+            // consecutivos frame a frame, generando flickering en el animator y el
+            // sprite. El debounce exige que la nueva dirección sea estable durante
+            // FRAMES_PARA_CONFIRMAR frames antes de actualizar 'facing'.
+            // Excepción: giros ≥90° (cambios reales de dirección) se aplican ya.
+            Vector2 newSnap = SnapTo8(dir);
+            if (newSnap != facing)
+            {
+                float angleDelta = facing != Vector2.zero ? Vector2.Angle(newSnap, facing) : 180f;
+                bool cambioGrande = angleDelta >= ANGULO_CAMBIO_INMEDIATO;
+
+                if (cambioGrande)
+                {
+                    // Giro brusco → aplicar de inmediato y resetear candidato
+                    facing             = newSnap;
+                    pendingFacing      = Vector2.zero;
+                    pendingFacingFrames = 0;
+                }
+                else if (newSnap == pendingFacing)
+                {
+                    // Mismo candidato de antes: acumular frames
+                    pendingFacingFrames++;
+                    if (pendingFacingFrames >= FRAMES_PARA_CONFIRMAR)
+                    {
+                        facing             = newSnap;
+                        pendingFacing      = Vector2.zero;
+                        pendingFacingFrames = 0;
+                    }
+                    // Todavía en espera: no actualizar facing
+                }
+                else
+                {
+                    // Nuevo candidato distinto al anterior: reiniciar cuenta
+                    pendingFacing       = newSnap;
+                    pendingFacingFrames = 1;
+                }
+            }
+            else
+            {
+                // Misma dirección que facing actual: resetear candidato
+                pendingFacing       = Vector2.zero;
+                pendingFacingFrames = 0;
+            }
+            // ────────────────────────────────────────────────────────────────────
 
             if (facing == Vector2.down) { animator.SetBool("isWalkingDown", true); AplicarFlip(false); }
             else if (facing == Vector2.up) { animator.SetBool("isWalkingUp", true); AplicarFlip(false); }
@@ -349,21 +487,46 @@ public abstract class EnemyAI : MonoBehaviour
         }
         else
         {
-            // Quieto: mantiene el flip acorde a la última dirección conocida
-            AplicarFlip(facing.x < 0);
+            // Quieto: no cambiar el flip (evita flickering al cruzar el deadzone).
+            // FaceDirection() es el único que actualiza el flip cuando el NPC apunta.
+            pendingFacing       = Vector2.zero;
+            pendingFacingFrames = 0;
         }
 
         SetFacingParams(facing);
     }
 
-    // Aplica el flip con histeresis: solo cambia si el cooldown expiró y la dirección
-    // horizontal del objetivo es lo suficientemente clara (evita el shimmer al disparar).
+    // Aplica el flip con histeresis de TIEMPO: el NPC debe querer el mismo flip
+    // durante COOLDOWN_FLIP segundos seguidos antes de que sr.flipX cambie.
+    // Si el deseo oscila (izq→der→izq...), el timer se resetea y nunca llega.
+    //
+    // IMPORTANTE: nunca hace flip inmediato (eso es responsabilidad de FaceDirection).
+    // Guard de frame: evita que el doble UpdateAnimator del EnceradorAI
+    // acumule Time.deltaTime dos veces en el mismo frame.
     private void AplicarFlip(bool quiereFlip)
     {
-        if (quiereFlip == sr.flipX) return; // sin cambio: no hace falta cooldown
-        if (flipCooldown > 0f) return;       // esperando: ignorar cambio por ahora
-        sr.flipX = quiereFlip;
-        flipCooldown = FLIP_COOLDOWN_SEG;
+        // Guard: solo procesar una vez por frame
+        if (Time.frameCount == ultimoFrameFlip) return;
+        ultimoFrameFlip = Time.frameCount;
+
+        // Sin cambio: resetear timer (el flip actual ya es el correcto)
+        if (quiereFlip == sr.flipX) { timerCambioFlip = 0f; return; }
+
+        // El deseo cambió de sentido: reiniciar timer
+        if (quiereFlip != flipDeseado)
+        {
+            flipDeseado     = quiereFlip;
+            timerCambioFlip = 0f;
+            return;
+        }
+
+        // Mismo sentido que antes: acumular
+        timerCambioFlip += Time.deltaTime;
+        if (timerCambioFlip >= COOLDOWN_FLIP)
+        {
+            sr.flipX        = quiereFlip;
+            timerCambioFlip = 0f;
+        }
     }
 
     void SetFacingParams(Vector2 f)

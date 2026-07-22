@@ -23,6 +23,8 @@ public class EnemySpawner : MonoBehaviour
         public GameObject prefab;
         [Tooltip("A partir de qué oleada (0 = primera) empieza a aparecer este tipo")]
         public int unlockWave = 0;
+        [Tooltip("Peso relativo de spawn. 1 = normal, 0.3 = poco frecuente. Se usa para el Encerador.")]
+        public float spawnWeight = 1f;
         // aliveCount y everSpawned se movieron a arrays privados en EnemySpawner
         // para evitar el error de layout de serialización en builds (Unity 6).
     }
@@ -73,6 +75,19 @@ public class EnemySpawner : MonoBehaviour
     private int  waveTotal   = 0; // total de enemigos a spawnear esta oleada
     private int  waveSpawned = 0; // cuántos ya se spawnearon
 
+    // Si queda 1 solo NPC y el jugador no lo elimina en TIMEOUT_ULTIMO_NPC segundos,
+    // se le aplica la muerte automáticamente y la oleada avanza.
+    // EXCEPCIÓN: la última oleada no tiene timeout (el jugador debe limpiarla).
+    private float timerUltimoNPC = 0f;
+    private const float TIMEOUT_ULTIMO_NPC = 30f;
+
+    // Control de Encerador por oleada: exactamente 2 por oleada.
+    // Se spawnean en los slots 1 y 2 (después del primer soldado de cubierta)
+    // y siempre aparecen junto a un NPC vivo para no quedar solos en el mapa.
+    private int enceradorSpawnadosEstaOleada = 0;
+    private const int enceradorePorOleada    = 2;
+    private int  indiceEncerador = -1; // cacheado al iniciar
+
     [Tooltip("Porción de la barra de progreso de pintado que corresponde a limpiar este combate")]
     [Range(0f, 1f)] public float combatProgressShare = 0.6f;
     private int totalEnemiesPlanned = 0;
@@ -113,6 +128,11 @@ public class EnemySpawner : MonoBehaviour
         totalEnemiesPlanned = ComputeTotalPlanned();
         tipoAlive   = new int[tipos.Count];
         tipoSpawned = new bool[tipos.Count];
+
+        // Cachear el índice del Encerador una sola vez
+        indiceEncerador = -1;
+        for (int i = 0; i < tipos.Count; i++)
+            if (tipos[i].nombre.Contains("Encerador")) { indiceEncerador = i; break; }
     }
 
     void Update()
@@ -130,8 +150,18 @@ public class EnemySpawner : MonoBehaviour
                 int tipoIndex = ElegirTipoIndex(CurrentWave);
                 if (tipoIndex >= 0)
                 {
-                    Transform sp = spawnPoints.Count > 0 ? spawnPoints[Random.Range(0, spawnPoints.Count)] : null;
-                    Vector3 pos = (sp != null) ? sp.position : GetOffscreenPosition();
+                    // Los Enceradores aparecen junto a un NPC vivo para no quedar
+                    // solos entre edificios. El resto usa spawn points normales.
+                    Vector3 pos;
+                    if (tipoIndex == indiceEncerador)
+                    {
+                        pos = ObtenerPosicionCercaDeNPC();
+                    }
+                    else
+                    {
+                        Transform sp = spawnPoints.Count > 0 ? spawnPoints[Random.Range(0, spawnPoints.Count)] : null;
+                        pos = (sp != null) ? sp.position : GetOffscreenPosition();
+                    }
                     SpawnOneAt(tipoIndex, pos);
                     waveSpawned++;
                     spawnTimer = tiempoEntreSpawns;
@@ -140,6 +170,24 @@ public class EnemySpawner : MonoBehaviour
                 {
                     Debug.LogWarning($"EnemySpawner: sin tipos disponibles para oleada {CurrentWave + 1}. Revisá unlockWave.");
                 }
+            }
+
+            // Auto-eliminar el último NPC si lleva demasiado tiempo sin morir.
+            // Solo en oleadas no-finales: la última siempre la debe limpiar el jugador.
+            bool esUltimaOleada = (CurrentWave >= totalWaves - 1);
+            if (!esUltimaOleada && waveSpawned >= waveTotal && TotalAlive() == 1)
+            {
+                timerUltimoNPC += Time.deltaTime;
+                if (timerUltimoNPC >= TIMEOUT_ULTIMO_NPC)
+                {
+                    Debug.Log("[EnemySpawner] Tiempo agotado: eliminando último NPC de la oleada.");
+                    EliminarUltimoNPCVivo();
+                    timerUltimoNPC = 0f;
+                }
+            }
+            else
+            {
+                timerUltimoNPC = 0f;
             }
 
             // Oleada terminada: se spawnearon todos Y no queda ninguno vivo
@@ -190,18 +238,91 @@ public class EnemySpawner : MonoBehaviour
             : (CurrentWave + 1) * 5; // fallback si hay más de 3 oleadas
         waveSpawned = 0;
         waveActive  = true;
+        timerUltimoNPC = 0f;
+        enceradorSpawnadosEstaOleada = 0;
         Debug.Log($"Oleada {CurrentWave + 1}: {waveTotal} enemigos en total, máx {maxSimultaneo} simultáneos.");
     }
 
-    // Devuelve el índice en 'tipos' del tipo elegido, o -1 si no hay disponibles.
+    // Aplica daño letal al único NPC vivo que queda (búsqueda por EnemyHealth).
+    // Usa TakeDamage para que se ejecute la secuencia de muerte completa
+    // (drop de munición, curación al jugador, animación Defeated, etc.).
+    void EliminarUltimoNPCVivo()
+    {
+        EnemyHealth[] todos = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
+        foreach (EnemyHealth e in todos)
+        {
+            if (e == null || !e.IsAlive()) continue;
+            e.TakeDamage(99999, PaintColor.Gray);
+            break;
+        }
+    }
+
+    // Devuelve el índice en 'tipos' del tipo elegido por peso relativo, o -1 si no hay disponibles.
+    // Los Enceradores se reservan en los slots 1 y 2 (después del primer soldado de cubierta)
+    // y se excluyen del resto de la selección aleatoria para que sean exactamente 2 por oleada.
     int ElegirTipoIndex(int waveIndex)
     {
-        var disponibles = new List<int>();
+        bool enceradorDisponible = indiceEncerador >= 0
+            && tipos[indiceEncerador].prefab != null
+            && waveIndex >= tipos[indiceEncerador].unlockWave;
+
+        // Slots reservados para Encerador: posiciones 1 y 2 de la oleada
+        // (así el primer soldado normal ya está en el mapa cuando entran).
+        if (enceradorDisponible
+            && enceradorSpawnadosEstaOleada < enceradorePorOleada
+            && waveSpawned >= 1
+            && waveSpawned <= enceradorePorOleada)
+        {
+            enceradorSpawnadosEstaOleada++;
+            return indiceEncerador;
+        }
+
+        // Resto de slots: selección por peso, sin incluir al Encerador.
+        float pesoTotal = 0f;
         for (int i = 0; i < tipos.Count; i++)
-            if (tipos[i].prefab != null && waveIndex >= tipos[i].unlockWave)
-                disponibles.Add(i);
-        if (disponibles.Count == 0) return -1;
-        return disponibles[Random.Range(0, disponibles.Count)];
+        {
+            if (tipos[i].prefab == null || waveIndex < tipos[i].unlockWave) continue;
+            if (enceradorDisponible && i == indiceEncerador) continue;
+            pesoTotal += Mathf.Max(0.01f, tipos[i].spawnWeight);
+        }
+
+        if (pesoTotal <= 0f) return -1;
+
+        float r = Random.Range(0f, pesoTotal);
+        float acum = 0f;
+        for (int i = 0; i < tipos.Count; i++)
+        {
+            if (tipos[i].prefab == null || waveIndex < tipos[i].unlockWave) continue;
+            if (enceradorDisponible && i == indiceEncerador) continue;
+            acum += Mathf.Max(0.01f, tipos[i].spawnWeight);
+            if (r <= acum) return i;
+        }
+        return -1;
+    }
+
+    // Devuelve la posición de un NPC vivo al azar + un pequeño offset,
+    // para que el Encerador aparezca pegado a él y ya tenga "escolta" de entrada.
+    Vector3 ObtenerPosicionCercaDeNPC()
+    {
+        EnemyHealth[] todos = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None);
+        var candidatos = new System.Collections.Generic.List<EnemyHealth>();
+        foreach (var e in todos)
+        {
+            if (e == null || !e.IsAlive()) continue;
+            if (e.GetComponent<EnceradorAI>() != null) continue; // no spawnear junto a otro Encerador
+            candidatos.Add(e);
+        }
+
+        if (candidatos.Count > 0)
+        {
+            var elegido = candidatos[Random.Range(0, candidatos.Count)];
+            // Pequeño offset aleatorio para no quedar exactamente encima
+            Vector2 offset = Random.insideUnitCircle * 0.6f;
+            return elegido.transform.position + (Vector3)offset;
+        }
+
+        // Fallback: posición fuera de pantalla normal
+        return GetOffscreenPosition();
     }
 
     void SpawnOneAt(int tipoIndex, Vector3 pos)

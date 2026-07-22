@@ -57,6 +57,7 @@ public class EnemyHealth : MonoBehaviour
     // GameObject, se le consulta ANTES de aplicar cualquier golpe.
     // ============================================================
     private EnemyAntiDisturbios escudo;
+    private EnemyCoraza coraza; // para respetar el color gris de la coraza en LateUpdate
 
     // ============================================================
     // Feedback de playtest (énfasis del usuario): los enemigos caídos NO
@@ -93,6 +94,7 @@ public class EnemyHealth : MonoBehaviour
         anim = GetComponent<Animator>() ?? GetComponentInChildren<Animator>();
         statusEffects = GetComponent<EnemyStatusEffects>();
         escudo = GetComponent<EnemyAntiDisturbios>();
+        coraza = GetComponent<EnemyCoraza>();
         if (sr != null) colorOriginal = sr.color;
     }
 
@@ -125,17 +127,41 @@ public class EnemyHealth : MonoBehaviour
         // que el clip de animación "Defeated" no pueda revertir el tinte (sus keyframes
         // de color se evaluán antes de LateUpdate, así que LateUpdate siempre gana).
         Color baseNow = (statusEffects != null) ? statusEffects.CurrentBaseColor : colorOriginal;
+        // La Coraza Rebote tiene prioridad de color: mientras está activa el NPC
+        // se ve gris aunque LateUpdate quiera restaurar el color original o de tinte.
+        if (coraza != null && coraza.EstaActiva) baseNow = coraza.ColorActual;
+        // Tinte celeste leve mientras el NPC está encerado (feedback visual del encerado).
+        // Se aplica después de la coraza para que esta siempre gane prioridad.
+        NpcCeraEffect ceraEff = GetComponent<NpcCeraEffect>();
+        if (ceraEff != null && ceraEff.EstaEncerado)
+            baseNow = Color.Lerp(baseNow, new Color(0f, 0.85f, 0.78f, 1f), 0.22f);
         sr.color = hitTimer > 0f ? hitColor : baseNow;
     }
+
+    // Flag para el Encerador: solo recibe daño de la pintura aguada (Gray).
+    // Los demás colores no le hacen daño directo; hay que usar el aguado.
+    [Header("Vulnerabilidad especial")]
+    [Tooltip("Si está activo, el NPC solo recibe daño de proyectiles de color Gray (aguado). Usar en el Encerador.")]
+    public bool soloVulnerableAlAguado = false;
 
     public void TakeDamage(int amount, PaintColor color)
     {
         if (currentHP <= 0) return;
 
+        // Encerador: inmune a todo color excepto el aguado
+        if (soloVulnerableAlAguado && color != PaintColor.Gray) return;
+
         // GDD: escudo frontal del Anti Disturbios. Si bloquea, el golpe se
         // absorbe por completo (sin daño, sin tinte, sin efecto de color),
         // pero el NPC queda inmovilizado unos segundos como contrapartida.
         if (escudo != null && escudo.TryBloquear())
+            return;
+
+        // Inmunidad de cera al daño: si el NPC está encerado y el proyectil
+        // no es aguado (Gray), el proyectil se consume sin hacer ningún efecto.
+        // Solo el aguado penetra la capa de cera.
+        NpcCeraEffect ceraCheck = GetComponent<NpcCeraEffect>();
+        if (ceraCheck != null && ceraCheck.EstaEncerado && color != PaintColor.Gray)
             return;
 
         currentHP -= amount;
@@ -152,14 +178,23 @@ public class EnemyHealth : MonoBehaviour
         }
         stunTimer = duracionAturdimientoPorGolpe;
 
-        hitColor = PaintColorUtils.ToUnityColor(color);
-        hitColor.a = 0.6f;
-        hitTimer = 0.2f;
+        // Si llegamos hasta acá y el NPC está encerado, el color que pasó es Gray.
+        // El aguado hace daño pero sin tinte de color ni efectos de pintura.
+        bool encerado = ceraCheck != null && ceraCheck.EstaEncerado;
 
-        DamagePopup.Create(damagePopupPrefab, transform.position, amount, PaintColorUtils.ToUnityColor(color));
-
-        // Sistema de pintura: cuenta el impacto de este color, puede disparar un efecto de estado
-        if (statusEffects != null) statusEffects.RegisterHit(color);
+        if (!encerado)
+        {
+            hitColor = PaintColorUtils.ToUnityColor(color);
+            hitColor.a = 0.6f;
+            hitTimer = 0.2f;
+            DamagePopup.Create(damagePopupPrefab, transform.position, amount, PaintColorUtils.ToUnityColor(color));
+            if (statusEffects != null) statusEffects.RegisterHit(color);
+        }
+        else
+        {
+            // Aguado en encerado: daño sin efecto de color, popup gris
+            DamagePopup.Create(damagePopupPrefab, transform.position, amount, Color.gray);
+        }
 
         if (currentHP <= 0)
             Die();
@@ -250,6 +285,11 @@ public class EnemyHealth : MonoBehaviour
 
         // El collider se deja activo para que el jugador NO atraviese al enemigo caído.
 
+        // Limpiar el trigger OnHit antes de disparar Defeated: si el NPC murió
+        // en el mismo instante que recibió un golpe, ambos triggers estarían
+        // encolados y Unity podría procesar OnHit primero, impidiendo que
+        // Defeated llegue al estado correcto.
+        if (anim != null) anim.ResetTrigger("OnHit");
         if (anim != null) anim.SetTrigger("Defeated");
 
         const float tiempoTotal = 10f;

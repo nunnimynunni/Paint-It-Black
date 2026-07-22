@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1309987684844828619
+--- !u!1 &5612518006460599639
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6606793490659819728}
-  - component: {fileID: 684194978073145598}
-  - component: {fileID: 8795937016982966095}
-  - component: {fileID: 5693989818153546892}
-  - component: {fileID: 2327135312925218445}
-  - component: {fileID: 2351629384260089147}
-  - component: {fileID: 5849709469354130386}
-  - component: {fileID: 4995484527429991305}
-  - component: {fileID: 4746583414438460021}
-  - component: {fileID: 6044432845031959203}
-  - component: {fileID: 52373272376993342}
-  - component: {fileID: 5076586233753264161}
+  - component: {fileID: 6994345379329642190}
+  - component: {fileID: 3194412748774497979}
+  - component: {fileID: 4815871237619258316}
+  - component: {fileID: 3339201973827146149}
+  - component: {fileID: 7672046441253279637}
+  - component: {fileID: 6586958462639765185}
+  - component: {fileID: 5824467101829870089}
+  - component: {fileID: 2865158520408441400}
+  - component: {fileID: 7404899237734761820}
+  - component: {fileID: 5864928157897235719}
+  - component: {fileID: 7356728792901539707}
   m_Layer: 0
-  m_Name: SoldadoPorra
+  m_Name: Encerador
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6606793490659819728
+--- !u!4 &6994345379329642190
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.4817185, y: -2.055663, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &684194978073145598
+--- !u!212 &3194412748774497979
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -68,7 +67,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,27 +90,27 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -714356055, guid: 012ea7f8cfc854c429abab9865b23fdb, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.24, y: 2.24}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
---- !u!95 &8795937016982966095
+--- !u!95 &4815871237619258316
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 081817e3270e0443fbfccd40e07a7916, type: 2}
+  m_Controller: {fileID: 9100000, guid: 94bb1fd0983194dd3b87358b617af983, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -123,57 +122,14 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5693989818153546892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f2553bdc2254110bb899e1f7fcdcdd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NPCMovement
-  moveSpeed: 2
-  distanciaMinimaObstaculo: 0.6
---- !u!114 &2327135312925218445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24e6835b407226049aca561da081fa8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitBox
---- !u!114 &2351629384260089147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 75
-  damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
-  cantidadMunicionPorDrop: 10
-  porcentajeCuracionAlMorir: 0.03
-  duracionAturdimientoPorGolpe: 0.3
---- !u!50 &5849709469354130386
+--- !u!50 &3339201973827146149
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -193,13 +149,13 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!70 &4995484527429991305
+--- !u!70 &7672046441253279637
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -228,66 +184,15 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0.15}
-  m_Size: {x: 0.5, y: 0.35}
+  m_Size: {x: 0.45, y: 0.3}
   m_Direction: 0
---- !u!114 &4746583414438460021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d97d48f3b6e174798ac34d0a37e1c562, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
-  hitsToTrigger: 1
-  poisonPercentOfMaxHP: 30
-  poisonDuration: 5
-  tintStrength: 1
-  effectDuration: 12
---- !u!114 &6044432845031959203
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: badcaa2c728994e57819ee9f4d85ccd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyPorra
-  baseMoveSpeed: 1.3
-  distanciaMinimaEstructuras: 1.2
-  meleeRange: 1.1
-  detectionRange: 40
-  attackCooldown: 1
-  damage: 15
-  attackHitDelay: 0.25
---- !u!114 &52373272376993342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f68ae6514a8fc4ed3b47fd5c3ac002bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::YSort
-  escala: 10
-  ordenBase: 300
-  yOffset: 0
---- !u!61 &5076586233753264161
+--- !u!61 &6586958462639765185
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1309987684844828619}
+  m_GameObject: {fileID: 5612518006460599639}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -319,11 +224,94 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 2.24, y: 2.24}
-    newSize: {x: 2.24, y: 2.24}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Size: {x: 0.65, y: 1.1}
   m_EdgeRadius: 0
+--- !u!114 &5824467101829870089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612518006460599639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHP: 40
+  damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
+  cantidadMunicionPorDrop: 8
+  porcentajeCuracionAlMorir: 0.02
+  duracionAturdimientoPorGolpe: 0.3
+  soloVulnerableAlAguado: 1
+--- !u!114 &2865158520408441400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612518006460599639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97d48f3b6e174798ac34d0a37e1c562, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
+  hitsToTrigger: 99
+  poisonPercentOfMaxHP: 0
+  poisonDuration: 0
+  tintStrength: 0
+  effectDuration: 0
+--- !u!114 &7404899237734761820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612518006460599639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5fcf28d5ba1419698cce43d3ce09c58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnceradorAI
+  baseMoveSpeed: 2.8
+  distanciaMinimaEstructuras: 1.0
+  radioSeparacionNPCs: 1.5
+  distanciaHuida: 3.5
+  radioDeteccion: 12
+  pesoPosicionamiento: 1.2
+--- !u!114 &5864928157897235719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612518006460599639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dae4b61054749ebb661289cbbc6824e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnceradorAbility
+  radioCera: 5
+  cooldownCera: 4
+  duracionCera: 10
+--- !u!114 &7356728792901539707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612518006460599639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68ae6514a8fc4ed3b47fd5c3ac002bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::YSort
+  escala: 10
+  ordenBase: 300
+  yOffset: 0

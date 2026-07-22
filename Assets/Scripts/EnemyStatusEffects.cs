@@ -111,6 +111,15 @@ public class EnemyStatusEffects : MonoBehaviour
         if (RainManager.Instance != null && RainManager.Instance.IsRaining) return;
         if (color == PaintColor.Gray) return; // Aguado: sin efectos, no cuenta
 
+        // Coraza Rebote: mientras la coraza está activa el NPC es inmune a
+        // efectos de pintura (el tinte gris ya domina el color del sprite).
+        EnemyCoraza coraza = GetComponent<EnemyCoraza>();
+        if (coraza != null && coraza.EstaActiva) return;
+
+        // Cera del Encerador: mientras el NPC está encerado es inmune a efectos de pintura.
+        NpcCeraEffect cera = GetComponent<NpcCeraEffect>();
+        if (cera != null && cera.EstaEncerado) return;
+
         if (!hits.ContainsKey(color)) hits[color] = 0;
         hits[color]++;
 

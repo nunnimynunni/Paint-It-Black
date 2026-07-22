@@ -219,6 +219,9 @@ public class PlayerHealth : MonoBehaviour
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
         buffOutlineRoutine = null;
 
+        // Sincronizar el cartel del HUD: desaparece al mismo instante que el outline.
+        if (BuffHudManager.Instance != null) BuffHudManager.Instance.OcultarBanner();
+
         // El potenciador expiró: revertir la mejora y avisar a MusicManager.
         if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
         if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
@@ -236,6 +239,8 @@ public class PlayerHealth : MonoBehaviour
             buffOutlineRoutine = null;
         }
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
+        // Sincronizar el cartel del HUD: se oculta junto con el outline (ej: Game Over)
+        if (BuffHudManager.Instance != null) BuffHudManager.Instance.OcultarBanner();
         if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
         if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
     }

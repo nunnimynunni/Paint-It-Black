@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d97d48f3b6e174798ac34d0a37e1c562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusEffects
-  hitsToTrigger: 3
+  hitsToTrigger: 1
   poisonPercentOfMaxHP: 30
   poisonDuration: 5
   tintStrength: 1
@@ -296,15 +296,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b315261e7e749456ea93e5898e3a1e04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPistolero
-  baseMoveSpeed: 1.7
+  baseMoveSpeed: 1.3
   distanciaMinimaEstructuras: 1.2
-  minRange: 4
-  maxRange: 6
-  detectionRange: 20
+  minRange: 3
+  maxRange: 5
+  detectionRange: 40
   bulletPrefab: {fileID: 8760281517111003479, guid: bafb3c0e6908c4ce288c8347dec964e3, type: 3}
   firePoint: {fileID: 0}
   distanciaCanon: 0.55
-  shootCooldown: 1.7
+  shootCooldown: 2.8
   damage: 10
   accuracy: 0.6
   missSpreadDegrees: 18
