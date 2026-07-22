@@ -73,6 +73,10 @@ public class UpgradeSystem : MonoBehaviour
     [Tooltip("Cantidad de mejoras distintas obtenidas hasta ahora, solo informativo/debug")]
     public int MejorasObtenidas { get; private set; } = 0;
 
+    // Tipo de mejora que está activa en este momento (null si no hay buff).
+    // Se usa para revertirla cuando el outline multicolor termina.
+    private TipoMejora? mejoraBuff = null;
+
     void Awake()
     {
         Instance = this;
@@ -100,10 +104,13 @@ public class UpgradeSystem : MonoBehaviour
         TipoMejora elegida = valores[Random.Range(0, valores.Length)];
         MejorasObtenidas++;
         string mensaje = AplicarMejora(elegida);
+        mejoraBuff = elegida; // guardar para poder revertirla al terminar el buff
 
-        // Pedido del usuario: mientras dure el potenciador (outline verde) suena
-        // "Final Boss". Cuando el outline se apaga, PlayerHealth llama
-        // MusicManager.TerminarPotenciador() y vuelve a "Peleas Genericas".
+        // Notificación visual en el HUD: recuadro con el nombre del buff
+        // y outline arcoiris en el área del HUD correspondiente (armas o vida).
+        BuffHudManager.Instance.MostrarBuff(EtiquetaCorta(elegida), EsBuffDeArma(elegida));
+
+        // Mientras dure el potenciador suena "Final Boss".
         if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeABoss();
 
         return mensaje;
@@ -115,7 +122,7 @@ public class UpgradeSystem : MonoBehaviour
     // aviso visual de que se obtuvo algo; para el escudo temporal dura
     // exactamente lo mismo que protege (10s), y para la curación instantánea
     // dura un poco menos, solo a modo de aviso.
-    const float DURACION_AVISO_PERMANENTE = 60f;
+    const float DURACION_AVISO_PERMANENTE = 45f;
     const float DURACION_ESCUDO = 10f;
     const float DURACION_AVISO_CURACION = 6f;
 
@@ -181,5 +188,70 @@ public class UpgradeSystem : MonoBehaviour
         }
 
         return "Mejora desconocida";
+    }
+
+    // Devuelve true si el buff corresponde al área de armas (para que
+    // BuffHudManager sepa en qué panel del HUD mostrar el outline).
+    static bool EsBuffDeArma(TipoMejora tipo) =>
+        tipo == TipoMejora.ArmaDano ||
+        tipo == TipoMejora.ArmaCooldown ||
+        tipo == TipoMejora.ArmaVelocidadDisparo ||
+        tipo == TipoMejora.ArmaMunicion ||
+        tipo == TipoMejora.ArmaAreaEfecto;
+
+    // Etiqueta corta para mostrar en el recuadro pixelado del HUD.
+    static string EtiquetaCorta(TipoMejora tipo)
+    {
+        switch (tipo)
+        {
+            case TipoMejora.ArmaDano:                  return "Dano +15%";
+            case TipoMejora.ArmaCooldown:              return "Recarga reducida";
+            case TipoMejora.ArmaVelocidadDisparo:      return "Vel. disparo +25%";
+            case TipoMejora.ArmaMunicion:              return "Municion +10";
+            case TipoMejora.ArmaAreaEfecto:            return "Area de efecto +20%";
+            case TipoMejora.VidaCuracion:              return "+30 de vida";
+            case TipoMejora.VidaEscudoTemporal:        return "Escudo 10s";
+            case TipoMejora.VidaReduccionDano:         return "Dano recibido -10%";
+            case TipoMejora.VidaExtra:                 return "+1 vida extra";
+            case TipoMejora.PasivaVelocidadMovimiento: return "Velocidad +10%";
+            case TipoMejora.PasivaRebote:              return "Rebote de balas";
+            default:                                   return "Mejora";
+        }
+    }
+
+    // Llamado por PlayerHealth cuando el outline multicolor termina (por timer o
+    // por GameOver). Revierte los stats que se pueden deshacer; curación,
+    // escudo y vida extra no se revierten porque ya son efectos consumidos.
+    public void RevocarBuffActual()
+    {
+        if (mejoraBuff == null) return;
+        switch (mejoraBuff.Value)
+        {
+            case TipoMejora.ArmaDano:
+                ArmaDanoMultiplier = Mathf.Max(1f, ArmaDanoMultiplier - 0.15f);
+                break;
+            case TipoMejora.ArmaCooldown:
+                ArmaCooldownMultiplier = Mathf.Min(1f, ArmaCooldownMultiplier + 0.15f);
+                break;
+            case TipoMejora.ArmaVelocidadDisparo:
+                ArmaVelocidadDisparoMultiplier = Mathf.Max(1f, ArmaVelocidadDisparoMultiplier - 0.25f);
+                break;
+            case TipoMejora.ArmaAreaEfecto:
+                ArmaAreaEfectoMultiplier = Mathf.Max(1f, ArmaAreaEfectoMultiplier - 0.2f);
+                break;
+            case TipoMejora.VidaReduccionDano:
+                VidaReduccionDanoPercent = Mathf.Max(0f, VidaReduccionDanoPercent - 0.1f);
+                break;
+            case TipoMejora.PasivaVelocidadMovimiento:
+                PasivaVelocidadMovimientoMultiplier = Mathf.Max(1f, PasivaVelocidadMovimientoMultiplier - 0.1f);
+                break;
+            case TipoMejora.PasivaRebote:
+                PasivaRebote = false;
+                break;
+            // VidaCuracion, VidaEscudoTemporal, VidaExtra y ArmaMunicion
+            // no se revierten: son efectos ya consumidos o que expiran solos.
+        }
+        mejoraBuff = null;
+        MejorasObtenidas = Mathf.Max(0, MejorasObtenidas - 1);
     }
 }

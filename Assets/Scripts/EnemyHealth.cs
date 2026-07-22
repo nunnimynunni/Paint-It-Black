@@ -68,6 +68,10 @@ public class EnemyHealth : MonoBehaviour
     // del momento de morir y se la reimpone cada frame en LateUpdate mientras
     // dure la secuencia de derrota.
     // ============================================================
+    // Cooldown para el trigger OnHit: evita que golpes muy seguidos reinicien
+    // la animación indefinidamente y dejen al NPC bloqueado en ese estado.
+    private float onHitCooldown = 0f;
+
     private bool muerto = false;
     // true solo durante el fade final de desvanecimiento: evita que LateUpdate
     // sobreescriba el alpha que SecuenciaDerrota va bajando frame a frame.
@@ -105,6 +109,7 @@ public class EnemyHealth : MonoBehaviour
         }
 
         if (stunTimer > 0f) stunTimer -= Time.deltaTime;
+        if (onHitCooldown > 0f) onHitCooldown -= Time.deltaTime;
 
         if (sr == null) return;
 
@@ -138,7 +143,13 @@ public class EnemyHealth : MonoBehaviour
 
         if (SfxManager.Instance != null) SfxManager.Instance.PlayImpacto();
 
-        if (anim != null) anim.SetTrigger("OnHit");
+        // Disparar OnHit solo si el cooldown ya expiró: evita que golpes
+        // rápidos reinicien el estado indefinidamente (bug "atascado en OnHit").
+        if (anim != null && onHitCooldown <= 0f)
+        {
+            anim.SetTrigger("OnHit");
+            onHitCooldown = 0.45f;
+        }
         stunTimer = duracionAturdimientoPorGolpe;
 
         hitColor = PaintColorUtils.ToUnityColor(color);
@@ -281,27 +292,15 @@ public class EnemyHealth : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Elige el color con menos munición que tenga el jugador (excluyendo Gray, que es infinito).
-    // Si todos están llenos, usa el último color recibido como fallback.
+    // Elige un color al azar entre todos los disponibles (excluyendo Gray, que es
+    // munición infinita). Garantiza variedad visual: el suelo queda con gotas de
+    // distintos colores en vez de acumular solo uno.
     PaintColor ElegirColorParaDrop()
     {
-        if (AmmoManager.instance == null) return ultimoColorRecibido;
-
-        PaintColor mejor = ultimoColorRecibido;
-        int menorAmmo = int.MaxValue;
-
+        var colores = new System.Collections.Generic.List<PaintColor>();
         foreach (PaintColor c in System.Enum.GetValues(typeof(PaintColor)))
-        {
-            if (c == PaintColor.Gray) continue; // infinito, no tiene sentido dropear
-            int actual = AmmoManager.instance.GetAmmo(c);
-            if (actual < menorAmmo)
-            {
-                menorAmmo = actual;
-                mejor = c;
-            }
-        }
-
-        return mejor;
+            if (c != PaintColor.Gray) colores.Add(c);
+        return colores.Count > 0 ? colores[Random.Range(0, colores.Count)] : PaintColor.Red;
     }
 
     public int GetCurrentHP() => currentHP;

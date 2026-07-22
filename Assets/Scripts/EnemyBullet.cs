@@ -47,9 +47,17 @@ public class EnemyBullet : MonoBehaviour
         EnemyHealth eh = other.GetComponent<EnemyHealth>() ?? other.GetComponentInParent<EnemyHealth>();
         if (eh != null && (owner == null || eh.gameObject != owner))
         {
-            // Nota: usa Gray (Aguado) para no contar como impacto de color en fuego amigo
-            eh.TakeDamage(damage, PaintColor.Gray);
-            Destroy(gameObject);
+            // Fuego amigo solo en modo Frenzy (efecto rojo): el NPC disparador
+            // está en cólera y ataca a cualquier entidad, incluso aliados.
+            // Sin Frenzy, el proyectil pasa a través de otros NPCs sin dañarlos.
+            EnemyStatusEffects ownerStatus = owner?.GetComponent<EnemyStatusEffects>();
+            bool enFrenzy = ownerStatus != null &&
+                            ownerStatus.CurrentStatus == EnemyStatusEffects.StatusType.Frenzy;
+            if (enFrenzy)
+            {
+                eh.TakeDamage(damage, PaintColor.Gray);
+                Destroy(gameObject);
+            }
             return;
         }
 

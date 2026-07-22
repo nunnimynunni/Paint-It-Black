@@ -48,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
     // PuzzleStructure (sprite hijo, mismo shader Custom/SpriteWhiteSolid,
     // un poco más grande, detrás en sorting order). Duración máxima 30s.
     // ============================================================
-    private const float DURACION_MAXIMA_BUFF = 60f;
+    private const float DURACION_MAXIMA_BUFF = 45f;
     private GameObject buffOutlineObj;
     private SpriteRenderer buffOutlineSr;
     private Coroutine buffOutlineRoutine;
@@ -174,7 +174,9 @@ public class PlayerHealth : MonoBehaviour
         // El color lo anima OcultarBuffOutlineLuegoDe frame a frame (arcoiris)
 
         Material mat = EncontrarMaterialOutlineExistente();
-        if (mat != null) buffOutlineSr.material = mat;
+        // Instancia propia: si NPCs u otros objetos modifican el material compartido
+        // no afectan el outline del jugador (y viceversa), evitando parpadeos.
+        if (mat != null) buffOutlineSr.material = new Material(mat);
 
         buffOutlineObj.SetActive(false);
     }
@@ -217,10 +219,8 @@ public class PlayerHealth : MonoBehaviour
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
         buffOutlineRoutine = null;
 
-        // El potenciador expiró: avisar a MusicManager para que vuelva a
-        // "Peleas Genericas". Solo lo hace si todavía está en la pista del
-        // boss (si la victoria llegó antes, ya está en Exploración Color y
-        // TerminarPotenciador lo detecta y no hace nada).
+        // El potenciador expiró: revertir la mejora y avisar a MusicManager.
+        if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
         if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
     }
 
@@ -236,6 +236,7 @@ public class PlayerHealth : MonoBehaviour
             buffOutlineRoutine = null;
         }
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
+        if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
         if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
     }
 

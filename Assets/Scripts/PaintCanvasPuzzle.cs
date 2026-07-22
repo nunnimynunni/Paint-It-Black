@@ -72,6 +72,8 @@ public class PaintCanvasPuzzle : MonoBehaviour
     private PaintColor colorSeleccionado = PaintColor.Red;
     private Image[] botonesSwatch;
     private GameObject seleccionMarco;
+    private Image seleccionMarcoImg; // imagen del marco (para ciclo arcoiris)
+    private float marcoHue = 0f;
 
     private float tiempoRestante;
     private bool terminado = false;
@@ -379,16 +381,16 @@ public class PaintCanvasPuzzle : MonoBehaviour
             btn.onClick.AddListener(() => SeleccionarColor(colorActual));
         }
 
-        // Marco blanco simple que rodea el color seleccionado (placeholder de selección).
+        // Marco de selección: Image sólida y visible (más grande que el swatch)
+        // colocada DETRÁS de los swatches; el exceso de 14px sobresale como borde.
+        // El color cicla arcoiris en Update() para que sea inconfundiblemente visible.
         seleccionMarco = new GameObject("PaintPuzzle_SeleccionMarco", typeof(RectTransform));
         seleccionMarco.transform.SetParent(paletaObj.transform, false);
         RectTransform mrect = seleccionMarco.GetComponent<RectTransform>();
-        mrect.sizeDelta = new Vector2(ancho + 12f, ancho + 12f);
-        Image marcoImg = seleccionMarco.AddComponent<Image>();
-        marcoImg.color = new Color(0f, 0f, 0f, 0f); // transparente, solo deja ver el outline del Image de UI por defecto
-        Outline outline = seleccionMarco.AddComponent<Outline>();
-        outline.effectColor = Color.white;
-        outline.effectDistance = new Vector2(3f, 3f);
+        mrect.sizeDelta = new Vector2(ancho + 14f, ancho + 14f);
+        seleccionMarcoImg = seleccionMarco.AddComponent<Image>();
+        seleccionMarcoImg.color = Color.white;
+        seleccionMarcoImg.raycastTarget = false;
         seleccionMarco.transform.SetSiblingIndex(0);
 
         SeleccionarColor(paleta[0]);
@@ -399,7 +401,24 @@ public class PaintCanvasPuzzle : MonoBehaviour
         colorSeleccionado = color;
         int idx = System.Array.IndexOf(paleta, color);
         if (idx >= 0 && botonesSwatch != null && seleccionMarco != null)
+        {
             seleccionMarco.transform.position = botonesSwatch[idx].transform.position;
+            // El swatch seleccionado se escala levemente para enfatizar la selección
+            for (int i = 0; i < botonesSwatch.Length; i++)
+                botonesSwatch[i].transform.localScale = (i == idx)
+                    ? new Vector3(1.2f, 1.2f, 1f)
+                    : Vector3.one;
+        }
+    }
+
+    void Update()
+    {
+        // Ciclo arcoiris en el marco de selección de la paleta
+        if (seleccionMarcoImg != null && !terminado)
+        {
+            marcoHue = Mathf.Repeat(marcoHue + Time.deltaTime * 0.5f, 1f);
+            seleccionMarcoImg.color = Color.HSVToRGB(marcoHue, 1f, 1f);
+        }
     }
 
     void PintarCelda(int indice)

@@ -30,6 +30,12 @@ public abstract class EnemyAI : MonoBehaviour
     [Tooltip("Distancia mínima que se intenta mantener respecto a obstáculos sólidos del mapa (casas, cascada, árboles...).")]
     public float distanciaMinimaEstructuras = 0.5f;
     private static readonly Collider2D[] bufferEstructuras = new Collider2D[8];
+
+    [Header("Separación entre NPCs")]
+    [Tooltip("Radio de repulsión respecto a otros NPCs aliados. Evita que se agrupen. " +
+             "Poner 0 para deshabilitar (p.ej. Anti Disturbios que forman escudo).")]
+    public float radioSeparacionNPCs = 2.5f;
+    private static readonly Collider2D[] bufferNPCs = new Collider2D[16];
     // Physics2D.OverlapCircleNonAlloc quedó obsoleto; el reemplazo no-obsoleto
     // pide un ContactFilter2D. NoFilter() reproduce el mismo comportamiento de
     // antes (sin filtrar por capa/profundidad, incluye triggers).
@@ -58,7 +64,7 @@ public abstract class EnemyAI : MonoBehaviour
     // Solo se permite cambiar el flip después de que pase este cooldown desde el
     // último cambio, y solo cuando la dirección horizontal es suficientemente clara.
     private float flipCooldown = 0f;
-    private const float FLIP_COOLDOWN_SEG = 0.25f;
+    private const float FLIP_COOLDOWN_SEG = 0.55f; // más alto = menos flickering al oscilar alrededor del eje
     private const float FLIP_DEADZONE_X   = 0.15f; // cos del ángulo mínimo para contar como "izquierda/derecha"
 
     protected virtual void Awake()
@@ -167,6 +173,7 @@ public abstract class EnemyAI : MonoBehaviour
 
         Tick(Time.deltaTime);
         moveDir = AplicarEvasionDeEstructuras(moveDir);
+        moveDir = AplicarSeparacionDeNPCs(moveDir);
         UpdateAnimator(moveDir);
         RevisarAtasco(Time.deltaTime);
     }
@@ -387,6 +394,55 @@ public abstract class EnemyAI : MonoBehaviour
                 return;
             }
         }
+    }
+
+    // Empuja al NPC lejos de otros NPCs aliados demasiado cercanos.
+    // El Anti Disturbios puede poner radioSeparacionNPCs=0 para desactivarlo
+    // y mantener la formación de escudo.
+    Vector2 AplicarSeparacionDeNPCs(Vector2 deseado)
+    {
+        if (radioSeparacionNPCs <= 0f) return deseado;
+
+        int n = Physics2D.OverlapCircle(transform.position, radioSeparacionNPCs,
+                                        filtroEstructuras, bufferNPCs);
+        if (n <= 0) return deseado;
+
+        Vector2 empuje = Vector2.zero;
+        for (int i = 0; i < n; i++)
+        {
+            Collider2D col = bufferNPCs[i];
+            if (col == null || col.gameObject == gameObject) continue;
+
+            // Solo considerar otros NPCs, no al jugador ni estructuras
+            EnemyAI otroNPC = col.GetComponent<EnemyAI>() ?? col.GetComponentInParent<EnemyAI>();
+            if (otroNPC == null || otroNPC == this) continue;
+
+            Vector2 fuera = (Vector2)transform.position - (Vector2)col.bounds.center;
+            float dist = fuera.magnitude;
+            if (dist < 0.0001f) { empuje += Random.insideUnitCircle.normalized * 0.5f; continue; }
+
+            // Fuerza inversamente proporcional a la distancia (más cerca, más empuje)
+            float intensidad = (1f - Mathf.Clamp01(dist / radioSeparacionNPCs)) * 1.5f;
+            empuje += fuera.normalized * intensidad;
+        }
+
+        if (empuje.sqrMagnitude < 0.0001f) return deseado;
+
+        // La separación solo debe DESVIAR lateralmente al NPC, nunca hacerlo
+        // retroceder: si el empuje tiene componente en la dirección contraria al
+        // deseado, se cancela esa parte y solo queda la desviación lateral.
+        // Así el NPC siempre avanza hacia el jugador aunque esquive a sus aliados.
+        if (deseado.sqrMagnitude > 0.0001f)
+        {
+            Vector2 dirDeseada = deseado.normalized;
+            float retroceso = Vector2.Dot(empuje, -dirDeseada);
+            if (retroceso > 0f)
+                empuje += dirDeseada * retroceso; // neutralizar componente de retroceso
+        }
+
+        Vector2 resultado = deseado + empuje * 0.6f; // escalar el desvío lateral al 60%
+        float magnitudDeseada = Mathf.Max(deseado.magnitude, 0.01f);
+        return resultado.sqrMagnitude > 0.0001f ? resultado.normalized * magnitudDeseada : deseado;
     }
 
     // Redondea cualquier dirección al octante más cercano (8 direcciones)
