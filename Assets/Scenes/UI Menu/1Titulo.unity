@@ -1236,8 +1236,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicManager
   volumenMusica: 0.45
+  volumenMusicaEnLluvia: 0.07
   duracionFadeInInicial: 2.5
   duracionCrossfade: 1.5
+  pitchPeleasGenericas: 0.93
 --- !u!4 &1552150388
 Transform:
   m_ObjectHideFlags: 0
