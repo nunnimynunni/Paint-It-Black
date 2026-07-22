@@ -68,7 +68,14 @@ public class EnemyHealth : MonoBehaviour
     // del momento de morir y se la reimpone cada frame en LateUpdate mientras
     // dure la secuencia de derrota.
     // ============================================================
+    // Cooldown para el trigger OnHit: evita que golpes muy seguidos reinicien
+    // la animación indefinidamente y dejen al NPC bloqueado en ese estado.
+    private float onHitCooldown = 0f;
+
     private bool muerto = false;
+    // true solo durante el fade final de desvanecimiento: evita que LateUpdate
+    // sobreescriba el alpha que SecuenciaDerrota va bajando frame a frame.
+    private bool fadeDerrota = false;
     private Vector3 posicionAlMorir;
     // Feedback de playtest (nueva ronda): "no deben girar ni espejarse" en el
     // estado caído. Además de la posición, se fija también la rotación y el
@@ -102,13 +109,21 @@ public class EnemyHealth : MonoBehaviour
         }
 
         if (stunTimer > 0f) stunTimer -= Time.deltaTime;
+        if (onHitCooldown > 0f) onHitCooldown -= Time.deltaTime;
 
-        if (sr == null || hitTimer <= 0f) return;
+        if (sr == null) return;
+
+        // El fade final de SecuenciaDerrota controla sr.color por su cuenta:
+        // no interferir para que el alpha baje correctamente.
+        if (fadeDerrota) return;
+
         hitTimer -= Time.deltaTime;
         // OJO: al terminar el flash del golpe, NO volver al color original sin teñir.
         // Si hay un efecto de pintura activo, su tinte es la "base" actual del sprite;
-        // si volviéramos a colorOriginal lo perderíamos cada vez que pega de nuevo
-        // (esto era el bug por el cual el efecto "se desactivaba al instante").
+        // si volviéramos a colorOriginal lo perderíamos cada vez que pega de nuevo.
+        // Además, cuando muerto=true seguimos reponiendo el color en cada frame para
+        // que el clip de animación "Defeated" no pueda revertir el tinte (sus keyframes
+        // de color se evaluán antes de LateUpdate, así que LateUpdate siempre gana).
         Color baseNow = (statusEffects != null) ? statusEffects.CurrentBaseColor : colorOriginal;
         sr.color = hitTimer > 0f ? hitColor : baseNow;
     }
@@ -128,7 +143,13 @@ public class EnemyHealth : MonoBehaviour
 
         if (SfxManager.Instance != null) SfxManager.Instance.PlayImpacto();
 
-        if (anim != null) anim.SetTrigger("OnHit");
+        // Disparar OnHit solo si el cooldown ya expiró: evita que golpes
+        // rápidos reinicien el estado indefinidamente (bug "atascado en OnHit").
+        if (anim != null && onHitCooldown <= 0f)
+        {
+            anim.SetTrigger("OnHit");
+            onHitCooldown = 0.45f;
+        }
         stunTimer = duracionAturdimientoPorGolpe;
 
         hitColor = PaintColorUtils.ToUnityColor(color);
@@ -219,13 +240,15 @@ public class EnemyHealth : MonoBehaviour
         {
             rb2.linearVelocity = Vector2.zero;
             rb2.angularVelocity = 0f;
-            rb2.bodyType = RigidbodyType2D.Kinematic;
+            // IMPORTANTE: usar FreezeAll en vez de Kinematic.
+            // Los cuerpos Kinematic NO participan en la resolución de colisiones
+            // con el jugador (Dynamic), por lo que el jugador los atraviesa.
+            // Con FreezeAll el cuerpo sigue siendo Dynamic (colisiona bien)
+            // pero no puede ser movido por ninguna fuerza externa ni animación.
+            rb2.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
-        // Feedback de playtest: el jugador NO debe poder atravesar a los
-        // enemigos caídos, así que el collider se deja activo (antes se
-        // desactivaba acá). El Rigidbody2D ya se puso Kinematic arriba, así
-        // que el cuerpo no se ve empujado por física pese a seguir colisionando.
+        // El collider se deja activo para que el jugador NO atraviese al enemigo caído.
 
         if (anim != null) anim.SetTrigger("Defeated");
 
@@ -241,6 +264,15 @@ public class EnemyHealth : MonoBehaviour
 
         if (sr != null)
         {
+            // Asegurar que el fade arranca desde el color de tinte correcto
+            // (no desde el blanco que el clip Defeated pudo haber dejado).
+            Color colorBase = (statusEffects != null) ? statusEffects.CurrentBaseColor : colorOriginal;
+            sr.color = colorBase;
+
+            // A partir de acá LateUpdate no debe tocar sr.color (bajaría el alpha
+            // que estamos reduciendo frame a frame).
+            fadeDerrota = true;
+
             float t = 0f;
             Color c0 = sr.color;
             while (t < duracionFade)
@@ -260,27 +292,15 @@ public class EnemyHealth : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Elige el color con menos munición que tenga el jugador (excluyendo Gray, que es infinito).
-    // Si todos están llenos, usa el último color recibido como fallback.
+    // Elige un color al azar entre todos los disponibles (excluyendo Gray, que es
+    // munición infinita). Garantiza variedad visual: el suelo queda con gotas de
+    // distintos colores en vez de acumular solo uno.
     PaintColor ElegirColorParaDrop()
     {
-        if (AmmoManager.instance == null) return ultimoColorRecibido;
-
-        PaintColor mejor = ultimoColorRecibido;
-        int menorAmmo = int.MaxValue;
-
+        var colores = new System.Collections.Generic.List<PaintColor>();
         foreach (PaintColor c in System.Enum.GetValues(typeof(PaintColor)))
-        {
-            if (c == PaintColor.Gray) continue; // infinito, no tiene sentido dropear
-            int actual = AmmoManager.instance.GetAmmo(c);
-            if (actual < menorAmmo)
-            {
-                menorAmmo = actual;
-                mejor = c;
-            }
-        }
-
-        return mejor;
+            if (c != PaintColor.Gray) colores.Add(c);
+        return colores.Count > 0 ? colores[Random.Range(0, colores.Count)] : PaintColor.Red;
     }
 
     public int GetCurrentHP() => currentHP;

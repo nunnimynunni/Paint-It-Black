@@ -28,6 +28,7 @@ public class PlayerHealth : MonoBehaviour
     // estado placeholder "Golpeado"). Si no hay Animator en el GameObject
     // simplemente no se dispara nada (no rompe nada existente).
     private Animator animator;
+    private PlayerAnimator playerAnimator;
 
     // ============================================================
     // GDD 3.7: "Mejoras de Vida y Defensa" otorgadas por el puzzle.
@@ -47,7 +48,7 @@ public class PlayerHealth : MonoBehaviour
     // PuzzleStructure (sprite hijo, mismo shader Custom/SpriteWhiteSolid,
     // un poco más grande, detrás en sorting order). Duración máxima 30s.
     // ============================================================
-    private const float DURACION_MAXIMA_BUFF = 30f;
+    private const float DURACION_MAXIMA_BUFF = 45f;
     private GameObject buffOutlineObj;
     private SpriteRenderer buffOutlineSr;
     private Coroutine buffOutlineRoutine;
@@ -63,6 +64,7 @@ public class PlayerHealth : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         colorOriginal = sr.color;
         animator = GetComponent<Animator>();
+        playerAnimator = GetComponent<PlayerAnimator>();
     }
 
     void LateUpdate()
@@ -105,6 +107,7 @@ public class PlayerHealth : MonoBehaviour
         invulnTimer = invulnerabilityDuration;
         sr.color = Color.red;
         if (animator != null) animator.SetTrigger("OnHit");
+        playerAnimator?.TriggerFreezeOnHit();
 
         if (currentHealth <= 0)
         {
@@ -160,7 +163,7 @@ public class PlayerHealth : MonoBehaviour
 
     void CrearBuffOutline()
     {
-        buffOutlineObj = new GameObject("PlayerHealth_OutlineVerdeBeneficio");
+        buffOutlineObj = new GameObject("PlayerHealth_OutlineMulticolorBuff");
         buffOutlineObj.transform.SetParent(sr.transform, false);
         buffOutlineObj.transform.localPosition = Vector3.zero;
         buffOutlineObj.transform.localScale = new Vector3(1.06f, 1.06f, 1f);
@@ -168,10 +171,12 @@ public class PlayerHealth : MonoBehaviour
         buffOutlineSr = buffOutlineObj.AddComponent<SpriteRenderer>();
         buffOutlineSr.sprite = sr.sprite;
         buffOutlineSr.sortingOrder = sr.sortingOrder - 1;
-        buffOutlineSr.color = new Color(0.15f, 0.95f, 0.2f, 1f); // verde
+        // El color lo anima OcultarBuffOutlineLuegoDe frame a frame (arcoiris)
 
         Material mat = EncontrarMaterialOutlineExistente();
-        if (mat != null) buffOutlineSr.material = mat;
+        // Instancia propia: si NPCs u otros objetos modifican el material compartido
+        // no afectan el outline del jugador (y viceversa), evitando parpadeos.
+        if (mat != null) buffOutlineSr.material = new Material(mat);
 
         buffOutlineObj.SetActive(false);
     }
@@ -191,11 +196,48 @@ public class PlayerHealth : MonoBehaviour
         return null;
     }
 
+    // Pedido del usuario: outline multicolor tipo estrella de Mario en vez de verde fijo.
+    // El outline cicla por todo el espectro HSV a razón de 0.5 ciclos/segundo
+    // (una vuelta completa de colores cada 2 segundos), igual que la estrella de
+    // Super Mario Bros. Usa yield return null + deltaTime en vez de WaitForSeconds
+    // para poder actualizar el color cada frame mientras dura el efecto.
     IEnumerator OcultarBuffOutlineLuegoDe(float segundos)
     {
-        yield return new WaitForSeconds(segundos);
+        float tiempoRestante = segundos;
+        float hue = 0f;
+        const float velocidadArcoiris = 0.5f; // ciclos por segundo
+
+        while (tiempoRestante > 0f)
+        {
+            hue = Mathf.Repeat(hue + Time.deltaTime * velocidadArcoiris, 1f);
+            if (buffOutlineSr != null)
+                buffOutlineSr.color = Color.HSVToRGB(hue, 1f, 1f);
+            tiempoRestante -= Time.deltaTime;
+            yield return null;
+        }
+
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
         buffOutlineRoutine = null;
+
+        // El potenciador expiró: revertir la mejora y avisar a MusicManager.
+        if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
+        if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
+    }
+
+    // Pedido del usuario: "recorda cortarlo" — cortar el potenciador también
+    // al hacer Game Over (de lo contrario el coroutine se destruye con la
+    // escena sin llamar TerminarPotenciador y la música de boss sigue sonando
+    // en el menú). Llamado desde GameManager.GameOver().
+    public void TerminarBuffOutline()
+    {
+        if (buffOutlineRoutine != null)
+        {
+            StopCoroutine(buffOutlineRoutine);
+            buffOutlineRoutine = null;
+        }
+        if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
+        if (UpgradeSystem.Instance != null) UpgradeSystem.Instance.RevocarBuffActual();
+        if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
     }
 
     public int GetCurrentHealth() => currentHealth;
