@@ -43,7 +43,7 @@ using UnityEngine.EventSystems;
 public class PaintCanvasPuzzle : MonoBehaviour
 {
     private const int GRID_SIZE = 4; // 4x4 = 16 celdas: suficiente para sentir presión sin ser tedioso
-    private const float TIME_LIMIT = 35f;
+    private const float TIME_LIMIT = 20f;
 
     private static readonly PaintColor[] paleta =
     {
@@ -72,8 +72,6 @@ public class PaintCanvasPuzzle : MonoBehaviour
     private PaintColor colorSeleccionado = PaintColor.Red;
     private Image[] botonesSwatch;
     private GameObject seleccionMarco;
-    private Image seleccionMarcoImg; // imagen del marco (para ciclo arcoiris)
-    private float marcoHue = 0f;
 
     private float tiempoRestante;
     private bool terminado = false;
@@ -217,22 +215,28 @@ public class PaintCanvasPuzzle : MonoBehaviour
         // Feedback de playtest: "el titulo del minijuego se pega al timer
         // ahora". Se sube el título más arriba (antes y=300) para dejar más
         // aire respecto del timer, que se queda donde estaba.
-        titulo = CrearTexto("PaintPuzzle_Titulo", backdrop.transform, new Vector2(0f, 370f), 34,
+        titulo = CrearTexto("PaintPuzzle_Titulo", backdrop.transform, new Vector2(0f, 340f), 34,
             "Copia el Patrón bajo Presión");
+        // Feedback de playtest: "el titulo del minijuego debe tener mayor
+        // interlineado entre las oraciones". El título envuelve a 2 líneas
+        // dentro de su caja de 500px de ancho (con Best Fit), así que
+        // lineSpacing sí tiene efecto visible aunque el texto sea una sola
+        // oración. Se sube la caja en alto para que el espacio extra entre
+        // líneas no quede recortado verticalmente.
         titulo.lineSpacing = 1.5f;
-        titulo.rectTransform.sizeDelta = new Vector2(560f, 80f);
-        timerTexto = CrearTexto("PaintPuzzle_Timer", backdrop.transform, new Vector2(0f, 278f), 28,
-            "Tiempo: 35s");
+        titulo.rectTransform.sizeDelta = new Vector2(500f, 80f);
+        timerTexto = CrearTexto("PaintPuzzle_Timer", backdrop.transform, new Vector2(0f, 248f), 28,
+            "Tiempo: 20s");
 
-        // --- Referencia (izquierda) ---
-        CrearTexto("PaintPuzzle_LabelRef", backdrop.transform, new Vector2(-295f, 218f), 20, "Referencia");
-        RectTransform gridRef = CrearGrillaContenedor("PaintPuzzle_GridRef", backdrop.transform, new Vector2(-295f, 0f));
+        // --- Referencia (arriba) ---
+        CrearTexto("PaintPuzzle_LabelRef", backdrop.transform, new Vector2(-260f, 190f), 20, "Referencia");
+        RectTransform gridRef = CrearGrillaContenedor("PaintPuzzle_GridRef", backdrop.transform, new Vector2(-260f, 0f));
         Image[] celdasRef = CrearCeldas(gridRef, false);
         for (int i = 0; i < celdasRef.Length; i++) celdasRef[i].color = PaintColorUtils.ToUnityColor(patronReferencia[i]);
 
-        // --- Lienzo (derecha) ---
-        CrearTexto("PaintPuzzle_LabelLienzo", backdrop.transform, new Vector2(295f, 218f), 20, "Tu lienzo");
-        RectTransform gridLienzo = CrearGrillaContenedor("PaintPuzzle_GridLienzo", backdrop.transform, new Vector2(295f, 0f));
+        // --- Lienzo (abajo/centro-derecha) ---
+        CrearTexto("PaintPuzzle_LabelLienzo", backdrop.transform, new Vector2(260f, 190f), 20, "Tu lienzo");
+        RectTransform gridLienzo = CrearGrillaContenedor("PaintPuzzle_GridLienzo", backdrop.transform, new Vector2(260f, 0f));
         celdasLienzo = CrearCeldas(gridLienzo, true);
         for (int i = 0; i < celdasLienzo.Length; i++) celdasLienzo[i].color = PaintColorUtils.ToUnityColor(PaintColor.Gray);
 
@@ -271,7 +275,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
         obj.transform.SetParent(padre, false);
         RectTransform rect = obj.GetComponent<RectTransform>();
         rect.anchoredPosition = pos;
-        float lado = GRID_SIZE * 72f;
+        float lado = GRID_SIZE * 56f;
         rect.sizeDelta = new Vector2(lado, lado);
         return rect;
     }
@@ -283,8 +287,8 @@ public class PaintCanvasPuzzle : MonoBehaviour
     {
         int n = GRID_SIZE * GRID_SIZE;
         Image[] celdas = new Image[n];
-        float ancho = 62f;
-        float espacio = 8f;
+        float ancho = 48f;
+        float espacio = 6f;
         float total = GRID_SIZE * (ancho + espacio) - espacio;
         float inicio = -total / 2f + ancho / 2f;
 
@@ -348,12 +352,12 @@ public class PaintCanvasPuzzle : MonoBehaviour
         GameObject paletaObj = new GameObject("PaintPuzzle_Paleta", typeof(RectTransform));
         paletaObj.transform.SetParent(backdrop.transform, false);
         RectTransform rect = paletaObj.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(0f, -300f);
-        rect.sizeDelta = new Vector2(600f, 70f);
+        rect.anchoredPosition = new Vector2(0f, -260f);
+        rect.sizeDelta = new Vector2(500f, 60f);
 
         botonesSwatch = new Image[paleta.Length];
-        float ancho = 62f;
-        float espacio = 16f;
+        float ancho = 50f;
+        float espacio = 14f;
         float total = paleta.Length * (ancho + espacio) - espacio;
         float inicio = -total / 2f + ancho / 2f;
 
@@ -381,16 +385,16 @@ public class PaintCanvasPuzzle : MonoBehaviour
             btn.onClick.AddListener(() => SeleccionarColor(colorActual));
         }
 
-        // Marco de selección: Image sólida y visible (más grande que el swatch)
-        // colocada DETRÁS de los swatches; el exceso de 14px sobresale como borde.
-        // El color cicla arcoiris en Update() para que sea inconfundiblemente visible.
+        // Marco blanco simple que rodea el color seleccionado (placeholder de selección).
         seleccionMarco = new GameObject("PaintPuzzle_SeleccionMarco", typeof(RectTransform));
         seleccionMarco.transform.SetParent(paletaObj.transform, false);
         RectTransform mrect = seleccionMarco.GetComponent<RectTransform>();
-        mrect.sizeDelta = new Vector2(ancho + 14f, ancho + 14f);
-        seleccionMarcoImg = seleccionMarco.AddComponent<Image>();
-        seleccionMarcoImg.color = Color.white;
-        seleccionMarcoImg.raycastTarget = false;
+        mrect.sizeDelta = new Vector2(ancho + 10f, ancho + 10f);
+        Image marcoImg = seleccionMarco.AddComponent<Image>();
+        marcoImg.color = new Color(0f, 0f, 0f, 0f); // transparente, solo deja ver el outline del Image de UI por defecto
+        Outline outline = seleccionMarco.AddComponent<Outline>();
+        outline.effectColor = Color.white;
+        outline.effectDistance = new Vector2(3f, 3f);
         seleccionMarco.transform.SetSiblingIndex(0);
 
         SeleccionarColor(paleta[0]);
@@ -401,24 +405,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
         colorSeleccionado = color;
         int idx = System.Array.IndexOf(paleta, color);
         if (idx >= 0 && botonesSwatch != null && seleccionMarco != null)
-        {
             seleccionMarco.transform.position = botonesSwatch[idx].transform.position;
-            // El swatch seleccionado se escala levemente para enfatizar la selección
-            for (int i = 0; i < botonesSwatch.Length; i++)
-                botonesSwatch[i].transform.localScale = (i == idx)
-                    ? new Vector3(1.2f, 1.2f, 1f)
-                    : Vector3.one;
-        }
-    }
-
-    void Update()
-    {
-        // Ciclo arcoiris en el marco de selección de la paleta
-        if (seleccionMarcoImg != null && !terminado)
-        {
-            marcoHue = Mathf.Repeat(marcoHue + Time.deltaTime * 0.5f, 1f);
-            seleccionMarcoImg.color = Color.HSVToRGB(marcoHue, 1f, 1f);
-        }
     }
 
     void PintarCelda(int indice)

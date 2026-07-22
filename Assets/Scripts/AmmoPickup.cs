@@ -46,10 +46,11 @@ public class AmmoPickup : MonoBehaviour
         SpriteRenderer sr = obj.AddComponent<SpriteRenderer>();
         sr.sprite = EncontrarSpriteGota();
         sr.color = PaintColorUtils.ToUnityColor(colorGota);
-        // sortingOrder 200: siempre por encima de todos los sprites del mapa/NPCs (YSort usa ~0-100)
-        sr.sortingOrder = 200;
-        // Escala más grande para visibilidad
-        obj.transform.localScale = new Vector3(2.0f, 2.0f, 1f);
+        sr.sortingOrder = 5;
+        // Agrandada (feedback de playtest: "las gotas... están muy pequeñas,
+        // hacelas más grandes para verlas bien en el mapa", y luego "deben
+        // ser aun más grandes" — se sube de 0.95 a 1.3).
+        obj.transform.localScale = new Vector3(1.3f, 1.3f, 1f);
 
         CircleCollider2D col = obj.AddComponent<CircleCollider2D>();
         col.isTrigger = true;

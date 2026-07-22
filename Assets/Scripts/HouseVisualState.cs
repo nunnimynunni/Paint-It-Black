@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 // ============================================================
@@ -17,14 +16,10 @@ using UnityEngine;
 //
 // FLUJO DE ESTADOS:
 //   Nueva      → al iniciar el juego (sprite limpio).
-//   Arruinada  → luego de 3-5 impactos de pintura (aleatoria por casa).
+//   Arruinada  → cuando un proyectil / spray / rodillo impacta la casa,
+//                o automáticamente al activarse el puzzle en esa casa.
 //   Pintada    → cuando el jugador completa el puzzle.
-//   (La lluvia revierte Pintada/Arruinada → Nueva, reseteando el contador)
-//
-// EFECTOS EN CADA IMPACTO (independientemente del estado actual):
-//   - Rattle: pequeña vibración del transform que decae en ~0.25s.
-//   - Tinte: el sprite se tiñe por unos segundos con el color recibido;
-//     un nuevo impacto de distinto color reemplaza el tinte inmediatamente.
+//   (La lluvia revierte Pintada/Arruinada → Nueva)
 // ============================================================
 public class HouseVisualState : MonoBehaviour
 {
@@ -40,55 +35,11 @@ public class HouseVisualState : MonoBehaviour
     private Sprite spriteArruinada;
     private Sprite spritePintada;
 
-    // ============================================================
-    // RESISTENCIA AL COLOR
-    // Pedido del usuario: "recién a los 3-5 disparos recibidos cambie
-    // (que la resistencia sea aleatoria en cada casa)". La casa no
-    // transiciona a Arruinada en el primer impacto; necesita acumular
-    // entre 3 y 5 golpes (generado al Awake, distinto por instancia).
-    // ============================================================
-    private int resistencia;       // Umbral aleatorio 3–5, fijado en Awake
-    private int hitsRecibidos = 0; // Golpes acumulados (solo cuenta de Nueva)
-
-    // ============================================================
-    // RATTLE
-    // Pedido del usuario: "en esos 3 disparos recibidos en cada uno
-    // haga un muy leve rattle como movimiento de vibración corta".
-    // Oscilación con decaimiento exponencial, sin tocar el Rigidbody.
-    // ============================================================
-    [Header("Rattle")]
-    [Tooltip("Amplitud máxima del shake (unidades de mundo)")]
-    public float rattleAmplitud = 0.055f;
-    [Tooltip("Duración total del efecto de shake en segundos")]
-    public float rattleDuracion = 0.28f;
-
-    // ============================================================
-    // TINTE DE COLOR
-    // Pedido del usuario: "dependiendo del color que le impacta, al
-    // igual que los npcs, esta cambie su hue por unos segundos a dicho
-    // color recibido (si recibe otro este otro lo reemplaza)".
-    // Mismo esquema que EnemyStatusEffects: Color.Lerp entre el color
-    // original del sprite y el color de la pintura, hold + fade-out.
-    // ============================================================
-    // El tinte es PERMANENTE: se aplica al recibir un impacto y persiste
-    // hasta que la lluvia limpie la casa (SetEstado → Nueva).
-    // Los disparos enemigos (EnemyBullet) se tratan como PaintColor.Gray.
-    [Header("Tinte de color")]
-    [Tooltip("Intensidad del tinte (0 = sin efecto, 1 = color puro)")]
-    [Range(0f, 1f)] public float tintStrength = 0.55f;
-
-    private Color colorOriginal;
-    private Vector3 posicionLocalOriginal;
-    private Coroutine rattleRoutine;
-    private Coroutine tintRoutine;
-
     // ── Collider propio para detectar pintura ──────────────────
     // Solo se crea si el GameObject no tiene ningún Collider2D.
     // Las casas con PuzzleStructure ya tienen uno (lo agrega PuzzleStructure.Start),
-    // pero Awake corre antes que Start de otros scripts, así que el check
-    // puede dar false aunque PuzzleStructure lo vaya a agregar luego. El
-    // collider extra (si se crea) es Trigger = true con radio amplio, lo
-    // que no rompe nada: el de PuzzleStructure lo complementa.
+    // pero se ejecuta antes porque Awake corre antes que Start de otros scripts.
+    // Para garantizarlo, usamos Awake.
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -97,12 +48,7 @@ public class HouseVisualState : MonoBehaviour
         CargarSprites();
         AplicarSprite(Estado.Nueva);
 
-        colorOriginal        = sr != null ? sr.color : Color.white;
-        posicionLocalOriginal = transform.localPosition;
-
-        // Umbral de resistencia independiente por instancia de casa
-        resistencia = Random.Range(3, 6); // 3, 4 o 5
-
+        // Si la casa no tiene ningún collider, agregar un trigger para detectar pintura.
         if (GetComponent<Collider2D>() == null)
         {
             var col = gameObject.AddComponent<CircleCollider2D>();
@@ -127,10 +73,12 @@ public class HouseVisualState : MonoBehaviour
 
     static Sprite CargarSprite(string path)
     {
+        // Intento directo (sprite individual)
         Sprite s = Resources.Load<Sprite>(path);
         if (s != null) return s;
-        // Fallback: sprite sheet en modo Multiple. Tomamos el sub-sprite
-        // de mayor área para no confundir artefactos de auto-slicing.
+        // Fallback: sprite sheet en modo Multiple.
+        // Tomamos el sprite de mayor área para evitar artefactos de auto-slicing
+        // (el auto-slicer puede generar sub-sprites diminutos de píxeles sueltos).
         Sprite[] all = Resources.LoadAll<Sprite>(path);
         if (all == null || all.Length == 0) return null;
         Sprite mayor = all[0];
@@ -149,19 +97,6 @@ public class HouseVisualState : MonoBehaviour
     {
         EstadoActual = estado;
         AplicarSprite(estado);
-
-        // Al volver a Nueva (lluvia): resetear contador y efectos visuales
-        if (estado == Estado.Nueva)
-        {
-            hitsRecibidos = 0;
-            resistencia   = Random.Range(3, 6); // nuevo umbral para esta "vida" de la casa
-
-            // Cancelar rattle/tinte en curso y restaurar colores/posición
-            if (rattleRoutine != null) { StopCoroutine(rattleRoutine); rattleRoutine = null; }
-            if (tintRoutine   != null) { StopCoroutine(tintRoutine);   tintRoutine   = null; }
-            if (sr != null) sr.color = colorOriginal;
-            transform.localPosition = posicionLocalOriginal;
-        }
     }
 
     void AplicarSprite(Estado estado)
@@ -178,90 +113,19 @@ public class HouseVisualState : MonoBehaviour
     }
 
     // ============================================================
-    // DETECCIÓN DE PINTURA
-    // Antes: un solo impacto cambiaba el estado a Arruinada.
-    // Ahora: cada impacto produce rattle + tinte independientemente del
-    // estado actual; el cambio Nueva→Arruinada requiere 'resistencia'
-    // golpes acumulados. Las casas ya Pintadas no reaccionan (el puzzle
-    // ya las terminó; solo la lluvia puede revertirlas).
+    // DETECCIÓN DE PINTURA — cambia a Arruinada si la casa recibe
+    // un impacto de cualquier arma de pintura del jugador.
+    // No hace nada si ya está Arruinada o Pintada.
     // ============================================================
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (EstadoActual == Estado.Pintada) return;
+        if (EstadoActual != Estado.Nueva) return;
 
-        PaintColor? colorImpacto = ObtenerColorDeImpacto(other);
-        if (colorImpacto == null) return;
+        bool esPintura = other.GetComponent<Projectile>() != null
+                      || other.GetComponent<spray>()      != null
+                      || other.GetComponent<rodillo>()    != null;
 
-        // Efectos visuales en todo impacto (rattle + tinte)
-        IniciarRattle();
-        AplicarTinte(colorImpacto.Value);
-
-        // Cambio de estado: solo aplica de Nueva → Arruinada
-        if (EstadoActual == Estado.Nueva)
-        {
-            hitsRecibidos++;
-            if (hitsRecibidos >= resistencia)
-                SetEstado(Estado.Arruinada);
-        }
-    }
-
-    // Extrae el PaintColor del proyectil que produjo el impacto.
-    // Los disparos del jugador llevan su color actual; los de enemigos
-    // (EnemyBullet) se tratan como Gray para "ensuciar" la casa.
-    PaintColor? ObtenerColorDeImpacto(Collider2D other)
-    {
-        var proj = other.GetComponent<Projectile>();
-        if (proj != null) return proj.colorType;
-
-        var sp = other.GetComponent<spray>();
-        if (sp != null) return sp.colorType;
-
-        var rod = other.GetComponent<rodillo>();
-        if (rod != null) return rod.colorType;
-
-        // Bala enemiga: no tiene colorType, siempre aplica Gray
-        if (other.GetComponent<EnemyBullet>() != null) return PaintColor.Gray;
-
-        return null;
-    }
-
-    // ============================================================
-    // RATTLE — vibración breve con decaimiento en cada impacto
-    // ============================================================
-    void IniciarRattle()
-    {
-        if (rattleRoutine != null) StopCoroutine(rattleRoutine);
-        rattleRoutine = StartCoroutine(RattleCoroutine());
-    }
-
-    IEnumerator RattleCoroutine()
-    {
-        float t = 0f;
-        while (t < rattleDuracion)
-        {
-            // Amplitud decrece conforme pasa el tiempo (1 → 0)
-            float amortiguacion = 1f - (t / rattleDuracion);
-            float ox = Mathf.Sin(t * 65f)        * rattleAmplitud * amortiguacion;
-            float oy = Mathf.Sin(t * 50f + 1.3f) * rattleAmplitud * 0.35f * amortiguacion;
-            transform.localPosition = posicionLocalOriginal + new Vector3(ox, oy, 0f);
-            t += Time.deltaTime;
-            yield return null;
-        }
-        transform.localPosition = posicionLocalOriginal;
-        rattleRoutine = null;
-    }
-
-    // ============================================================
-    // TINTE DE COLOR — permanente hasta que la lluvia limpie la casa.
-    // Un impacto nuevo reemplaza el tinte anterior de inmediato.
-    // Se cancela cualquier coroutine de tinte anterior (por si alguna
-    // quedó pendiente de una versión anterior del script en caliente).
-    // ============================================================
-    void AplicarTinte(PaintColor color)
-    {
-        if (sr == null) return;
-        if (tintRoutine != null) { StopCoroutine(tintRoutine); tintRoutine = null; }
-        Color colorPintura = PaintColorUtils.ToUnityColor(color);
-        sr.color = Color.Lerp(colorOriginal, colorPintura, tintStrength);
+        if (esPintura)
+            SetEstado(Estado.Arruinada);
     }
 }

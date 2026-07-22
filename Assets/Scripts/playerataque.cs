@@ -31,13 +31,10 @@ public class playerataque : MonoBehaviour
     // "ArmaActual" 0=Pincel/1=Spray/2=Rodillo, ver estados placeholder
     // "Disparo ..."). Si no hay Animator en el GameObject no se rompe nada.
     private Animator animator;
-    // Para setear el flipX de la animación de balde según dirección del mouse
-    private PlayerAnimator playerAnim;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
-        playerAnim = GetComponent<PlayerAnimator>();
     }
 
     void Update()
@@ -113,7 +110,7 @@ public class playerataque : MonoBehaviour
 
     void SpawnSpray()
     {
-        // Sin animación de disparo: la animación actual sigue sin interrupciones.
+        DispararAnimacion(1); // 1 = Spray
         if (SfxManager.Instance != null) SfxManager.Instance.PlayAerosol();
         Vector2 dir = GetMouseDirection(firePoint);
         currentSpray = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity, firePoint);
@@ -136,7 +133,7 @@ public class playerataque : MonoBehaviour
 
     void SpawnProjectile()
     {
-        // Sin animación de disparo: la animación actual sigue sin interrupciones.
+        DispararAnimacion(0); // 0 = Pincel
         if (SfxManager.Instance != null) SfxManager.Instance.PlayPincelazo();
         Vector2 dir = GetMouseDirection(projectileFirePoint);
         GameObject bullet = Instantiate(projectilePrefab, projectileFirePoint.position, Quaternion.identity);
@@ -154,7 +151,7 @@ public class playerataque : MonoBehaviour
 
     void SpawnMelee()
     {
-        // Sin animación de disparo: la animación actual sigue sin interrupciones.
+        DispararAnimacion(2); // 2 = Rodillo
         if (SfxManager.Instance != null) SfxManager.Instance.PlayRodillo();
         Vector2 dir = GetMouseDirection(meleeFirePoint);
         float offset = 1f;

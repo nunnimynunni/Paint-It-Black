@@ -103,12 +103,12 @@ TextureImporter:
       name: frottnguy_0
       rect:
         serializedVersion: 2
-        x: 24
-        y: 14
-        width: 88
-        height: 112
+        x: 23
+        y: 13
+        width: 90
+        height: 114
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 55767aae25c354f79891cf5e9a1c6378
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 

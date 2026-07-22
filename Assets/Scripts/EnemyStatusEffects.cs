@@ -19,7 +19,7 @@ public class EnemyStatusEffects : MonoBehaviour
 
     [Header("Config")]
     [Tooltip("Cantidad de impactos del mismo color para activar el efecto")]
-    public int hitsToTrigger = 1;
+    public int hitsToTrigger = 3;
     [Tooltip("Cuánta vida máxima (%) pierde por veneno, repartida durante poisonDuration")]
     public float poisonPercentOfMaxHP = 30f;
     // Feedback de playtest: "el color del efecto de color aplicado a los
@@ -30,11 +30,8 @@ public class EnemyStatusEffects : MonoBehaviour
     public float poisonDuration = 10f;
     [Tooltip("Qué tan fuerte se nota el tinte de color sobre el sprite original")]
     [Range(0f, 1f)] public float tintStrength = 1.0f;
-    // Feedback de playtest: "el color debe quedar por bastante tiempo impregnado en el npc afectado".
-    // Subido de 12s a 45s para que el efecto dure visualmente mucho más, permitiendo al jugador
-    // aprovechar las ventanas de comportamiento alterado (pacificado/miedo/lento).
-    [Tooltip("Cuánto dura un efecto de comportamiento (Frenzy/Pacificado/Miedo/Lento) antes de volver a la normalidad.")]
-    public float effectDuration = 45f;
+    [Tooltip("Cuánto dura un efecto de comportamiento (Frenzy/Pacificado/Miedo/Lento) antes de volver a la normalidad. Se reinicia si vuelve a juntar 5 impactos del mismo color mientras está activo.")]
+    public float effectDuration = 12f;
 
     public StatusType CurrentStatus { get; private set; } = StatusType.None;
     public bool IsPoisoned { get; private set; } = false;
@@ -135,20 +132,16 @@ public class EnemyStatusEffects : MonoBehaviour
         {
             case PaintColor.Red:
                 CurrentStatus = StatusType.Frenzy;
-                // Rojo: permanente hasta la muerte del NPC (no se resetea por timer)
+                // Efecto permanente: no se resetea con el tiempo, dura hasta la muerte del NPC
                 break;
             case PaintColor.Yellow:
                 CurrentStatus = StatusType.Pacified;
-                // Dura effectDuration segundos; cada nuevo impacto del mismo color reinicia el timer
-                RestartEffectTimer();
                 break;
             case PaintColor.Purple:
                 CurrentStatus = StatusType.Fear;
-                RestartEffectTimer();
                 break;
             case PaintColor.Blue:
                 CurrentStatus = StatusType.Slow;
-                RestartEffectTimer();
                 break;
             case PaintColor.Green:
                 // El veneno corre en paralelo, no pisa el estado de comportamiento actual

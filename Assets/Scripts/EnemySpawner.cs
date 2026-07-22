@@ -62,12 +62,6 @@ public class EnemySpawner : MonoBehaviour
     private Camera cam;
     private float waveTimer = 0f;
 
-    [Header("Spawn progresivo")]
-    [Tooltip("Segundos mínimos entre cada spawn individual dentro de la oleada. " +
-             "Evita que todos los NPCs salgan de golpe.")]
-    public float tiempoEntreSpawns = 0.7f;
-    private float spawnTimer = 0f;
-
     // Estado del drip-feed de la oleada activa
     private bool waveActive  = false;
     private int  waveTotal   = 0; // total de enemigos a spawnear esta oleada
@@ -122,24 +116,19 @@ public class EnemySpawner : MonoBehaviour
 
         if (waveActive)
         {
-            // Drip-feed progresivo: un NPC cada tiempoEntreSpawns segundos,
-            // siempre que haya cupo y queden por spawnear.
-            spawnTimer -= Time.deltaTime;
-            if (TotalAlive() < maxSimultaneo && waveSpawned < waveTotal && spawnTimer <= 0f)
+            // Drip-feed: spawnear más mientras haya cupo y queden por spawnear
+            while (TotalAlive() < maxSimultaneo && waveSpawned < waveTotal)
             {
                 int tipoIndex = ElegirTipoIndex(CurrentWave);
-                if (tipoIndex >= 0)
-                {
-                    Transform sp = spawnPoints.Count > 0 ? spawnPoints[Random.Range(0, spawnPoints.Count)] : null;
-                    Vector3 pos = (sp != null) ? sp.position : GetOffscreenPosition();
-                    SpawnOneAt(tipoIndex, pos);
-                    waveSpawned++;
-                    spawnTimer = tiempoEntreSpawns;
-                }
-                else
+                if (tipoIndex < 0)
                 {
                     Debug.LogWarning($"EnemySpawner: sin tipos disponibles para oleada {CurrentWave + 1}. Revisá unlockWave.");
+                    break;
                 }
+                Transform sp = spawnPoints.Count > 0 ? spawnPoints[Random.Range(0, spawnPoints.Count)] : null;
+                Vector3 pos = (sp != null) ? sp.position : GetOffscreenPosition();
+                SpawnOneAt(tipoIndex, pos);
+                waveSpawned++;
             }
 
             // Oleada terminada: se spawnearon todos Y no queda ninguno vivo

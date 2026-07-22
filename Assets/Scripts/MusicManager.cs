@@ -37,22 +37,18 @@ public class MusicManager : MonoBehaviour
     // Controles, Idioma, etc.) se trata como "menú" y suena el Intro.
     const string ESCENA_JUEGO = "SampleScene";
 
-    // Pedido del usuario: "toda debe estar un poco más bajo de volumen".
+    // Pedido del usuario: "que todos los sonidos y las musicas convivan
+    // bien". Se bajó un poco la música base (de 0.6 a 0.45) para que quede
+    // de fondo sin tapar los SFX puntuales (aerosol, pincelazo, impacto),
+    // que ahora se manejan con volúmenes propios en SfxManager.
     [Header("Volumen")]
-    [Range(0f, 1f)] public float volumenMusica = 0.28f;
+    [Range(0f, 1f)] public float volumenMusica = 0.45f;
     [Tooltip("Volumen de la música mientras llueve (la lluvia pasa al frente)")]
-    [Range(0f, 1f)] public float volumenMusicaEnLluvia = 0.07f;
+    [Range(0f, 1f)] public float volumenMusicaEnLluvia = 0.10f;
 
     [Header("Tiempos de transición")]
     public float duracionFadeInInicial = 2.5f;
     public float duracionCrossfade = 1.5f;
-
-    // Pedido del usuario: "Peleas genéricas" ligeramente ralentizada para
-    // que no sea tan intensa. Unity no tiene control de tempo independiente
-    // del pitch, así que se baja el pitch mínimamente (0.93 ≈ un semitono
-    // más grave, apenas perceptible pero reduce la energía del track).
-    [Header("Pitch de pelea")]
-    [Range(0.7f, 1f)] public float pitchPeleasGenericas = 0.93f;
 
     private AudioSource sourceA;
     private AudioSource sourceB;
@@ -62,7 +58,6 @@ public class MusicManager : MonoBehaviour
     private AudioClip clipExploracionByN;
     private AudioClip clipExploracionColor;
     private AudioClip clipBoss;
-    private AudioClip clipPeleasGenericas;
 
     private Coroutine rutinaActual;
     private Coroutine duckRoutine;
@@ -90,11 +85,10 @@ public class MusicManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        clipIntro            = Resources.Load<AudioClip>("Audio/Music/Intro");
-        clipExploracionByN   = Resources.Load<AudioClip>("Audio/Music/ExploracionByN");
+        clipIntro = Resources.Load<AudioClip>("Audio/Music/Intro");
+        clipExploracionByN = Resources.Load<AudioClip>("Audio/Music/ExploracionByN");
         clipExploracionColor = Resources.Load<AudioClip>("Audio/Music/ExploracionColor");
-        clipBoss             = Resources.Load<AudioClip>("Audio/Music/FinalBoss");
-        clipPeleasGenericas  = Resources.Load<AudioClip>("Audio/Music/PeleasGenericas");
+        clipBoss = Resources.Load<AudioClip>("Audio/Music/FinalBoss");
 
         sourceA = gameObject.AddComponent<AudioSource>();
         sourceB = gameObject.AddComponent<AudioSource>();
@@ -147,36 +141,14 @@ public class MusicManager : MonoBehaviour
         Crossfade(ClipParaEscena(escena.name));
     }
 
-    // ============================================================
-    // API PÚBLICA — llamados desde el resto del juego
-    // ============================================================
-
-    // Llamado desde GomezInteraction.StartExit() cuando Gomez sale y
-    // arrancan las oleadas. Suena "Peleas genéricas" ligeramente más lenta.
-    public void CrossfadeAPeleasGenericas()
-    {
-        Crossfade(clipPeleasGenericas);
-    }
-
-    // Llamado desde UpgradeSystem.OtorgarMejoraAleatoria() cuando el
-    // jugador gana el puzzle y queda potenciado (verde). Sube la tensión
-    // con "Final Boss" mientras dure el potenciador.
+    // Llamado desde GomezInteraction al iniciarse el diálogo (inicio de la interacción).
     public void CrossfadeABoss()
     {
         Crossfade(clipBoss);
     }
 
-    // Llamado desde PlayerHealth.OcultarBuffOutlineLuegoDe() cuando el
-    // potenciador expira. Vuelve a Peleas Genericas, pero solo si todavía
-    // estamos en la pista del boss (si la victoria llegó antes, ya habrá
-    // hecho crossfade a Exploración Color y no queremos pisarlo).
-    public void TerminarPotenciador()
-    {
-        if (clipObjetivoActual == clipBoss)
-            Crossfade(clipPeleasGenericas);
-    }
-
-    // Llamado desde EnemySpawner.CheckVictory() al ganar la oleada.
+    // Llamado desde EnemySpawner.CheckVictory() al ganar la oleada: el pueblo
+    // ya recuperó color, así que vuelve a la exploración en color (no a la BYN).
     public void CrossfadeAExploracion()
     {
         Crossfade(clipExploracionColor);
@@ -193,8 +165,7 @@ public class MusicManager : MonoBehaviour
         AudioSource entrante = activaEsA ? sourceB : sourceA;
         activaEsA = !activaEsA;
 
-        entrante.clip  = nuevoClip;
-        entrante.pitch = nuevoClip == clipPeleasGenericas ? pitchPeleasGenericas : 1f;
+        entrante.clip = nuevoClip;
         entrante.volume = 0f;
         entrante.Play();
 
@@ -255,21 +226,6 @@ public class MusicManager : MonoBehaviour
         sourceA.volume = hastaA;
         sourceB.volume = hastaB;
         duckRoutine = null;
-    }
-
-    void Update()
-    {
-        // Garantiza loop instantáneo: si la fuente activa dejó de sonar
-        // (los .mp3 pueden tener silencio al final que produce un corte
-        // breve aunque loop = true esté activo), se reinicia desde el
-        // principio en el mismo frame sin esperar al sistema de Unity.
-        AudioSource activa = activaEsA ? sourceA : sourceB;
-        if (activa.clip != null && activa.clip == clipObjetivoActual
-            && !activa.isPlaying && activa.volume > 0.01f)
-        {
-            activa.timeSamples = 0;
-            activa.Play();
-        }
     }
 
     IEnumerator FadeVolumen(AudioSource source, float desde, float hasta, float duracion)

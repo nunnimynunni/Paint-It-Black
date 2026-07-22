@@ -105,15 +105,6 @@ public class SfxManager : MonoBehaviour
         if (clipRodillo != null) sourceOneShot.PlayOneShot(clipRodillo, volumenRodillo);
     }
 
-    // Detiene todos los SFX en curso. Se llama al hacer GameOver para que los
-    // sonidos de impacto que estaban en cola (PlayOneShot permite solapar muchas
-    // instancias) no sigan sonando por encima de la pantalla de derrota/menú.
-    public void DetenerTodo()
-    {
-        if (sourceOneShot != null) sourceOneShot.Stop();
-        if (sourcePisadas != null) sourcePisadas.Stop();
-    }
-
     public void IniciarPisadas()
     {
         if (sourcePisadas != null && clipPisadas != null && !sourcePisadas.isPlaying)
