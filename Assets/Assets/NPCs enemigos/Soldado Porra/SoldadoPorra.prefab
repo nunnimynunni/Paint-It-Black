@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 100
+  maxHP: 1
   damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
   cantidadMunicionPorDrop: 10
   porcentajeCuracionAlMorir: 0.03
@@ -280,6 +280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::YSort
   escala: 10
   ordenBase: 300
+  yOffset: 0
 --- !u!61 &5076586233753264161
 BoxCollider2D:
   m_ObjectHideFlags: 0

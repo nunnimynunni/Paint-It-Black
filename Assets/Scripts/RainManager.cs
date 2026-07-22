@@ -237,11 +237,75 @@ public class RainManager : MonoBehaviour
 
     IEnumerator SecuenciaLluvia()
     {
+        yield return StartCoroutine(PreLluvia());
         yield return StartCoroutine(IniciarLluvia());
         relampagosRoutine = StartCoroutine(BucleRelampagos());
         yield return new WaitForSeconds(rainDuration);
         if (relampagosRoutine != null) { StopCoroutine(relampagosRoutine); relampagosRoutine = null; }
         yield return StartCoroutine(TerminarLluvia());
+    }
+
+    // ============================================================
+    // PRE-LLUVIA: 2-3 relámpagos aislados con trueno antes de que
+    // arranque la lluvia de verdad. Sin gotas, sin B&W todavía.
+    // El jugador siente que se viene la tormenta antes de que llegue.
+    // ============================================================
+    [Header("Pre-lluvia")]
+    [Tooltip("Cantidad de relámpagos aislados antes de que arranque la lluvia")]
+    public int preRainRelampagos = 3;
+    [Tooltip("Pausa mínima entre relámpagos de pre-lluvia (seg)")]
+    public float preRainMinInterval = 2f;
+    [Tooltip("Pausa máxima entre relámpagos de pre-lluvia (seg)")]
+    public float preRainMaxInterval = 4f;
+
+    IEnumerator PreLluvia()
+    {
+        // Guardamos los valores originales para restaurarlos antes de IniciarLluvia()
+        float oscuridadOriginal   = oscuridadMaxima;
+        float postExposureOriginal = postExposureTarget;
+
+        // Pausa inicial antes del primer relámpago
+        yield return new WaitForSeconds(Random.Range(preRainMinInterval, preRainMaxInterval));
+
+        for (int i = 0; i < preRainRelampagos; i++)
+        {
+            // Cada relámpago usa una oscuridad progresivamente mayor (de 20% a 75% del valor final).
+            // Así el primero es tenue y el último ya se siente amenazante, sin llegar al máximo
+            // que solo ocurre cuando la lluvia arranca de verdad.
+            float t = (i + 1f) / preRainRelampagos;
+            oscuridadMaxima    = Mathf.Lerp(oscuridadOriginal * 0.2f,    oscuridadOriginal * 0.75f,    t);
+            postExposureTarget = Mathf.Lerp(postExposureOriginal * 0.2f, postExposureOriginal * 0.75f, t);
+
+            yield return StartCoroutine(FlashRelampago());
+
+            // Después de cada relámpago el overlay no vuelve a 0 del todo:
+            // queda en un nivel ambiental acumulado (nubes que se van cerrando).
+            // El último relámpago deja el cielo al 30% de oscuridad final,
+            // así el fade de IniciarLluvia() no parte de 0 sino de ahí.
+            float oscuridadAmbiental = Mathf.Lerp(0f, oscuridadOriginal * 0.3f, t);
+            if (overlayOscuro != null)
+            {
+                float desde = overlayOscuro.color.a;
+                float ft = 0f;
+                while (ft < 1f)
+                {
+                    ft += Time.deltaTime / 1.5f;
+                    if (overlayOscuro != null)
+                        overlayOscuro.color = new Color(0f, 0f, 0.04f, Mathf.Lerp(desde, oscuridadAmbiental, ft));
+                    yield return null;
+                }
+            }
+
+            if (i < preRainRelampagos - 1)
+                yield return new WaitForSeconds(Random.Range(preRainMinInterval, preRainMaxInterval));
+        }
+
+        // Restaurar antes de que IniciarLluvia() haga su fade completo
+        oscuridadMaxima    = oscuridadOriginal;
+        postExposureTarget = postExposureOriginal;
+
+        // Pausa final antes de que arranque la lluvia de verdad
+        yield return new WaitForSeconds(Random.Range(1.5f, 2.5f));
     }
 
     // ============================================================

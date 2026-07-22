@@ -43,7 +43,7 @@ using UnityEngine.EventSystems;
 public class PaintCanvasPuzzle : MonoBehaviour
 {
     private const int GRID_SIZE = 4; // 4x4 = 16 celdas: suficiente para sentir presión sin ser tedioso
-    private const float TIME_LIMIT = 60f;
+    private const float TIME_LIMIT = 20f;
 
     private static readonly PaintColor[] paleta =
     {
@@ -226,7 +226,7 @@ public class PaintCanvasPuzzle : MonoBehaviour
         titulo.lineSpacing = 1.5f;
         titulo.rectTransform.sizeDelta = new Vector2(500f, 80f);
         timerTexto = CrearTexto("PaintPuzzle_Timer", backdrop.transform, new Vector2(0f, 248f), 28,
-            "Tiempo: 60s");
+            "Tiempo: 20s");
 
         // --- Referencia (arriba) ---
         CrearTexto("PaintPuzzle_LabelRef", backdrop.transform, new Vector2(-260f, 190f), 20, "Referencia");
