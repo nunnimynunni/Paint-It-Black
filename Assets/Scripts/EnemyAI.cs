@@ -53,6 +53,14 @@ public abstract class EnemyAI : MonoBehaviour
     // mientras están quietas disparando/atacando.
     protected Vector2 facing = Vector2.down;
 
+    // Histeresis de flipX: evita que el sprite se espeje rápidamente cuando el
+    // jugador oscila alrededor del eje horizontal del NPC (bug visual al disparar).
+    // Solo se permite cambiar el flip después de que pase este cooldown desde el
+    // último cambio, y solo cuando la dirección horizontal es suficientemente clara.
+    private float flipCooldown = 0f;
+    private const float FLIP_COOLDOWN_SEG = 0.25f;
+    private const float FLIP_DEADZONE_X   = 0.15f; // cos del ángulo mínimo para contar como "izquierda/derecha"
+
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -272,10 +280,29 @@ public abstract class EnemyAI : MonoBehaviour
     }
 
     // Fuerza hacia dónde "mira" el NPC aunque no se esté moviendo (ej: apuntar al disparar).
+    // IMPORTANTE: si el nuevo rumbo implica un cambio horizontal de lado (flipX), pero
+    // el cooldown de flip todavía no expiró, se conserva la componente X actual para que
+    // 'facing' nunca quede desincronizado del sprite visual.  Esto resuelve dos bugs:
+    //   1. Oscilación rápida del sprite cuando el jugador cruza el eje horizontal del NPC.
+    //   2. NPC "dispara para el lado contrario" porque facing.x ya cambió pero flipX todavía no.
     protected void FaceDirection(Vector2 dir)
     {
         if (dir.sqrMagnitude < 0.0001f) return;
-        facing = SnapTo8(dir);
+        Vector2 snapped = SnapTo8(dir);
+        if (snapped == facing) return;
+
+        // ¿El nuevo snap quiere cambiar el lado horizontal?
+        bool cambiaDeLado = snapped.x != 0 && facing.x != 0
+                            && Mathf.Sign(snapped.x) != Mathf.Sign(facing.x);
+        if (cambiaDeLado && flipCooldown > 0f)
+        {
+            // Actualizar solo la componente Y; la X se comprometerá cuando
+            // AplicarFlip() pueda efectivamente girar el sprite.
+            facing = new Vector2(facing.x, snapped.y);
+            return;
+        }
+
+        facing = snapped;
     }
 
     // --- Animación: igual lógica que NPCMovement pero para una dirección cualquiera ---
@@ -290,22 +317,24 @@ public abstract class EnemyAI : MonoBehaviour
         animator.SetBool("isWalkingDiagonalUp", false);
         animator.SetBool("isWalkingDiagonalDown", false);
 
+        if (flipCooldown > 0f) flipCooldown -= Time.deltaTime;
+
         if (dir.sqrMagnitude > 0.0001f)
         {
             facing = SnapTo8(dir);
 
-            if (facing == Vector2.down) { animator.SetBool("isWalkingDown", true); sr.flipX = false; }
-            else if (facing == Vector2.up) { animator.SetBool("isWalkingUp", true); sr.flipX = false; }
+            if (facing == Vector2.down) { animator.SetBool("isWalkingDown", true); AplicarFlip(false); }
+            else if (facing == Vector2.up) { animator.SetBool("isWalkingUp", true); AplicarFlip(false); }
             else if (facing.x > 0)
             {
-                sr.flipX = false;
+                AplicarFlip(false);
                 if (facing.y > 0) animator.SetBool("isWalkingDiagonalUp", true);
                 else if (facing.y < 0) animator.SetBool("isWalkingDiagonalDown", true);
                 else animator.SetBool("isWalkingRight", true);
             }
             else if (facing.x < 0)
             {
-                sr.flipX = true;
+                AplicarFlip(true);
                 if (facing.y > 0) animator.SetBool("isWalkingDiagonalUp", true);
                 else if (facing.y < 0) animator.SetBool("isWalkingDiagonalDown", true);
                 else animator.SetBool("isWalkingRight", true);
@@ -314,10 +343,20 @@ public abstract class EnemyAI : MonoBehaviour
         else
         {
             // Quieto: mantiene el flip acorde a la última dirección conocida
-            sr.flipX = facing.x < 0;
+            AplicarFlip(facing.x < 0);
         }
 
         SetFacingParams(facing);
+    }
+
+    // Aplica el flip con histeresis: solo cambia si el cooldown expiró y la dirección
+    // horizontal del objetivo es lo suficientemente clara (evita el shimmer al disparar).
+    private void AplicarFlip(bool quiereFlip)
+    {
+        if (quiereFlip == sr.flipX) return; // sin cambio: no hace falta cooldown
+        if (flipCooldown > 0f) return;       // esperando: ignorar cambio por ahora
+        sr.flipX = quiereFlip;
+        flipCooldown = FLIP_COOLDOWN_SEG;
     }
 
     void SetFacingParams(Vector2 f)

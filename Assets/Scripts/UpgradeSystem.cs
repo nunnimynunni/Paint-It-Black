@@ -115,7 +115,7 @@ public class UpgradeSystem : MonoBehaviour
     // aviso visual de que se obtuvo algo; para el escudo temporal dura
     // exactamente lo mismo que protege (10s), y para la curación instantánea
     // dura un poco menos, solo a modo de aviso.
-    const float DURACION_AVISO_PERMANENTE = 30f;
+    const float DURACION_AVISO_PERMANENTE = 60f;
     const float DURACION_ESCUDO = 10f;
     const float DURACION_AVISO_CURACION = 6f;
 

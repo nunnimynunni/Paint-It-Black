@@ -91,6 +91,8 @@ public class RainManager : MonoBehaviour
     {
         public RectTransform rect;
         public float speed;
+        public Image img;         // referencia para fade de alpha
+        public float targetAlpha; // alpha objetivo (el que tenía al crearse)
     }
 
     // ============================================================
@@ -314,9 +316,13 @@ public class RainManager : MonoBehaviour
     IEnumerator IniciarLluvia()
     {
         IsRaining = true;
-        MostrarGotas(true);
         IniciarAudioLluvia();
         MusicManager.Instance?.DuckMusica(audioFadeDuration);
+
+        // Activar el canvas de gotas pero con alpha 0 para el fade-in progresivo
+        if (rainCanvas != null) rainCanvas.gameObject.SetActive(true);
+        foreach (var d in drops)
+            if (d.img != null) d.img.color = new Color(1f, 1f, 1f, 0f);
 
         if (colorAdj != null)
         {
@@ -329,12 +335,23 @@ public class RainManager : MonoBehaviour
                 colorAdj.postExposure.value = Mathf.Lerp(0f,            postExposureTarget, pct);
                 if (overlayOscuro != null)
                     overlayOscuro.color = new Color(0f, 0f, 0.04f, Mathf.Lerp(0f, oscuridadMaxima, pct));
+                // Las gotas también aparecen progresivamente con el overlay
+                foreach (var d in drops)
+                    if (d.img != null) d.img.color = new Color(1f, 1f, 1f, d.targetAlpha * pct);
                 yield return null;
             }
             colorAdj.saturation.value   = -100f;
             colorAdj.postExposure.value = postExposureTarget;
             if (overlayOscuro != null)
                 overlayOscuro.color = new Color(0f, 0f, 0.04f, oscuridadMaxima);
+            foreach (var d in drops)
+                if (d.img != null) d.img.color = new Color(1f, 1f, 1f, d.targetAlpha);
+        }
+        else
+        {
+            // Sin post-procesado: al menos mostrar gotas ya
+            foreach (var d in drops)
+                if (d.img != null) d.img.color = new Color(1f, 1f, 1f, d.targetAlpha);
         }
 
         RevertirCasasPintadas();
@@ -359,6 +376,9 @@ public class RainManager : MonoBehaviour
                 colorAdj.postExposure.value = Mathf.Lerp(postExposureTarget, 0f, pct);
                 if (overlayOscuro != null)
                     overlayOscuro.color = new Color(0f, 0f, 0.04f, Mathf.Lerp(oscuridadMaxima, 0f, pct));
+                // Las gotas también se desvanecen progresivamente
+                foreach (var d in drops)
+                    if (d.img != null) d.img.color = new Color(1f, 1f, 1f, d.targetAlpha * (1f - pct));
                 yield return null;
             }
             colorAdj.saturation.value   = 0f;
@@ -366,6 +386,10 @@ public class RainManager : MonoBehaviour
             if (overlayOscuro != null)
                 overlayOscuro.color = new Color(0f, 0f, 0.04f, 0f);
         }
+
+        // Asegurar gotas en alpha 0 al finalizar
+        foreach (var d in drops)
+            if (d.img != null) d.img.color = new Color(1f, 1f, 1f, 0f);
 
         DesbloquearCasas();
         LimpiarPinturaEnNPCs();
@@ -573,7 +597,8 @@ public class RainManager : MonoBehaviour
             dropObj.transform.SetParent(contenedor.transform, false);
 
             var img = dropObj.AddComponent<Image>();
-            img.color = new Color(1f, 1f, 1f, Random.Range(0.45f, 0.75f));
+            float alpha = Random.Range(0.45f, 0.75f);
+            img.color = new Color(1f, 1f, 1f, alpha);
 
             float altura = Random.Range(8f, 18f);
             float ancho  = Random.Range(0.8f, 1.4f);
@@ -589,8 +614,10 @@ public class RainManager : MonoBehaviour
 
             drops.Add(new RainDrop
             {
-                rect  = rect,
-                speed = Random.Range(500f, 800f),
+                rect        = rect,
+                speed       = Random.Range(500f, 800f),
+                img         = img,
+                targetAlpha = alpha,
             });
         }
 

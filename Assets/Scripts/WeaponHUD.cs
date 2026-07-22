@@ -28,19 +28,20 @@ public class WeaponHUD : MonoBehaviour
 
     [Header("Layout de slots")]
     [Tooltip("Tamaño del icono de arma en pixels")]
-    public float iconSize = 54f;
+    public float iconSize = 64f;
     [Tooltip("Factor de escala del slot activo")]
-    public float activeScale = 1.30f;
+    public float activeScale = 1.20f;
     [Tooltip("Separación horizontal entre slots")]
-    public float spacing = 12f;
+    public float spacing = 14f;
 
-    // ── Colores ────────────────────────────────────────────────
+    // ── Colores (estetica graffiti: manchas de pintura, alto contraste) ────────
+    // Activo: mancha amarillo-dorado como aerosol sobre pared, icono blanco puro
     static readonly Color COLOR_ICONO_ACTIVO   = new Color(1f,    1f,    1f,    1f);
-    static readonly Color COLOR_ICONO_INACTIVO = new Color(0.5f,  0.5f,  0.5f,  0.55f);
-    static readonly Color COLOR_FONDO_ACTIVO   = new Color(0.08f, 0.08f, 0.08f, 0.80f);
-    static readonly Color COLOR_FONDO_INACTIVO = new Color(0.05f, 0.05f, 0.05f, 0.42f);
-    static readonly Color COLOR_TECLA_ACTIVO   = new Color(1f,    1f,    1f,    0.90f);
-    static readonly Color COLOR_TECLA_INACTIVO = new Color(0.6f,  0.6f,  0.6f,  0.70f);
+    static readonly Color COLOR_ICONO_INACTIVO = new Color(0.55f, 0.55f, 0.55f, 0.50f);
+    static readonly Color COLOR_FONDO_ACTIVO   = new Color(0.95f, 0.75f, 0.05f, 0.88f); // amarillo spray
+    static readonly Color COLOR_FONDO_INACTIVO = new Color(0.04f, 0.04f, 0.04f, 0.65f); // negro pared
+    static readonly Color COLOR_TECLA_ACTIVO   = new Color(1f,    1f,    1f,    1.00f); // blanco siempre
+    static readonly Color COLOR_TECLA_INACTIVO = new Color(1f,    1f,    1f,    0.80f);
 
     // ── Internos ───────────────────────────────────────────────
     private RectTransform[] slotRT = new RectTransform[3];
@@ -153,7 +154,8 @@ public class WeaponHUD : MonoBehaviour
             var txt = goT.AddComponent<Text>();
             txt.text = labels[i];
             txt.font = fuente;
-            txt.fontSize = 11;
+            txt.fontSize = 13;
+            txt.fontStyle = FontStyle.Bold;
             txt.alignment = TextAnchor.MiddleCenter;
             txt.color = COLOR_TECLA_INACTIVO;
             teclas[i] = txt;

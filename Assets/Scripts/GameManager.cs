@@ -100,8 +100,24 @@ public class GameManager : MonoBehaviour
         IsGameOver = true;
 
         Debug.Log("GAME OVER");
+
+        // Detener todos los SFX en curso (los PlayOneShot de impacto que estaban
+        // en cola seguirían sonando sobre la pantalla de derrota/menú si no se cortan).
+        if (SfxManager.Instance != null) SfxManager.Instance.DetenerTodo();
+
+        // Cortar el buff arcoiris si estaba activo: el coroutine en PlayerHealth
+        // se destruiría con la escena sin llamar TerminarPotenciador(), dejando
+        // la música de "Final Boss" sonando indefinidamente sobre el menú.
+        if (PlayerHealth.Instance != null) PlayerHealth.Instance.TerminarBuffOutline();
+
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
         SetHudVisible(false);
+
+        // Restaurar el cursor para que el jugador pueda navegar la pantalla de derrota.
+        // SetHudVisible(false) llama DesactivarModoOleada() que oculta el cursor;
+        // se vuelve a mostrar aquí explícitamente.
+        Cursor.visible = true;
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 
         Time.timeScale = 0f;
 
@@ -192,19 +208,21 @@ public class GameManager : MonoBehaviour
         if (hudExploracionCache == null) hudExploracionCache = GameObject.Find("hudExploracion");
         if (hudExploracionCache != null) hudExploracionCache.SetActive(visible);
 
-        // HudCombateVisual agrupa los elementos visuales del HUD de combate (MarcoArmas, barra
-        // de vida, gotas). No se puede buscar con GameObject.Find cuando está inactivo, así que
-        // se recorre el canvas por Transform (funciona con objetos inactivos).
+        // HudCombateVisual: agrupa los visuales del HUD de combate.
+        // Transform.Find funciona con objetos inactivos; se cachea la primera vez.
         if (hudCombateVisualCache == null)
         {
-            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
-            if (canvas != null)
+            foreach (Canvas c in Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None))
             {
-                Transform t = canvas.transform.Find("HudCombateVisual");
-                if (t != null) hudCombateVisualCache = t.gameObject;
+                Transform t = c.transform.Find("HudCombateVisual");
+                if (t != null) { hudCombateVisualCache = t.gameObject; break; }
             }
         }
         if (hudCombateVisualCache != null) hudCombateVisualCache.SetActive(visible);
+
+        // Cursor: activar/desactivar el bullseye según si entra o sale del combate
+        if (!visible && WeaponCursor.Instance != null)
+            WeaponCursor.Instance.DesactivarModoOleada();
     }
 
     // Útil para un botón de "Reintentar" en el panel de Game Over

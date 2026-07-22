@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ed0d70540bdc73448bc85bd5616db47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHP: 1
+  maxHP: 100
   damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
   cantidadMunicionPorDrop: 10
   porcentajeCuracionAlMorir: 0.03
@@ -259,13 +259,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed6df92d06e7348afa57be3b1107bd7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAntiDisturbios
-  baseMoveSpeed: 2.5
-  distanciaMinimaEstructuras: 0.5
+  baseMoveSpeed: 2.1
+  distanciaMinimaEstructuras: 1.2
   allyDetectionRange: 10
   blockPositionRatio: 0.4
   followDistance: 0.3
   meleeRange: 1.2
-  detectionRange: 12
+  detectionRange: 20
   attackCooldown: 1.3
   damage: 10
   attackHitDelay: 0.3

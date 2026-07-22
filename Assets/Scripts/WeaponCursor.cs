@@ -4,29 +4,36 @@ using UnityEngine.InputSystem;
 
 // ============================================================
 // SCRIPT: WeaponCursor
-// Muestra una mira de UI que sigue al mouse y se tintea con el
-// color de munición activo (igual que las gotas de AmmoHUD).
-// El cursor del sistema se oculta mientras el juego está activo.
+// Gestiona el cursor según el modo de juego:
+//   - Exploración (antes/después de oleada): sin cursor.
+//   - Oleada activa: punterobullseye de UI, tintado con el color
+//     de munición activo (igual que las gotas de AmmoHUD).
+//   - Minijuego: cursor del sistema en pincel (lo maneja
+//     PaintCanvasPuzzle vía Suspender/Reanudar).
 //
-// SETUP: arrastrar el sprite de la mira al campo "spriteMira" en
-// el Inspector del GameObject WeaponCursor_Runtime, o asignarlo
-// en Project Settings → Player → Default Cursor como fallback.
-//
-// Suspender()/Reanudar() los sigue usando PaintCanvasPuzzle para
-// mostrar/ocultar la mira durante el minijuego.
+// Flujo esperado:
+//   GomezInteraction → ActivarModoOleada() al empezar combate.
+//   PaintCanvasPuzzle → Suspender() al abrir puzzle, Reanudar() al cerrar.
+//   GameManager.SetHudVisible(false) → DesactivarModoOleada() al terminar.
 // ============================================================
 public class WeaponCursor : MonoBehaviour
 {
     public static WeaponCursor Instance;
 
-    [Tooltip("Sprite de la mira (base blanca, se tintea con el color activo)")]
-    public Sprite spriteMira;
-    [Tooltip("Tamaño de la mira en pantalla (px)")]
-    public float tamanio = 32f;
+    [Tooltip("Sprite del bullseye (base blanca, se tintea con el color activo)")]
+    public Sprite spriteBullseye;
+    [Tooltip("Tamaño del bullseye en pantalla (px)")]
+    public float tamanio = 79f;
 
-    private Canvas canvas;
+    private Canvas canvasCursor;
     private Image imagenMira;
     private RectTransform rectMira;
+
+    // Indica si la oleada está activa (para que Reanudar() sepa qué mostrar)
+    private bool oleadaActiva = false;
+
+    // Permite que MenuPausa sepa si debe restaurar el bullseye al reanudar
+    public bool OleadaActiva => oleadaActiva;
 
     void Awake()
     {
@@ -35,26 +42,28 @@ public class WeaponCursor : MonoBehaviour
 
     void Start()
     {
-        if (spriteMira == null) return;
-        CrearCursorUI();
+        // Por defecto: sin cursor (exploración pre-oleada)
         Cursor.visible = false;
     }
 
-    void CrearCursorUI()
+    // ── Crea el canvas de UI con el bullseye (solo la primera vez) ───────────
+    void AsegurarCursorUI()
     {
+        if (canvasCursor != null) return;
+        if (spriteBullseye == null) return;
+
         GameObject canvasObj = new GameObject("WeaponCursor_Canvas");
         canvasObj.transform.SetParent(transform);
-        canvas = canvasObj.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 999; // por encima de todo
-
+        canvasCursor = canvasObj.AddComponent<Canvas>();
+        canvasCursor.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasCursor.sortingOrder = 999;
         canvasObj.AddComponent<CanvasScaler>();
 
         GameObject miraObj = new GameObject("Mira", typeof(RectTransform));
         miraObj.transform.SetParent(canvasObj.transform, false);
 
         imagenMira = miraObj.AddComponent<Image>();
-        imagenMira.sprite = spriteMira;
+        imagenMira.sprite = spriteBullseye;
         imagenMira.raycastTarget = false;
 
         rectMira = miraObj.GetComponent<RectTransform>();
@@ -67,32 +76,54 @@ public class WeaponCursor : MonoBehaviour
     void Update()
     {
         if (imagenMira == null || rectMira == null) return;
+        if (canvasCursor == null || !canvasCursor.gameObject.activeSelf) return;
 
         // Seguir la posición del mouse
         rectMira.anchoredPosition = Mouse.current.position.ReadValue();
 
-        // Tintear con el color de munición activo (igual que AmmoHUD)
-        if (WeaponManager.instance != null)
-        {
-            Color colorMunicion = PaintColorUtils.ToUnityColor(WeaponManager.instance.currentColor);
-            imagenMira.color = colorMunicion;
-        }
+        // Sin tinte: el bullseye se ve siempre como es
+        imagenMira.color = Color.white;
     }
 
-    // Llamado por PaintCanvasPuzzle al abrir el minijuego:
-    // muestra el cursor del sistema y oculta la mira de UI.
+    // ── API pública ──────────────────────────────────────────────────────────
+
+    // Llamado por GomezInteraction al arrancar el combate.
+    public void ActivarModoOleada()
+    {
+        oleadaActiva = true;
+        Cursor.visible = false;
+        AsegurarCursorUI();
+        if (canvasCursor != null) canvasCursor.gameObject.SetActive(true);
+    }
+
+    // Llamado por GameManager.SetHudVisible(false) al terminar/perder la oleada.
+    public void DesactivarModoOleada()
+    {
+        oleadaActiva = false;
+        Cursor.visible = false;
+        if (canvasCursor != null) canvasCursor.gameObject.SetActive(false);
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
+
+    // Llamado por PaintCanvasPuzzle al ABRIR el minijuego:
+    // oculta el bullseye y muestra el cursor del sistema (el puzzle pone el pincel).
     public void Suspender()
     {
         Cursor.visible = true;
-        if (canvas != null) canvas.gameObject.SetActive(false);
+        if (canvasCursor != null) canvasCursor.gameObject.SetActive(false);
     }
 
-    // Llamado por PaintCanvasPuzzle al cerrar el minijuego:
-    // oculta el cursor del sistema y vuelve a mostrar la mira.
+    // Llamado por PaintCanvasPuzzle al CERRAR el minijuego:
+    // limpia el cursor del sistema y vuelve al bullseye.
     public void Reanudar()
     {
-        Cursor.visible = false;
-        if (canvas != null) canvas.gameObject.SetActive(true);
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        Cursor.visible = false;
+        // Asegurar que el canvas existe (puede haberse destruido por algún motivo)
+        AsegurarCursorUI();
+        // Volver al bullseye siempre que el canvas exista, sin depender de oleadaActiva
+        // (el puzzle solo se abre durante la oleada, así que siempre queremos volver al bullseye)
+        if (canvasCursor != null)
+            canvasCursor.gameObject.SetActive(true);
     }
 }

@@ -68,9 +68,9 @@ public class GomezInteraction : MonoBehaviour
     public GameObject hudExploracion;
     // hudCombate: se activa al terminar el diálogo (gotas, barra de vida, arma)
     public GameObject hudCombate;
-    // Referencia cacheada a HudCombateVisual (los elementos visuales: MarcoArmas, barra vida, gotas)
-    // Se busca por Transform.Find (funciona aunque el objeto esté inactivo).
-    private GameObject hudCombateVisual;
+    // Referencia a HudCombateVisual (los elementos visuales: MarcoArmas, barra vida, gotas).
+    // Asignado en la escena como los demás campos de HUD.
+    [SerializeField] private GameObject hudCombateVisual;
 
     [Header("Salida")]
     // true = NPC desaparece al terminar diálogo (Gomez)
@@ -131,14 +131,6 @@ public class GomezInteraction : MonoBehaviour
         if (hudCombate != null)
             hudCombate.SetActive(false);
 
-        // Cachear HudCombateVisual buscando entre hijos del Canvas.
-        // Transform.Find funciona aunque el objeto esté inactivo (a diferencia de GameObject.Find).
-        Canvas canvas = Object.FindFirstObjectByType<Canvas>();
-        if (canvas != null)
-        {
-            Transform t = canvas.transform.Find("HudCombateVisual");
-            if (t != null) hudCombateVisual = t.gameObject;
-        }
         if (hudCombateVisual != null)
             hudCombateVisual.SetActive(false);
 
@@ -207,6 +199,7 @@ public class GomezInteraction : MonoBehaviour
                     dialogOpen = false;
                     if (hudCombate != null) hudCombate.SetActive(true);
                     if (hudCombateVisual != null) hudCombateVisual.SetActive(true);
+                    WeaponCursor.Instance?.ActivarModoOleada();
                     if (exitAfterDialog) StartExit();
                     else if (triggersEndingAfterDialog) StartEndingPostDialog();
                 }
