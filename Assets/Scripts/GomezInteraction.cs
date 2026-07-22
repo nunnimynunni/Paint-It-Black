@@ -68,6 +68,9 @@ public class GomezInteraction : MonoBehaviour
     public GameObject hudExploracion;
     // hudCombate: se activa al terminar el diálogo (gotas, barra de vida, arma)
     public GameObject hudCombate;
+    // Referencia cacheada a HudCombateVisual (los elementos visuales: MarcoArmas, barra vida, gotas)
+    // Se busca por Transform.Find (funciona aunque el objeto esté inactivo).
+    private GameObject hudCombateVisual;
 
     [Header("Salida")]
     // true = NPC desaparece al terminar diálogo (Gomez)
@@ -128,6 +131,17 @@ public class GomezInteraction : MonoBehaviour
         if (hudCombate != null)
             hudCombate.SetActive(false);
 
+        // Cachear HudCombateVisual buscando entre hijos del Canvas.
+        // Transform.Find funciona aunque el objeto esté inactivo (a diferencia de GameObject.Find).
+        Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+        if (canvas != null)
+        {
+            Transform t = canvas.transform.Find("HudCombateVisual");
+            if (t != null) hudCombateVisual = t.gameObject;
+        }
+        if (hudCombateVisual != null)
+            hudCombateVisual.SetActive(false);
+
         animator = GetComponent<Animator>();
 
         AsegurarColliderSolido();
@@ -180,9 +194,10 @@ public class GomezInteraction : MonoBehaviour
                 if (hudExploracion != null) hudExploracion.SetActive(false);
                 if (dialogManager != null) dialogManager.OpenDialog();
 
-                // Pedido del usuario: el inicio de la interacción con Gomez es la
-                // señal para el crossfade hacia la música de "Final Boss".
-                if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeABoss();
+                // La música de exploración BYN sigue sonando durante el diálogo
+                // con Gomez (ya no hace crossfade a Boss acá). El crossfade a
+                // "Peleas Genericas" ocurre en StartExit(), cuando Gomez sale y
+                // arrancan las oleadas.
             }
             else
             {
@@ -191,6 +206,7 @@ public class GomezInteraction : MonoBehaviour
                 {
                     dialogOpen = false;
                     if (hudCombate != null) hudCombate.SetActive(true);
+                    if (hudCombateVisual != null) hudCombateVisual.SetActive(true);
                     if (exitAfterDialog) StartExit();
                     else if (triggersEndingAfterDialog) StartEndingPostDialog();
                 }
@@ -224,6 +240,12 @@ public class GomezInteraction : MonoBehaviour
         // CORRECCIÓN (vertical slice): el combate arranca directo acá, ya no
         // depende de pisar una zona del piso (WaveTriggerZone quedó deprecado).
         // ============================================================
+
+        // Gomez sale → oleadas empiezan → crossfade a "Peleas Genericas".
+        // La música de exploración BYN sonó durante todo el diálogo; recién
+        // acá sube la tensión musical (sin llegar al boss todavía).
+        if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeAPeleasGenericas();
+
         EnemySpawner spawner = Object.FindFirstObjectByType<EnemySpawner>();
         Debug.Log($"[GomezInteraction] StartExit: EnemySpawner {(spawner != null ? "encontrado → arrancando oleadas" : "NO ENCONTRADO")}");
         if (spawner != null) spawner.StartWaves();

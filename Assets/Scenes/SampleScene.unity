@@ -3495,6 +3495,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 2
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &158289211
 GameObject:
   m_ObjectHideFlags: 0
@@ -9299,12 +9302,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1539724444}
+  m_Father: {fileID: 500000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 62.16365, y: 71.4957}
-  m_SizeDelta: {x: 44.3273, y: 62.9914}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -75, y: 86}
+  m_SizeDelta: {x: 53, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &425306475
 MonoBehaviour:
@@ -9788,6 +9791,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 4
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &459788448
 GameObject:
   m_ObjectHideFlags: 0
@@ -16195,8 +16201,9 @@ MonoBehaviour:
   spritePincel: {fileID: -3298989508981142680, guid: f889ce96a9be3454192983fe4f2b18ad, type: 3}
   spriteRodillo: {fileID: 4867034358069601309, guid: 34554943c9e17f1418d63fa2a97df26e, type: 3}
   weaponImage: {fileID: 1030201037}
-  slideDistance: 20
-  slideDuration: 0.15
+  iconSize: 54
+  activeScale: 1.3
+  spacing: 12
 --- !u!1 &678357062
 GameObject:
   m_ObjectHideFlags: 0
@@ -23331,6 +23338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 2
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1046135789
 GameObject:
   m_ObjectHideFlags: 0
@@ -24219,6 +24229,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 4
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1087019537
 GameObject:
   m_ObjectHideFlags: 0
@@ -26496,6 +26509,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 1
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1205193851
 GameObject:
   m_ObjectHideFlags: 0
@@ -28276,12 +28292,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1030201039}
-  m_Father: {fileID: 1539724444}
+  m_Father: {fileID: 500000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 90, y: -90}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 160, y: 90}
+  m_SizeDelta: {x: 290, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1262612193
 MonoBehaviour:
@@ -28290,7 +28306,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262612191}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -29444,12 +29460,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1539724444}
+  m_Father: {fileID: 500000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 123.72285, y: 71.4957}
-  m_SizeDelta: {x: 44.3273, y: 62.9914}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -148, y: 86}
+  m_SizeDelta: {x: 53, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1308583401
 MonoBehaviour:
@@ -31130,6 +31146,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 3
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1423195587
 GameObject:
   m_ObjectHideFlags: 0
@@ -31792,6 +31811,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 3
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1443614096
 GameObject:
   m_ObjectHideFlags: 0
@@ -33802,6 +33824,42 @@ Transform:
   - {fileID: 1539724444}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &500000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 500000002}
+  m_Layer: 5
+  m_Name: HudCombateVisual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &500000002
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500000001}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 500000002}
+  m_Father: {fileID: 1539724444}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1539724443
 GameObject:
   m_ObjectHideFlags: 0
@@ -33840,11 +33898,8 @@ RectTransform:
   - {fileID: 1184324741}
   - {fileID: 173228796}
   - {fileID: 995334859}
-  - {fileID: 1262612192}
-  - {fileID: 425306474}
-  - {fileID: 1308583400}
-  - {fileID: 1636979230}
-  m_Father: {fileID: 1537306271}
+  - {fileID: 500000002}
+m_Father: {fileID: 1537306271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -35912,11 +35967,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1770445215}
-  m_Father: {fileID: 1539724444}
+  m_Father: {fileID: 500000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -212.675, y: 68.678}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 212.675, y: -68.678}
   m_SizeDelta: {x: 345.35, y: 57.356}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1639485033
@@ -38830,6 +38885,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 1
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1772222230
 GameObject:
   m_ObjectHideFlags: 0
@@ -40453,6 +40511,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 1
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &1837966220
 GameObject:
   m_ObjectHideFlags: 0
@@ -45026,6 +45087,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HouseVisualState
   numeroCasa: 2
+  rattleAmplitud: 0.055
+  rattleDuracion: 0.28
+  tintStrength: 0.55
 --- !u!1 &2041507793
 GameObject:
   m_ObjectHideFlags: 0

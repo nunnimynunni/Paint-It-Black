@@ -45,9 +45,9 @@ public class RainManager : MonoBehaviour
 
     [Header("Oscuridad")]
     [Tooltip("Opacidad máxima del overlay oscuro (0=nada, 1=negro total)")]
-    public float oscuridadMaxima = 0.65f;
+    public float oscuridadMaxima = 0.35f;
     [Tooltip("postExposure del URP Volume durante la lluvia (negativo = más oscuro)")]
-    public float postExposureTarget = -2.2f;
+    public float postExposureTarget = -0.9f;
 
     [Header("Relámpagos")]
     [Tooltip("Tiempo mínimo entre relámpagos (seg)")]

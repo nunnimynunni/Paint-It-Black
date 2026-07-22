@@ -182,6 +182,7 @@ public class GameManager : MonoBehaviour
     // ============================================================
     private static GameObject hudCombateCache;
     private static GameObject hudExploracionCache;
+    private static GameObject hudCombateVisualCache;
 
     public static void SetHudVisible(bool visible)
     {
@@ -190,6 +191,20 @@ public class GameManager : MonoBehaviour
 
         if (hudExploracionCache == null) hudExploracionCache = GameObject.Find("hudExploracion");
         if (hudExploracionCache != null) hudExploracionCache.SetActive(visible);
+
+        // HudCombateVisual agrupa los elementos visuales del HUD de combate (MarcoArmas, barra
+        // de vida, gotas). No se puede buscar con GameObject.Find cuando está inactivo, así que
+        // se recorre el canvas por Transform (funciona con objetos inactivos).
+        if (hudCombateVisualCache == null)
+        {
+            Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+            if (canvas != null)
+            {
+                Transform t = canvas.transform.Find("HudCombateVisual");
+                if (t != null) hudCombateVisualCache = t.gameObject;
+            }
+        }
+        if (hudCombateVisualCache != null) hudCombateVisualCache.SetActive(visible);
     }
 
     // Útil para un botón de "Reintentar" en el panel de Game Over

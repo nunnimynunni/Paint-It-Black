@@ -28,6 +28,7 @@ public class PlayerHealth : MonoBehaviour
     // estado placeholder "Golpeado"). Si no hay Animator en el GameObject
     // simplemente no se dispara nada (no rompe nada existente).
     private Animator animator;
+    private PlayerAnimator playerAnimator;
 
     // ============================================================
     // GDD 3.7: "Mejoras de Vida y Defensa" otorgadas por el puzzle.
@@ -63,6 +64,7 @@ public class PlayerHealth : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         colorOriginal = sr.color;
         animator = GetComponent<Animator>();
+        playerAnimator = GetComponent<PlayerAnimator>();
     }
 
     void LateUpdate()
@@ -105,6 +107,7 @@ public class PlayerHealth : MonoBehaviour
         invulnTimer = invulnerabilityDuration;
         sr.color = Color.red;
         if (animator != null) animator.SetTrigger("OnHit");
+        playerAnimator?.TriggerFreezeOnHit();
 
         if (currentHealth <= 0)
         {
@@ -196,6 +199,12 @@ public class PlayerHealth : MonoBehaviour
         yield return new WaitForSeconds(segundos);
         if (buffOutlineObj != null) buffOutlineObj.SetActive(false);
         buffOutlineRoutine = null;
+
+        // El potenciador expiró: avisar a MusicManager para que vuelva a
+        // "Peleas Genericas". Solo lo hace si todavía está en la pista del
+        // boss (si la victoria llegó antes, ya está en Exploración Color y
+        // TerminarPotenciador lo detecta y no hace nada).
+        if (MusicManager.Instance != null) MusicManager.Instance.TerminarPotenciador();
     }
 
     public int GetCurrentHealth() => currentHealth;

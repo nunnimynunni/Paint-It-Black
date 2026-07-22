@@ -37,6 +37,40 @@ public class PlayerAnimator : MonoBehaviour
     private float dodgeCooldownTimer = 0f;
     private Vector2 lastDirection = Vector2.down;
 
+    // Temporizador de flipX para disparos del balde: mientras dure, tiene
+    // prioridad sobre el espejo automático de movimiento. playerataque lo
+    // activa al lanzar el rodillo, indicando si el disparo va a la izquierda.
+    private float tiempoFlipXDisparo = 0f;
+    private bool flipXDisparoValor = false;
+
+    // Freeze brevísimo al recibir un golpe: congela el movimiento solo el
+    // tiempo necesario para que la animación OnHit arranque y se sienta el
+    // impacto. Independiente del timer de invulnerabilidad para que no se
+    // acumule si el jugador recibe varios golpes seguidos.
+    [Header("Freeze al recibir golpe")]
+    [Tooltip("Segundos que el movimiento queda congelado tras recibir un golpe (muy breve, solo para que se vea la animación)")]
+    public float freezeOnHitDuracion = 0.15f;
+    private float freezeOnHitTimer = 0f;
+
+    // Llamado desde PlayerHealth.TakeDamage() para congelar el movimiento brevemente.
+    public void TriggerFreezeOnHit()
+    {
+        // Si ya hay un freeze activo no lo acumula: solo reinicia si el nuevo
+        // dura más que el tiempo restante, evitando que golpes rápidos encadenen
+        // freezes indefinidamente.
+        if (freezeOnHitTimer < freezeOnHitDuracion)
+            freezeOnHitTimer = freezeOnHitDuracion;
+    }
+
+    // Llamado desde playerataque.SpawnMelee() para anclar el flipX durante
+    // la animación de balde (duración aprox. 0.45 s). Después del timer
+    // vuelve a manejar el flipX en función del movimiento normalmente.
+    public void SetFlipXDisparo(bool izquierda, float duracion)
+    {
+        flipXDisparoValor = izquierda;
+        tiempoFlipXDisparo = duracion;
+    }
+
     // GDD 3.3: "el jugador queda momentáneamente inmovilizado [...] impidiendo
     // el uso consecutivo o en cadena del movimiento". Hasta ahora, intentar
     // esquivar durante el cooldown simplemente no hacía nada (el input se
@@ -61,10 +95,12 @@ public class PlayerAnimator : MonoBehaviour
         if (keyboard == null) return;
 
         if (dodgeCooldownTimer > 0f) dodgeCooldownTimer -= Time.deltaTime;
+        if (freezeOnHitTimer > 0f) freezeOnHitTimer -= Time.deltaTime;
 
-        // Mientras se esquiva, no reprocesamos el input de movimiento normal:
-        // la corutina DoDodge() ya está manejando la velocidad por su cuenta.
+        // Mientras se esquiva o está en el freeze de golpe, no reprocesamos
+        // el input de movimiento normal.
         if (isDodging) return;
+        if (freezeOnHitTimer > 0f) return;
 
         movimiento = Vector2.zero;
 
@@ -100,9 +136,15 @@ public class PlayerAnimator : MonoBehaviour
         anim.SetBool("diagonalAbajoD", diagAbajoD || diagAbajoI);
         anim.SetBool("diagonalArribaD", diagArribaD || diagArribaI);
 
-        // Espejo autom�tico en X
+        // Espejo automático en X.
+        // El disparo de balde tiene prioridad durante su animación (timer
+        // activado por playerataque.SpawnMelee); fuera de ese timer, usa la
+        // dirección de movimiento como antes.
+        if (tiempoFlipXDisparo > 0f) tiempoFlipXDisparo -= Time.deltaTime;
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (diagAbajoI || diagArribaI)
+        if (tiempoFlipXDisparo > 0f)
+            sr.flipX = flipXDisparoValor;
+        else if (diagAbajoI || diagArribaI)
             sr.flipX = true;
         else
             sr.flipX = false;
@@ -158,8 +200,10 @@ public class PlayerAnimator : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Mientras isDodging == true, DoDodge() es quien controla rb.linearVelocity.
+        // Mientras isDodging == true, DoDodge() controla la velocidad.
+        // Mientras freezeOnHitTimer > 0, el personaje queda quieto brevemente.
         if (isDodging) return;
+        if (freezeOnHitTimer > 0f) { rb.linearVelocity = Vector2.zero; return; }
 
         if (rb != null)
             rb.linearVelocity = movimiento * velocidad * VelocidadMovimientoMult;
@@ -199,7 +243,8 @@ public class PlayerAnimator : MonoBehaviour
         if (PlayerHealth.Instance != null)
             PlayerHealth.Instance.GrantInvulnerability(dodgeDuration + 0.05f);
 
-        if (anim != null) anim.SetTrigger(dodgeAnimTrigger);
+        // Sin animación de dodge: la animación actual sigue sin interrupciones.
+        // if (anim != null) anim.SetTrigger(dodgeAnimTrigger);
 
         Vector2 dir = lastDirection.sqrMagnitude > 0.01f ? lastDirection.normalized : Vector2.down;
 

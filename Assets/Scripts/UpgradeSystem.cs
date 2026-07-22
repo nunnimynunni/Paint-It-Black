@@ -99,7 +99,14 @@ public class UpgradeSystem : MonoBehaviour
         var valores = (TipoMejora[])System.Enum.GetValues(typeof(TipoMejora));
         TipoMejora elegida = valores[Random.Range(0, valores.Length)];
         MejorasObtenidas++;
-        return AplicarMejora(elegida);
+        string mensaje = AplicarMejora(elegida);
+
+        // Pedido del usuario: mientras dure el potenciador (outline verde) suena
+        // "Final Boss". Cuando el outline se apaga, PlayerHealth llama
+        // MusicManager.TerminarPotenciador() y vuelve a "Peleas Genericas".
+        if (MusicManager.Instance != null) MusicManager.Instance.CrossfadeABoss();
+
+        return mensaje;
     }
 
     // Mientras el beneficio esté activo, el protagonista muestra un outline
