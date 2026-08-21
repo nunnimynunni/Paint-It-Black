@@ -21,10 +21,27 @@ public class playerataque : MonoBehaviour
     [Tooltip("Segundos entre golpes del rodillo")]
     public float cooldownRodillo = 0.5f;
 
+    [Header("Arma 4 - Balde (AoE + Charco)")]
+    public GameObject baldePrefab;
+    public Transform baldeFirePoint;
+    [Tooltip("Segundos entre lanzamientos del balde")]
+    public float cooldownBalde = 1.5f;
+    [Tooltip("Unidades de munición que consume el balde (GDD: 5)")]
+    public int baldeAmmoCost = 5;
+
+    [Header("Granada - Frasco de Barniz")]
+    public GameObject granadaPrefab;
+    public float cooldownGranada = 2f;
+    public int granadasMax = 5;
+    private int granadasActuales = 3;
+    private float timerGranada = 0f;
+
     private GameObject currentSpray;
+    private GameObject currentBalde;
     private float timerSpray   = 0f;
     private float timerPincel  = 0f;
     private float timerRodillo = 0f;
+    private float timerBalde   = 0f;
 
     // Feedback de playtest: vacantes de animación de disparo del Forastero
     // (Animator "frottnguy_0", parámetros Trigger "Disparar" + Int
@@ -48,6 +65,12 @@ public class playerataque : MonoBehaviour
         if (timerSpray   > 0f) timerSpray   -= Time.deltaTime;
         if (timerPincel  > 0f) timerPincel  -= Time.deltaTime;
         if (timerRodillo > 0f) timerRodillo -= Time.deltaTime;
+        if (timerBalde   > 0f) timerBalde   -= Time.deltaTime;
+        if (timerGranada > 0f) timerGranada -= Time.deltaTime;
+
+        // --- GRANADA (clic derecho, independiente del arma activa) ---
+        if (Mouse.current.rightButton.wasPressedThisFrame && timerGranada <= 0f && granadasActuales > 0)
+            LanzarGranada();
 
         var weapon = WeaponManager.instance.currentWeapon;
 
@@ -93,6 +116,27 @@ public class playerataque : MonoBehaviour
                 && AmmoManager.instance != null && AmmoManager.instance.ConsumeAmmo(WeaponManager.instance.currentColor))
                 SpawnMelee();
         }
+
+        // --- BALDE ---
+        if (weapon == WeaponManager.WeaponType.Balde)
+        {
+            if (Mouse.current.leftButton.wasPressedThisFrame && timerBalde <= 0f
+                && AmmoManager.instance != null && AmmoManager.instance.ConsumeAmmo(WeaponManager.instance.currentColor, baldeAmmoCost))
+                SpawnBalde();
+
+            // Actualizar rotación hacia el mouse mientras el balde existe
+            if (currentBalde != null)
+                UpdateBaldeDirection();
+        }
+        else
+        {
+            // Si cambió de arma con el balde activo, destruirlo
+            if (currentBalde != null)
+            {
+                Destroy(currentBalde);
+                currentBalde = null;
+            }
+        }
     }
 
     // Multiplicadores de UpgradeSystem (GDD 3.7: Mejoras de Arma). Si todavía
@@ -134,6 +178,14 @@ public class playerataque : MonoBehaviour
         if (s != null) s.Init(dir);
     }
 
+    // Igual que UpdateSprayDirection: llama a Init() cada frame
+    void UpdateBaldeDirection()
+    {
+        Vector2 dir = GetMouseDirection(firePoint);
+        BaldeProyectil bp = currentBalde.GetComponent<BaldeProyectil>();
+        if (bp != null) bp.Init(dir);
+    }
+
     void SpawnProjectile()
     {
         // Sin animación de disparo: la animación actual sigue sin interrupciones.
@@ -170,6 +222,43 @@ public class playerataque : MonoBehaviour
         }
         timerRodillo = cooldownRodillo * CooldownMult;
     }
+
+    void SpawnBalde()
+    {
+        if (SfxManager.Instance != null) SfxManager.Instance.PlayImpacto();
+        Vector2 dir = GetMouseDirection(firePoint);
+        currentBalde = Instantiate(baldePrefab, firePoint.position, Quaternion.identity, firePoint);
+        currentBalde.transform.localScale *= AreaMult;
+        BaldeProyectil bp = currentBalde.GetComponent<BaldeProyectil>();
+        if (bp != null)
+        {
+            bp.colorType = WeaponManager.instance.currentColor;
+            bp.damage = Mathf.RoundToInt(bp.damage * DanoMult);
+            bp.Init(dir);
+        }
+        timerBalde = cooldownBalde * CooldownMult;
+    }
+
+    void LanzarGranada()
+    {
+        if (granadaPrefab == null) return;
+        granadasActuales--;
+        timerGranada = cooldownGranada;
+
+        Vector2 dir = GetMouseDirection(firePoint);
+        GameObject granada = Instantiate(granadaPrefab, firePoint.position, Quaternion.identity);
+        GranadaBarniz gb = granada.GetComponent<GranadaBarniz>();
+        if (gb != null)
+            gb.Init(dir);
+    }
+
+    // Llamado por GranadaPickup al recoger
+    public void AgregarGranadas(int cantidad)
+    {
+        granadasActuales = Mathf.Min(granadasActuales + cantidad, granadasMax);
+    }
+
+    public int GetGranadas() => granadasActuales;
 
     Vector2 GetMouseDirection(Transform from)
     {

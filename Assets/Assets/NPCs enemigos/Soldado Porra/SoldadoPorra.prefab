@@ -164,6 +164,8 @@ MonoBehaviour:
   maxHP: 75
   damagePopupPrefab: {fileID: 3582372060705828563, guid: 33e9239be44752f4b9183a87d921a530, type: 3}
   cantidadMunicionPorDrop: 10
+  granadaPickupPrefab: {fileID: 5180245248024867140, guid: bda12fb8c7c3c42468dd955cfe80b88e, type: 3}
+  probabilidadDropGranada: 0.122
   porcentajeCuracionAlMorir: 0.03
   duracionAturdimientoPorGolpe: 0.3
 --- !u!50 &5849709469354130386
@@ -261,6 +263,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPorra
   baseMoveSpeed: 1.7
   distanciaMinimaEstructuras: 1.2
+  radioSeparacionNPCs: 2.5
   meleeRange: 1.1
   detectionRange: 20
   attackCooldown: 1

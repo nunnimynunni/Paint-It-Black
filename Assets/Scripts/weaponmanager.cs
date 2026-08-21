@@ -5,7 +5,7 @@ public class WeaponManager : MonoBehaviour
 {
     public static WeaponManager instance;
 
-    public enum WeaponType { Spray, Projectile, Melee }
+    public enum WeaponType { Spray, Projectile, Melee, Balde }
     public WeaponType currentWeapon = WeaponType.Spray;
 
     // Color activo del disparo — se pasa a cada proyectil al instanciarlo
@@ -23,6 +23,7 @@ public class WeaponManager : MonoBehaviour
         if (Keyboard.current.digit1Key.wasPressedThisFrame) currentWeapon = WeaponType.Spray;
         if (Keyboard.current.digit2Key.wasPressedThisFrame) currentWeapon = WeaponType.Projectile;
         if (Keyboard.current.digit3Key.wasPressedThisFrame) currentWeapon = WeaponType.Melee;
+        if (Keyboard.current.digit4Key.wasPressedThisFrame) currentWeapon = WeaponType.Balde;
 
         // Tab cicla entre los colores disponibles
         if (Keyboard.current.tabKey.wasPressedThisFrame)

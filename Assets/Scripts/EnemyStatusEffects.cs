@@ -15,7 +15,7 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class EnemyStatusEffects : MonoBehaviour
 {
-    public enum StatusType { None, Frenzy, Pacified, Fear, Slow }
+    public enum StatusType { None, Frenzy, Pacified, Fear, Slow, Immobilized }
 
     [Header("Config")]
     [Tooltip("Cantidad de impactos del mismo color para activar el efecto")]
@@ -80,6 +80,7 @@ public class EnemyStatusEffects : MonoBehaviour
     {
         get
         {
+            if (CurrentStatus == StatusType.Immobilized) return 0f;
             if (CurrentStatus == StatusType.Frenzy) return 1f + 0.5f * EffectIntensity; // 1.5x a 2.25x
             if (CurrentStatus == StatusType.Slow) return Mathf.Clamp(1f - 0.5f * EffectIntensity, 0.1f, 0.5f); // 0.5x a 0.1x
             return 1f;
@@ -99,7 +100,7 @@ public class EnemyStatusEffects : MonoBehaviour
     }
 
     // Pacificado: no ataca, se mueve errático sin intención de combate
-    public bool CanAct => CurrentStatus != StatusType.Pacified;
+    public bool CanAct => CurrentStatus != StatusType.Pacified && CurrentStatus != StatusType.Immobilized;
     public bool IsFrenzied => CurrentStatus == StatusType.Frenzy;
     public bool IsFearful => CurrentStatus == StatusType.Fear;
     public bool IsPacified => CurrentStatus == StatusType.Pacified;
@@ -209,6 +210,20 @@ public class EnemyStatusEffects : MonoBehaviour
 
         IsPoisoned = false;
         // El tinte verde se mantiene aunque el veneno termine — el color es permanente hasta la muerte
+    }
+
+    // Llamado por GranadaBarniz al explotar: inmoviliza al enemigo por una duración
+    public void ApplyImmobilize(float duracion)
+    {
+        CurrentStatus = StatusType.Immobilized;
+        if (sr != null)
+        {
+            Color barniz = new Color(0.6f, 0.4f, 0.1f, 1f);
+            sr.color = Color.Lerp(baseColor, barniz, tintStrength);
+            CurrentBaseColor = sr.color;
+        }
+        if (effectRoutine != null) StopCoroutine(effectRoutine);
+        effectRoutine = StartCoroutine(EffectDurationRoutine(duracion));
     }
 
     // ============================================================

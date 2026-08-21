@@ -19,6 +19,10 @@ public class EnemyHealth : MonoBehaviour
     public int cantidadMunicionPorDrop = 10;
     private PaintColor ultimoColorRecibido = PaintColor.Red;
 
+    [Header("Drop de granada")]
+    public GameObject granadaPickupPrefab;
+    [Range(0f, 1f)] public float probabilidadDropGranada = 0.1f;
+
     // ============================================================
     // GDD / feedback de playtest: "matar npcs debe regenerar un pequeño
     // porcentaje de la vida" del jugador. Se calcula sobre la vida MÁXIMA
@@ -191,6 +195,10 @@ public class EnemyHealth : MonoBehaviour
 
         // Siempre dropea munición del color que más le falte al jugador.
         AmmoPickup.Crear(transform.position, ElegirColorParaDrop(), cantidadMunicionPorDrop);
+
+        // Drop raro de granada
+        if (granadaPickupPrefab != null && Random.value <= probabilidadDropGranada)
+            Instantiate(granadaPickupPrefab, transform.position + Vector3.right * 0.3f, Quaternion.identity);
 
         // Feedback de playtest: "matar npcs debe regenerar un pequeño
         // porcentaje de la vida" del jugador, calculado sobre su vida máxima.

@@ -17173,6 +17173,11 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!4 &745011808 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3607856865733994495, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+  m_PrefabInstance: {fileID: 1523875724}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &749136147
 GameObject:
   m_ObjectHideFlags: 0
@@ -26237,6 +26242,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1175317593}
+  - component: {fileID: 1175317595}
+  - component: {fileID: 1175317594}
   m_Layer: 5
   m_Name: IconoArma
   m_TagString: Untagged
@@ -26260,9 +26267,47 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0.0000019073, y: -0.0000016689}
+  m_SizeDelta: {x: 80.176, y: 42.8755}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1175317594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175317592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -5639815438464745509, guid: 70066ab7203ffb048ab98fb7c52bedbd, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1175317595
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175317592}
+  m_CullTransparentMesh: 1
 --- !u!1 &1184324740
 GameObject:
   m_ObjectHideFlags: 0
@@ -31140,7 +31185,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0042321384, y: -0.47820607}
+  m_Offset: {x: 0.004232168, y: -0.56734973}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -31150,7 +31195,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.8453321, y: 0.7396732}
+  m_Size: {x: 1.8453321, y: 0.9179605}
   m_EdgeRadius: 0
 --- !u!212 &1408776875
 SpriteRenderer:
@@ -33758,6 +33803,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1224512469}
     m_Modifications:
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: baldeOffset
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: baldePrefab
+      value: 
+      objectReference: {fileID: 8068888488118431375, guid: 3c39a5ca656a2b24cb0736f89ee71fad, type: 3}
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: granadasMax
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: granadaPrefab
+      value: 
+      objectReference: {fileID: 6754905899796669494, guid: 43610f867fbc3824d81988f7da305f8d, type: 3}
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: baldeFirePoint
+      value: 
+      objectReference: {fileID: 745011808}
+    - target: {fileID: 1810445669120822122, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
+      propertyPath: cooldownGranada
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2498292786852309687, guid: ade28ef85e8334afe9f35f4a241e178a, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -45602,9 +45671,9 @@ MonoBehaviour:
   - root: {fileID: 1339558931}
     iconoArma: {fileID: 1713259431}
     weaponType: 2
-  - root: {fileID: 0}
-    iconoArma: {fileID: 0}
-    weaponType: 0
+  - root: {fileID: 1897965376}
+    iconoArma: {fileID: 1175317594}
+    weaponType: 3
   normalScale: 1
   selectedScale: 1.25
   scaleSpeed: 10
