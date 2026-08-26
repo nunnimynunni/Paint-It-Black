@@ -129,7 +129,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.34
+  m_Radius: 0.5
 --- !u!50 &2394667489028301602
 Rigidbody2D:
   serializedVersion: 5
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GranadaBarniz
   velocidad: 8
   velocidadRotacion: 360
-  timerExplosion: 1.5
-  radioExplosion: 2
+  timerExplosion: 2
+  radioExplosion: 2.4
   duracionInmovilizacion: 5
   explosionVFXPrefab: {fileID: 0}

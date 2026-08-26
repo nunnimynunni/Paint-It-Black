@@ -36,6 +36,9 @@ public class EnemyStatusEffects : MonoBehaviour
     [Tooltip("Cuánto dura un efecto de comportamiento (Frenzy/Pacificado/Miedo/Lento) antes de volver a la normalidad.")]
     public float effectDuration = 45f;
 
+    [Header("Immobilize (Granada)")]
+    public Material materialInmovilizado;
+
     public StatusType CurrentStatus { get; private set; } = StatusType.None;
     public bool IsPoisoned { get; private set; } = false;
 
@@ -60,6 +63,7 @@ public class EnemyStatusEffects : MonoBehaviour
     private EnemyHealth health;
     private Coroutine poisonRoutine;
     private Coroutine effectRoutine;
+    private Material materialOriginal;
 
     void Awake()
     {
@@ -71,6 +75,7 @@ public class EnemyStatusEffects : MonoBehaviour
     {
         baseColor = sr.color;
         CurrentBaseColor = baseColor;
+        if (sr != null) materialOriginal = sr.material;
     }
 
     // --- Multiplicadores que leen los scripts de IA/ataque ---
@@ -218,12 +223,26 @@ public class EnemyStatusEffects : MonoBehaviour
         CurrentStatus = StatusType.Immobilized;
         if (sr != null)
         {
-            Color barniz = new Color(0.6f, 0.4f, 0.1f, 1f);
-            sr.color = Color.Lerp(baseColor, barniz, tintStrength);
+            if (materialInmovilizado != null)
+                sr.material = materialInmovilizado;
+            sr.color = Color.white;
             CurrentBaseColor = sr.color;
         }
         if (effectRoutine != null) StopCoroutine(effectRoutine);
-        effectRoutine = StartCoroutine(EffectDurationRoutine(duracion));
+        effectRoutine = StartCoroutine(ImmobilizeDurationRoutine(duracion));
+    }
+
+    IEnumerator ImmobilizeDurationRoutine(float duracion)
+    {
+        yield return new WaitForSeconds(duracion);
+        CurrentStatus = StatusType.None;
+        if (sr != null)
+        {
+            sr.material = materialOriginal;
+            sr.color = baseColor;
+        }
+        CurrentBaseColor = baseColor;
+        effectRoutine = null;
     }
 
     // ============================================================

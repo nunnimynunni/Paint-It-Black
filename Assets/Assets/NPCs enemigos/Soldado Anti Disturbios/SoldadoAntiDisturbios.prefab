@@ -249,6 +249,7 @@ MonoBehaviour:
   poisonDuration: 5
   tintStrength: 1
   effectDuration: 12
+  materialInmovilizado: {fileID: 2100000, guid: c7aa864ea01613045b2ba048a6b2919d, type: 2}
 --- !u!114 &6590711705427460705
 MonoBehaviour:
   m_ObjectHideFlags: 0
